@@ -1,0 +1,16 @@
+package(default_visibility = ["//helper:__subpackages__"])
+
+load("@io_bazel_rules_go//go:def.bzl", "go_library")
+
+go_library(
+    name = "agent",
+    srcs = ["agent.go"],
+    importpath = "github.com/hazaelsan/ssh-relay/helper/agent",
+    deps = [
+        "//helper/proto:config_go_proto",
+        "//helper/session",
+        "//http",
+        "//response",
+        "@com_github_golang_glog//:go_default_library",
+    ],
+)

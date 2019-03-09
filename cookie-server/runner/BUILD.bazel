@@ -1,0 +1,23 @@
+package(default_visibility = ["//cookie-server:__subpackages__"])
+
+load("@io_bazel_rules_go//go:def.bzl", "go_library")
+
+go_library(
+    name = "runner",
+    srcs = [
+        "cookie.go",
+        "doc.go",
+        "request.go",
+        "runner.go",
+    ],
+    importpath = "github.com/hazaelsan/ssh-relay/cookie-server/runner",
+    deps = [
+        "//cookie-server/proto:config_go_proto",
+        "//duration",
+        "//http",
+        "//proto:cookie_go_proto",
+        "//request",
+        "//response",
+        "@com_github_golang_glog//:go_default_library",
+    ],
+)

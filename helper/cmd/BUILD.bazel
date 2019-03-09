@@ -1,0 +1,16 @@
+package(default_visibility = ["//visibility:private"])
+
+load("@io_bazel_rules_go//go:def.bzl", "go_binary")
+
+go_binary(
+    name = "ssh_relay_helper",
+    srcs = ["ssh-relay-helper.go"],
+    deps = [
+        "//helper/agent",
+        "//helper/proto:config_go_proto",
+        "//proto:http_go_proto",
+        "@com_github_golang_glog//:go_default_library",
+        "@com_github_golang_protobuf//proto:go_default_library",
+    ],
+)
+

@@ -1,0 +1,53 @@
+package runner
+
+import (
+	"errors"
+	"time"
+
+	"github.com/hazaelsan/ssh-relay/duration"
+	"github.com/hazaelsan/ssh-relay/http"
+	"github.com/hazaelsan/ssh-relay/relay/session/manager"
+
+	pb "github.com/hazaelsan/ssh-relay/relay/proto/config_go_proto"
+)
+
+var (
+	// ErrBadOrigin is returned when the origin cookie is missing or invalid.
+	ErrBadOrigin = errors.New("bad origin")
+)
+
+// New instantiates a Runner with a *pb.Config.
+func New(cfg *pb.Config) (*Runner, error) {
+	s, err := http.NewServer(cfg.ServerOptions)
+	if err != nil {
+		return nil, err
+	}
+	var maxAge time.Duration
+	if err := duration.FromProto(&maxAge, cfg.MaxSessionAge); err != nil {
+		return nil, err
+	}
+	r := &Runner{
+		cfg:    cfg,
+		mgr:    manager.New(int(cfg.MaxSessions), maxAge),
+		server: s,
+	}
+	for path, fun := range map[string]http.HandlerFunc{
+		"/connect": r.connectHandle,
+		"/proxy":   r.proxyHandle,
+	} {
+		s.HandleFunc(path, fun)
+	}
+	return r, nil
+}
+
+// Runner is the main SSH-over-WebSocket Relay connection handler.
+type Runner struct {
+	cfg    *pb.Config
+	mgr    *manager.Manager
+	server *http.Server
+}
+
+// Run executes the runner, listens for incoming client connections.
+func (r *Runner) Run() error {
+	return r.server.Run()
+}

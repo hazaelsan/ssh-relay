@@ -1,0 +1,25 @@
+package(default_visibility = ["//relay:__subpackages__"])
+
+load("@io_bazel_rules_go//go:def.bzl", "go_library")
+
+go_library(
+    name = "runner",
+    srcs = [
+        "connect.go",
+        "doc.go",
+        "origin.go",
+        "proxy.go",
+        "runner.go",
+    ],
+    importpath = "github.com/hazaelsan/ssh-relay/relay/runner",
+    deps = [
+        "//duration",
+        "//http",
+        "//relay/proto:config_go_proto",
+        "//relay/session/manager",
+        "//request",
+        "//request/cookie",
+        "@com_github_golang_glog//:go_default_library",
+        "@com_github_gorilla_websocket//:go_default_library",
+    ],
+)

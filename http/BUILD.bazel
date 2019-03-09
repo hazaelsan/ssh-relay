@@ -1,0 +1,21 @@
+package(default_visibility = ["//visibility:public"])
+
+load("@io_bazel_rules_go//go:def.bzl", "go_library")
+
+go_library(
+    name = "http",
+    srcs = [
+        "client.go",
+        "doc.go",
+        "http.go",
+        "server.go",
+    ],
+    importpath = "github.com/hazaelsan/ssh-relay/http",
+    deps = [
+        "//duration",
+        "//proto:http_go_proto",
+        "//tls",
+        "@com_github_golang_glog//:go_default_library",
+        "@io_bazel_rules_go//proto/wkt:duration_go_proto",
+    ],
+)

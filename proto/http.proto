@@ -1,0 +1,70 @@
+// Generic configuration options for Go HTTP servers.
+
+syntax = "proto3";
+
+import "google/protobuf/duration.proto";
+import "proto/tls.proto";
+
+package hazaelsan.ssh_relay;
+
+option go_package = "github.com/hazaelsan/ssh-relay/proto/http_go_proto";
+
+// HTTP Server settings, see https://golang.org/pkg/net/http/#Server.
+// Next ID: 6
+message HttpServer {
+  // Maximum duration for reading the entire request.
+  google.protobuf.Duration read_timeout = 1;
+
+  // Amount of time allowed to read request headers.
+  google.protobuf.Duration read_header_timeout = 2;
+
+  // Maximum duration before timing out writes of the response.
+  google.protobuf.Duration write_timeout = 3;
+
+  // Maximum amount of time to wait for the rext request.
+  google.protobuf.Duration idle_timeout = 4;
+
+  // Maximum number of bytes the server will read parsing the request header.
+  int32 max_header_bytes = 5;
+}
+
+// Configuration settings for HTTPS servers.
+// Next ID: 4
+message HttpServerOptions {
+  // Listening address for incoming requests, defaults to the unspecified
+  // address.
+  string addr = 1;
+
+  // Listening port number, required.
+  string port = 2;
+
+  // HTTP Server settings, see https://golang.org/pkg/net/http/#Server.
+  HttpServer http_server = 3;
+
+  // SSL/TLS settings, see https://golang.org/pkg/crypto/tls/#Config.
+  TlsConfig tls_config = 4;
+
+  // Maximum age for the HSTS Policy header.
+  // This should be a long value (in the order of months).
+  // If unset, no HSTS header will be set.  It is then the operator's
+  // responsibility to ensure the HSTS header is set via other ways (i.e., by
+  // setting it at the top-level domain name).
+  google.protobuf.Duration hsts_max_age = 5;
+
+  // Whether to include subdomains in the HSTS Policy.
+  // Only used if hsts_max_age is set.
+  bool hsts_include_subdomains = 6;
+}
+
+// Transport settings for HTTPS clients, see https://golang.org/pkg/net/http/#Transport.
+// Next ID: 4
+message HttpTransport {
+  // SSL/TLS settings, see https://golang.org/pkg/crypto/tls/#Config.
+  TlsConfig tls_config = 1;
+
+  // Amount of time allowed to read request headers.
+  google.protobuf.Duration response_header_timeout = 2;
+
+  // Maximum number of bytes are allowed from a server's response.
+  int64 max_response_header_bytes = 3;
+}

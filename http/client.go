@@ -1,0 +1,38 @@
+package http
+
+import (
+	"fmt"
+	"net/http"
+	"time"
+
+	"github.com/hazaelsan/ssh-relay/duration"
+	"github.com/hazaelsan/ssh-relay/tls"
+
+	dpb "github.com/golang/protobuf/ptypes/duration"
+	httppb "github.com/hazaelsan/ssh-relay/proto/http_go_proto"
+)
+
+// NewClient generates an *http.Client from a config message.
+func NewClient(cfg *httppb.HttpTransport) (*http.Client, error) {
+	if cfg.TlsConfig == nil {
+		return http.DefaultClient, nil
+	}
+	tlsCfg, err := tls.ClientConfig(cfg.TlsConfig)
+	if err != nil {
+		return nil, fmt.Errorf("tls.Config() error: %v", err)
+	}
+	t := &http.Transport{
+		TLSClientConfig:        tlsCfg,
+		MaxResponseHeaderBytes: cfg.MaxResponseHeaderBytes,
+	}
+	for dst, src := range map[*time.Duration]*dpb.Duration{
+		&t.ResponseHeaderTimeout: cfg.ResponseHeaderTimeout,
+	} {
+		if err := duration.FromProto(dst, src); err != nil {
+			return nil, fmt.Errorf("duration.FromProto(%v, %v) error: %v", dst, src, err)
+		}
+	}
+	c := http.DefaultClient
+	c.Transport = t
+	return c, nil
+}
