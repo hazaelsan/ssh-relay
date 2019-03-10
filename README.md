@@ -12,7 +12,8 @@ App][chrome-app], but the client helper makes it possible to use with ssh's
 
 ## Features
 
-* Supports client/server version 2 of the Relay Protocol[^version].
+* Supports client/server version 2 of the Relay Protocol.
+  Version 1 is supported by the SSH Relay, though this version is deprecated.
 * Supports WebSockets for the SSH transport (via `/connect`), the older
   XHR-based method (via `/read` and `/write`) is NOT supported.
 * Configuration is done almost entirely via [protobuf messages](https://developers.google.com/protocol-buffers/).
@@ -94,5 +95,3 @@ and minimally tested using the [Secure Shell Chrome App][chrome-app].
 
 [relay-protocol]: https://chromium.googlesource.com/apps/libapps/+/HEAD/nassh/doc/relay-protocol.md
 [chrome-app]: https://chrome.google.com/webstore/detail/secure-shell-app/pnhechapfaindjhompbnflcldabbghjo
-
-[^version]: Version 1 is only supported by the SSH Relay.  The client only supports version.
