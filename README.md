@@ -12,8 +12,9 @@ App][chrome-app], but the client helper makes it possible to use with ssh's
 
 ## Features
 
-* Supports client/server version 2 of the Relay Protocol, version 1 is NOT supported.
-* Supports WebSockets for the SSH transport, the older XHR-based method is NOT supported.
+* Supports client/server version 2 of the Relay Protocol[^version].
+* Supports WebSockets for the SSH transport (via `/connect`), the older
+  XHR-based method (via `/read` and `/write`) is NOT supported.
 * Configuration is done almost entirely via [protobuf messages](https://developers.google.com/protocol-buffers/).
 * TLS is **required** for all operations, though its options are configurable.
 
@@ -23,9 +24,9 @@ Building of all components is done via [Bazel](http://bazel.build).
 
 ## Components
 
-It's possible to host the Cookie Server and the SSH Relay on the same host, but
-in that case you'll need a reverse proxy (e.g., `nginx`) to route requests
-accordingly.
+NOTE: It's possible to host the Cookie Server and the SSH Relay on the same
+host, but in that case you'll need a reverse proxy (e.g., `nginx`) to route
+requests accordingly.
 
 ### Cookie Server
 
@@ -66,7 +67,7 @@ Host *.example.org
 ```proto
 # DO NOT set host/port in the config proto.
 
-# This can also be passed via --cookie_server_address
+# This can also be passed via --cookie_server_address,
 # port defaults to 8022 if unspecified.
 cookie_server_address: "cookie-server.example.org:8022"
 
@@ -88,7 +89,10 @@ All bugs/feature requests should be done via GitHub, pull requests are welcome.
 
 **This project is NOT affiliated or endorsed by Google.**
 
-All code was written based on Google's [public documentation][relay-protocol] and minimally tested using the [Secure Shell Chrome App][chrome-app].
+All code was written based on Google's [public documentation][relay-protocol]
+and minimally tested using the [Secure Shell Chrome App][chrome-app].
 
 [relay-protocol]: https://chromium.googlesource.com/apps/libapps/+/HEAD/nassh/doc/relay-protocol.md
 [chrome-app]: https://chrome.google.com/webstore/detail/secure-shell-app/pnhechapfaindjhompbnflcldabbghjo
+
+[^version]: Version 1 is only supported by the SSH Relay.  The client only supports version.
