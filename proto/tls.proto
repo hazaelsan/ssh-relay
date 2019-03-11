@@ -29,7 +29,7 @@ message TlsConfig {
   // Next ID: 5
   enum ClientAuthType {
     NO_CLIENT_CERT = 0;
-    REQUIRE_CLIENT_CERT = 1;
+    REQUEST_CLIENT_CERT = 1;
     REQUIRE_ANY_CLIENT_CERT = 2;
     VERIFY_CLIENT_CERT_IF_GIVEN = 3;
     REQUIRE_AND_VERIFY_CLIENT_CERT = 4;

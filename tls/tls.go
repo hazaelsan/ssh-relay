@@ -25,7 +25,7 @@ var (
 var (
 	clientAuthMap = map[pb.TlsConfig_ClientAuthType]tls.ClientAuthType{
 		pb.TlsConfig_NO_CLIENT_CERT:                 tls.NoClientCert,
-		pb.TlsConfig_REQUIRE_CLIENT_CERT:            tls.RequestClientCert,
+		pb.TlsConfig_REQUEST_CLIENT_CERT:            tls.RequestClientCert,
 		pb.TlsConfig_REQUIRE_ANY_CLIENT_CERT:        tls.RequireAnyClientCert,
 		pb.TlsConfig_VERIFY_CLIENT_CERT_IF_GIVEN:    tls.VerifyClientCertIfGiven,
 		pb.TlsConfig_REQUIRE_AND_VERIFY_CLIENT_CERT: tls.RequireAndVerifyClientCert,
