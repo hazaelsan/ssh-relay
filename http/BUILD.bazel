@@ -23,7 +23,20 @@ go_library(
 go_test(
     name = "client_test",
     srcs = ["client_test.go"],
-    embed = ["http"],
+    embed = [":http"],
+    data = ["//testdata"],
+    deps = [
+        "//proto:http_go_proto",
+        "//proto:tls_go_proto",
+        "@com_github_kylelemons_pretty//:pretty",
+        "@io_bazel_rules_go//proto/wkt:duration_go_proto",
+    ],
+)
+
+go_test(
+    name = "server_test",
+    srcs = ["server_test.go"],
+    embed = [":http"],
     data = ["//testdata"],
     deps = [
         "//proto:http_go_proto",
