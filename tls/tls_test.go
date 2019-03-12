@@ -35,7 +35,7 @@ func TestConfig(t *testing.T) {
 			},
 			want: &tls.Config{
 				ClientAuth: tls.RequireAnyClientCert,
-				MinVersion: TLSMinVersion,
+				MinVersion: tls.VersionTLS12,
 			},
 			ok: true,
 		},
@@ -46,7 +46,7 @@ func TestConfig(t *testing.T) {
 			},
 			want: &tls.Config{
 				ClientAuth: tls.RequireAndVerifyClientCert,
-				MinVersion: TLSMinVersion,
+				MinVersion: tls.VersionTLS12,
 			},
 			rootCNs: []string{
 				"CN=*.example.org,O=Internet Widgits Pty Ltd,ST=California,C=US",
@@ -59,7 +59,7 @@ func TestConfig(t *testing.T) {
 			},
 			want: &tls.Config{
 				ClientAuth: tls.NoClientCert,
-				MinVersion: TLSMinVersion,
+				MinVersion: tls.VersionTLS12,
 			},
 			clientCNs: []string{
 				"CN=*.example.org,O=Internet Widgits Pty Ltd,ST=California,C=US",
@@ -143,7 +143,7 @@ func TestClientConfig(t *testing.T) {
 			},
 			want: &tls.Config{
 				ClientAuth: tls.RequireAnyClientCert,
-				MinVersion: TLSMinVersion,
+				MinVersion: tls.VersionTLS12,
 			},
 			subjects: []string{
 				"CN=*.example.org,O=Internet Widgits Pty Ltd,ST=California,C=US",
