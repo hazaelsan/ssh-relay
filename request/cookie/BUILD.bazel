@@ -1,6 +1,6 @@
 package(default_visibility = ["//:__subpackages__"])
 
-load("@io_bazel_rules_go//go:def.bzl", "go_library")
+load("@io_bazel_rules_go//go:def.bzl", "go_library", "go_test")
 
 go_library(
     name = "cookie",
@@ -9,5 +9,15 @@ go_library(
     deps = [
         "//request",
         "@com_github_google_uuid//:go_default_library",
+    ],
+)
+
+go_test(
+    name = "cookie_test",
+    srcs = ["cookie_test.go"],
+    embed = [":cookie"],
+    deps = [
+        "@com_github_google_uuid//:go_default_library",
+        "@com_github_kylelemons_pretty//:pretty",
     ],
 )
