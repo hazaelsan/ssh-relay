@@ -1,6 +1,6 @@
 package(default_visibility = ["//visibility:public"])
 
-load("@io_bazel_rules_go//go:def.bzl", "go_library")
+load("@io_bazel_rules_go//go:def.bzl", "go_library", "go_test")
 
 go_library(
     name = "duration",
@@ -9,5 +9,15 @@ go_library(
     deps = [
         "@com_github_golang_protobuf//ptypes:go_default_library_gen",
         "@io_bazel_rules_go//proto/wkt:duration_go_proto",
+    ],
+)
+
+go_test(
+    name = "duration_test",
+    srcs = ["duration_test.go"],
+    embed = [":duration"],
+    deps = [
+        "@com_github_golang_protobuf//ptypes:go_default_library_gen",
+        "@com_github_kylelemons_pretty//:pretty",
     ],
 )
