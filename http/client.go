@@ -32,7 +32,7 @@ func NewClient(cfg *httppb.HttpTransport) (*http.Client, error) {
 			return nil, fmt.Errorf("duration.FromProto(%v, %v) error: %v", dst, src, err)
 		}
 	}
-	c := http.DefaultClient
+	c := new(http.Client)
 	c.Transport = t
 	return c, nil
 }
