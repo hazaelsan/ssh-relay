@@ -55,3 +55,33 @@ func TestFromReader(t *testing.T) {
 		}
 	}
 }
+
+func TestEncode(t *testing.T) {
+	testdata := []struct {
+		r    *Response
+		want string
+	}{
+		{
+			r:    &Response{Endpoint: "foo"},
+			want: "eyJlbmRwb2ludCI6ImZvbyJ9",
+		},
+		{
+			r:    &Response{Error: "foo"},
+			want: "eyJlbmRwb2ludCI6IiIsImVycm9yIjoiZm9vIn0=",
+		},
+		{
+			r:    &Response{},
+			want: "eyJlbmRwb2ludCI6IiJ9",
+		},
+	}
+	for _, tt := range testdata {
+		got, err := tt.r.Encode()
+		if err != nil {
+			t.Errorf("Encode(%v) error = %v", pretty.Sprint(tt.r), err)
+			continue
+		}
+		if got != tt.want {
+			t.Errorf("Encode(%v) = %v, want %v", pretty.Sprint(tt.r), got, tt.want)
+		}
+	}
+}
