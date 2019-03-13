@@ -17,6 +17,7 @@ go_library(
         "//http",
         "//relay/proto:config_go_proto",
         "//relay/request/connect",
+        "//relay/request/proxy",
         "//relay/session/manager",
         "//request",
         "@com_github_golang_glog//:go_default_library",

@@ -6,19 +6,19 @@ import (
 	"net/http"
 
 	"github.com/golang/glog"
+	"github.com/hazaelsan/ssh-relay/relay/request/proxy"
 	"github.com/hazaelsan/ssh-relay/request"
 )
 
 // proxyHandle handles /proxy requests.
 // Sets up the SSH connection and returns the SID to the client.
 func (r *Runner) proxyHandle(w http.ResponseWriter, req *http.Request) {
-	host := req.URL.Query().Get("host")
-	port := req.URL.Query().Get("port")
-	if host == "" || port == "" {
-		http.Error(w, request.ErrBadRequest.Error(), http.StatusBadRequest)
+	pr, err := proxy.New(req)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
-	addr := net.JoinHostPort(host, port)
+	addr := net.JoinHostPort(pr.Host, pr.Port)
 	ssh, err := net.Dial("tcp", addr)
 	if err != nil {
 		if glog.V(1) {
