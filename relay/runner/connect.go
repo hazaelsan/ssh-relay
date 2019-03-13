@@ -6,13 +6,13 @@ import (
 	"github.com/golang/glog"
 	"github.com/gorilla/websocket"
 	"github.com/hazaelsan/ssh-relay/request"
-	"github.com/hazaelsan/ssh-relay/request/cookie"
+	"github.com/hazaelsan/ssh-relay/request/connect"
 )
 
 // connectHandle handles /connect requests.
 // WebSocket session, handles bidirectional traffic.
 func (r *Runner) connectHandle(w http.ResponseWriter, req *http.Request) {
-	cr, err := cookie.New(req)
+	cr, err := connect.New(req)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return

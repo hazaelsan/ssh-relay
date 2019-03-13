@@ -1,5 +1,5 @@
-// Package cookie represents a /cookie request.
-package cookie
+// Package connect represents a /connect request.
+package connect
 
 import (
 	"net/http"

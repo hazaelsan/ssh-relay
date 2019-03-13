@@ -1,4 +1,4 @@
-package cookie
+package connect
 
 import (
 	"net/http"
@@ -17,7 +17,7 @@ func TestNew(t *testing.T) {
 		ok   bool
 	}{
 		{
-			uri: "/cookie?ack=0&pos=0&try=1&sid=" + sid.String(),
+			uri: "/connect?ack=0&pos=0&try=1&sid=" + sid.String(),
 			want: &Request{
 				SID: sid,
 				try: 1,
@@ -26,27 +26,27 @@ func TestNew(t *testing.T) {
 		},
 		// Non-zero ack.
 		{
-			uri: "/cookie?ack=1&pos=0&try=1&sid=" + sid.String(),
+			uri: "/connect?ack=1&pos=0&try=1&sid=" + sid.String(),
 		},
 		// Non-zero pos.
 		{
-			uri: "/cookie?ack=0&pos=1&try=1&sid=" + sid.String(),
+			uri: "/connect?ack=0&pos=1&try=1&sid=" + sid.String(),
 		},
 		// Bad ack.
 		{
-			uri: "/cookie?ack=foo&pos=0&try=1&sid=" + sid.String(),
+			uri: "/connect?ack=foo&pos=0&try=1&sid=" + sid.String(),
 		},
 		// Bad pos.
 		{
-			uri: "/cookie?ack=0&pos=foo&try=1&sid=" + sid.String(),
+			uri: "/connect?ack=0&pos=foo&try=1&sid=" + sid.String(),
 		},
 		// Bad try.
 		{
-			uri: "/cookie?ack=0&pos=0&try=foo&sid=" + sid.String(),
+			uri: "/connect?ack=0&pos=0&try=foo&sid=" + sid.String(),
 		},
 		// Bad sid.
 		{
-			uri: "/cookie?ack=0&pos=0&try=1&sid=foobar",
+			uri: "/connect?ack=0&pos=0&try=1&sid=foobar",
 		},
 	}
 	for _, tt := range testdata {

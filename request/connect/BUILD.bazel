@@ -3,9 +3,9 @@ package(default_visibility = ["//:__subpackages__"])
 load("@io_bazel_rules_go//go:def.bzl", "go_library", "go_test")
 
 go_library(
-    name = "cookie",
-    srcs = ["cookie.go"],
-    importpath = "github.com/hazaelsan/ssh-relay/request/cookie",
+    name = "connect",
+    srcs = ["connect.go"],
+    importpath = "github.com/hazaelsan/ssh-relay/request/connect",
     deps = [
         "//request",
         "@com_github_google_uuid//:go_default_library",
@@ -13,9 +13,9 @@ go_library(
 )
 
 go_test(
-    name = "cookie_test",
-    srcs = ["cookie_test.go"],
-    embed = [":cookie"],
+    name = "connect_test",
+    srcs = ["connect_test.go"],
+    embed = [":connect"],
     deps = [
         "@com_github_google_uuid//:go_default_library",
         "@com_github_kylelemons_pretty//:pretty",
