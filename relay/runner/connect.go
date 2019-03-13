@@ -5,8 +5,8 @@ import (
 
 	"github.com/golang/glog"
 	"github.com/gorilla/websocket"
+	"github.com/hazaelsan/ssh-relay/relay/request/connect"
 	"github.com/hazaelsan/ssh-relay/request"
-	"github.com/hazaelsan/ssh-relay/request/connect"
 )
 
 // connectHandle handles /connect requests.

@@ -1,11 +1,11 @@
-package(default_visibility = ["//:__subpackages__"])
+package(default_visibility = ["//relay:__subpackages__"])
 
 load("@io_bazel_rules_go//go:def.bzl", "go_library", "go_test")
 
 go_library(
     name = "connect",
     srcs = ["connect.go"],
-    importpath = "github.com/hazaelsan/ssh-relay/request/connect",
+    importpath = "github.com/hazaelsan/ssh-relay/relay/request/connect",
     deps = [
         "//request",
         "@com_github_google_uuid//:go_default_library",
