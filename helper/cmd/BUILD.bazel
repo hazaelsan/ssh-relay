@@ -13,4 +13,3 @@ go_binary(
         "@com_github_golang_protobuf//proto:go_default_library",
     ],
 )
-

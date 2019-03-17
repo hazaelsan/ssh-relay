@@ -1,0 +1,30 @@
+package(default_visibility = ["//cookie-server:__subpackages__"])
+
+load("@io_bazel_rules_go//go:def.bzl", "go_library", "go_test")
+
+go_library(
+    name = "handler",
+    srcs = ["handler.go"],
+    importpath = "github.com/hazaelsan/ssh-relay/cookie-server/request/cookie/handler",
+    deps = [
+        "//cookie-server/proto:config_go_proto",
+        "//cookie-server/request/cookie",
+        "//duration",
+        "//proto:cookie_go_proto",
+        "//response",
+        "@com_github_golang_glog//:go_default_library",
+    ],
+)
+
+go_test(
+    name = "handler_test",
+    srcs = ["handler_test.go"],
+    embed = [":handler"],
+    deps = [
+        "//cookie-server/proto:config_go_proto",
+        "//cookie-server/request/cookie",
+        "//proto:cookie_go_proto",
+        "//response",
+        "@com_github_kylelemons_pretty//:pretty",
+    ],
+)

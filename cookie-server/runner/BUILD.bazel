@@ -7,17 +7,14 @@ go_library(
     srcs = [
         "cookie.go",
         "doc.go",
-        "request.go",
         "runner.go",
     ],
     importpath = "github.com/hazaelsan/ssh-relay/cookie-server/runner",
     deps = [
         "//cookie-server/proto:config_go_proto",
-        "//duration",
+        "//cookie-server/request/cookie",
+        "//cookie-server/request/cookie/handler",
         "//http",
-        "//proto:cookie_go_proto",
-        "//request",
-        "//response",
         "@com_github_golang_glog//:go_default_library",
     ],
 )

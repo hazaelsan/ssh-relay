@@ -1,0 +1,17 @@
+package(default_visibility = ["//cookie-server:__subpackages__"])
+
+load("@io_bazel_rules_go//go:def.bzl", "go_library", "go_test")
+
+go_library(
+    name = "cookie",
+    srcs = ["cookie.go"],
+    importpath = "github.com/hazaelsan/ssh-relay/cookie-server/request/cookie",
+    deps = ["//request"],
+)
+
+go_test(
+    name = "cookie_test",
+    srcs = ["cookie_test.go"],
+    embed = [":cookie"],
+    deps = ["@com_github_kylelemons_pretty//:pretty"],
+)
