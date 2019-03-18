@@ -7,7 +7,6 @@ go_library(
     srcs = [
         "connect.go",
         "doc.go",
-        "origin.go",
         "proxy.go",
         "runner.go",
     ],
@@ -16,11 +15,12 @@ go_library(
         "//duration",
         "//http",
         "//relay/proto:config_go_proto",
+        "//relay/request",
         "//relay/request/connect",
+        "//relay/request/connect/handler",
         "//relay/request/proxy",
         "//relay/session/manager",
         "//request",
         "@com_github_golang_glog//:go_default_library",
-        "@com_github_gorilla_websocket//:go_default_library",
     ],
 )

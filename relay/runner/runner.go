@@ -1,7 +1,6 @@
 package runner
 
 import (
-	"errors"
 	"time"
 
 	"github.com/hazaelsan/ssh-relay/duration"
@@ -9,11 +8,6 @@ import (
 	"github.com/hazaelsan/ssh-relay/relay/session/manager"
 
 	pb "github.com/hazaelsan/ssh-relay/relay/proto/config_go_proto"
-)
-
-var (
-	// ErrBadOrigin is returned when the origin cookie is missing or invalid.
-	ErrBadOrigin = errors.New("bad origin")
 )
 
 // New instantiates a Runner with a *pb.Config.

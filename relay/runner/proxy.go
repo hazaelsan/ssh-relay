@@ -6,8 +6,8 @@ import (
 	"net/http"
 
 	"github.com/golang/glog"
+	"github.com/hazaelsan/ssh-relay/relay/request"
 	"github.com/hazaelsan/ssh-relay/relay/request/proxy"
-	"github.com/hazaelsan/ssh-relay/request"
 )
 
 // proxyHandle handles /proxy requests.
@@ -32,13 +32,9 @@ func (r *Runner) proxyHandle(w http.ResponseWriter, req *http.Request) {
 		http.Error(w, err.Error(), http.StatusServiceUnavailable)
 		return
 	}
-
-	origin, err := r.origin(req)
+	origin, err := request.Origin(req, r.cfg.OriginCookieName)
 	if err != nil {
-		if glog.V(1) {
-			glog.Errorf("%v: Invalid origin for: %v", s, origin)
-		}
-		http.Error(w, request.ErrBadRequest.Error(), http.StatusBadRequest)
+		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
 	w.Header().Add("Access-Control-Allow-Origin", origin)
