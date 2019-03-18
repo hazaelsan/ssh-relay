@@ -1,9 +1,16 @@
 package(default_visibility = ["//relay:__subpackages__"])
 
-load("@io_bazel_rules_go//go:def.bzl", "go_library")
+load("@io_bazel_rules_go//go:def.bzl", "go_library", "go_test")
 
 go_library(
     name = "request",
     srcs = ["request.go"],
     importpath = "github.com/hazaelsan/ssh-relay/relay/request",
+)
+
+
+go_test(
+    name = "request_test",
+    srcs = ["request_test.go"],
+    embed = [":request"],
 )
