@@ -11,21 +11,24 @@ import (
 	"github.com/hazaelsan/ssh-relay/session"
 )
 
-// New creates a *Session from an SSH connection with the given lifetime.
-func New(ssh net.Conn, t time.Duration) *Session {
+// New creates a *Session from an SSH connection with the given lifetime,
+// returns a channel that's closed when the session has expired.
+func New(ssh net.Conn, t time.Duration) (*Session, <-chan struct{}) {
 	s := &Session{
 		SID: uuid.New(),
 		s:   session.New(ssh),
 	}
 	glog.V(2).Infof("%v: Creating session with maximum lifetime: %v", s, t)
+	done := make(chan struct{})
 	go func() {
 		select {
 		case <-time.After(t):
 			glog.V(2).Infof("%v: Session expired", s)
 			s.s.Close()
+			close(done)
 		}
 	}()
-	return s
+	return s, done
 }
 
 // A Session is a container for an SSH session.
