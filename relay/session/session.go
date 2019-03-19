@@ -11,8 +11,8 @@ import (
 	"github.com/hazaelsan/ssh-relay/session"
 )
 
-// NewSession creates a *Session from an SSH connection with the given lifetime.
-func NewSession(ssh net.Conn, t time.Duration) *Session {
+// New creates a *Session from an SSH connection with the given lifetime.
+func New(ssh net.Conn, t time.Duration) *Session {
 	s := &Session{
 		SID: uuid.New(),
 		s:   session.New(ssh),

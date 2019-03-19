@@ -45,7 +45,7 @@ func (m *Manager) New(ssh net.Conn) (*session.Session, error) {
 	if m.maxSessions > 0 && len(m.sessions) > m.maxSessions {
 		return nil, ErrSessionLimit
 	}
-	s := session.NewSession(ssh, m.maxAge)
+	s := session.New(ssh, m.maxAge)
 	m.sessions[s.SID] = s
 	glog.V(1).Infof("%v/%v active sessions", len(m.sessions), m.maxSessions)
 	return s, nil
