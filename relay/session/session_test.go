@@ -17,15 +17,31 @@ func (t *testConn) Close() error {
 	return t.Conn.Close()
 }
 
+func isDone(c <-chan struct{}, d time.Duration) bool {
+	select {
+	case <-c:
+		return true
+	case <-time.After(d):
+		return false
+	}
+}
+
 func TestNew(t *testing.T) {
-	duration := time.Second
+	duration := 100 * time.Millisecond
 	a, _ := net.Pipe()
 	conn := &testConn{Conn: a}
-	_ = New(conn, duration)
+	_, c := New(conn, duration)
+	if isDone(c, duration) {
+		t.Errorf("done = true before %v expired", duration)
+	}
 	if conn.closed {
 		t.Errorf("conn.closed = true before %v expired", duration)
 	}
-	time.Sleep(duration)
+
+	time.Sleep(2 * duration)
+	if !isDone(c, duration) {
+		t.Errorf("done = false after %v expired", duration)
+	}
 	if !conn.closed {
 		t.Errorf("conn.closed = false after %v expired", duration)
 	}

@@ -12,7 +12,7 @@ import (
 )
 
 // New creates a *Session from an SSH connection with the given lifetime,
-// returns a channel that's closed when the session has expired.
+// returns a channel that notifies when the session has expired.
 func New(ssh net.Conn, t time.Duration) (*Session, <-chan struct{}) {
 	s := &Session{
 		SID: uuid.New(),
@@ -25,7 +25,7 @@ func New(ssh net.Conn, t time.Duration) (*Session, <-chan struct{}) {
 		case <-time.After(t):
 			glog.V(2).Infof("%v: Session expired", s)
 			s.s.Close()
-			close(done)
+			done <- struct{}{}
 		}
 	}()
 	return s, done

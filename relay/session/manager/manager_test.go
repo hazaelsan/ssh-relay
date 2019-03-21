@@ -9,17 +9,6 @@ import (
 	"github.com/hazaelsan/ssh-relay/relay/session"
 )
 
-// testConn is a wrapper to test a net.Conn to see if the underlying connection is closed.
-type testConn struct {
-	net.Conn
-	closed bool
-}
-
-func (t *testConn) Close() error {
-	t.closed = true
-	return t.Conn.Close()
-}
-
 func TestNew(t *testing.T) {
 	testdata := []struct {
 		maxAge      time.Duration
@@ -72,7 +61,7 @@ func TestNew(t *testing.T) {
 		}
 		// Test limits after sessions have expired.
 		if tt.hasLimit {
-			time.Sleep(tt.maxAge)
+			time.Sleep(2 * tt.maxAge)
 			if _, err := m.New(p); err != nil {
 				t.Errorf("New(%v) error = %v", i, err)
 			}

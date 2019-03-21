@@ -18,6 +18,11 @@ func (r *Runner) proxyHandle(w http.ResponseWriter, req *http.Request) {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
+	origin, err := request.Origin(req, r.cfg.OriginCookieName)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
 	addr := net.JoinHostPort(pr.Host, pr.Port)
 	ssh, err := net.Dial("tcp", addr)
 	if err != nil {
@@ -30,11 +35,6 @@ func (r *Runner) proxyHandle(w http.ResponseWriter, req *http.Request) {
 	s, err := r.mgr.New(ssh)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusServiceUnavailable)
-		return
-	}
-	origin, err := request.Origin(req, r.cfg.OriginCookieName)
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
 	w.Header().Add("Access-Control-Allow-Origin", origin)
