@@ -25,7 +25,6 @@ func listener(done <-chan struct{}) (string, error) {
 	}
 	go func() {
 		<-done
-		fmt.Println("shutting down")
 		s.Close()
 	}()
 	go func() {
@@ -104,10 +103,8 @@ func TestProxyHandle(t *testing.T) {
 		for _, c := range tt.cookies {
 			req.AddCookie(c)
 		}
-		w := httptest.NewRecorder()
-		r.proxyHandle(w, req)
-		if got := w.Result().StatusCode; got != tt.wantCode {
-			t.Errorf("proxyHandle(%v) status code = %v, want %v", tt.url, got, tt.wantCode)
+		if got := testProxyHandle(r, req); got.StatusCode != tt.wantCode {
+			t.Errorf("proxyHandle(%v) status code = %v, want %v", tt.url, got.StatusCode, tt.wantCode)
 		}
 	}
 
