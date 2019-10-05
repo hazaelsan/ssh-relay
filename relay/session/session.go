@@ -11,24 +11,23 @@ import (
 	"github.com/hazaelsan/ssh-relay/session"
 )
 
-// New creates a *Session from an SSH connection with the given lifetime,
-// returns a channel that notifies when the session has expired.
-func New(ssh net.Conn, t time.Duration) (*Session, <-chan struct{}) {
+// New creates a *Session from an SSH connection with the given lifetime.
+func New(ssh net.Conn, t time.Duration) *Session {
 	s := &Session{
 		SID: uuid.New(),
 		s:   session.New(ssh),
 	}
 	glog.V(2).Infof("%v: Creating session with maximum lifetime: %v", s, t)
-	done := make(chan struct{})
 	go func() {
 		select {
 		case <-time.After(t):
 			glog.V(2).Infof("%v: Session expired", s)
-			s.s.Close()
-			done <- struct{}{}
+			s.Close()
+		case <-s.Done():
+			return
 		}
 	}()
-	return s, done
+	return s
 }
 
 // A Session is a container for an SSH session.
@@ -44,6 +43,11 @@ func (s Session) String() string {
 // Close closes the SSH connection, causing the Session to be invalid.
 func (s *Session) Close() error {
 	return s.s.Close()
+}
+
+// Done notifies when a session has terminated and should be reaped.
+func (s *Session) Done() <-chan struct{} {
+	return s.s.Done()
 }
 
 // Run starts bidirectional communication between the WebSocket and SSH connections.

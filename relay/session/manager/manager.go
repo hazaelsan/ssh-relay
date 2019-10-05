@@ -45,10 +45,10 @@ func (m *Manager) New(ssh net.Conn) (*session.Session, error) {
 	if m.maxSessions > 0 && len(m.sessions) >= m.maxSessions {
 		return nil, ErrSessionLimit
 	}
-	s, done := session.New(ssh, m.maxAge)
+	s := session.New(ssh, m.maxAge)
 	go func() {
 		select {
-		case <-done:
+		case <-s.Done():
 			m.Delete(s)
 		}
 	}()
@@ -76,7 +76,6 @@ func (m *Manager) Delete(s *session.Session) error {
 	if !ok {
 		return ErrNoSuchSID
 	}
-	s.Close()
 	delete(m.sessions, s.SID)
 	glog.V(4).Infof("%v: Session terminated", s)
 	return nil

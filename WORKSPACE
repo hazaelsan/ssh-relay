@@ -48,16 +48,16 @@ new_http_archive(
 
 new_http_archive(
     name = "com_github_kylelemons_diff",
-    strip_prefix = "godebug-master",
-    url = "https://github.com/kylelemons/godebug/archive/master.zip",
-    sha256 = "c356a85736d4f0719d8ea59a870827c0aa5acda1ab96fb1ea5562a35e54afb4f",
+    strip_prefix = "godebug-1.1.0",
+    url = "https://github.com/kylelemons/godebug/archive/v1.1.0.zip",
+    sha256 = "a07edfa7b01c277196479e1ec51b92b416f2935c049f96917632e9c000e146f8",
     build_file = "bazel/BUILD.godebug_diff",
 )
 
 new_http_archive(
     name = "com_github_kylelemons_pretty",
-    strip_prefix = "godebug-master",
-    url = "https://github.com/kylelemons/godebug/archive/master.zip",
-    sha256 = "c356a85736d4f0719d8ea59a870827c0aa5acda1ab96fb1ea5562a35e54afb4f",
+    strip_prefix = "godebug-1.1.0",
+    url = "https://github.com/kylelemons/godebug/archive/v1.1.0.zip",
+    sha256 = "a07edfa7b01c277196479e1ec51b92b416f2935c049f96917632e9c000e146f8",
     build_file = "bazel/BUILD.godebug_pretty",
 )

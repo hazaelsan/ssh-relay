@@ -32,21 +32,32 @@ var (
 
 // New creates a *Session from a plain SSH connection.
 func New(ssh io.ReadWriteCloser) *Session {
-	return &Session{ssh: ssh}
+	return &Session{
+		ssh:  ssh,
+		done: make(chan struct{}),
+	}
 }
 
 // A Session is an SSH-over-WebSocket Relay session.
 // One leg of the session is a WebSocket, the other is an io.Reader/io.Writer pair that talks plain SSH.
 type Session struct {
-	ssh io.ReadWriteCloser
-	ws  *websocket.Conn
-	c   uint32
-	mu  sync.RWMutex
+	ssh  io.ReadWriteCloser
+	ws   *websocket.Conn
+	c    uint32
+	mu   sync.RWMutex
+	done chan struct{}
 }
 
 // Close closes the SSH connection, causing the Session to be invalid.
 func (s *Session) Close() error {
-	return s.ssh.Close()
+	err := s.ssh.Close()
+	s.done <- struct{}{}
+	return err
+}
+
+// Done notifies when a session has terminated.
+func (s *Session) Done() <-chan struct{} {
+	return s.done
 }
 
 // incCounter increments the counter by n, wrapping every 24 bits.
@@ -57,8 +68,10 @@ func (s *Session) incCounter(n int) {
 // Run starts bidirectional communication between the WebSocket and SSH connections.
 func (s *Session) Run(ws *websocket.Conn) error {
 	s.mu.Lock()
-	defer s.mu.Unlock()
-	defer s.Close()
+	defer func() {
+		s.mu.Unlock()
+		s.Close()
+	}()
 	s.ws = ws
 	errc := make(chan error)
 	go s.runSSH(errc)

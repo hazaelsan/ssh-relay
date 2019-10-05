@@ -53,7 +53,45 @@ func testProxyHandle(r *Runner, req *http.Request) *http.Response {
 }
 
 func TestProxyHandle(t *testing.T) {
-	// Failure modes.
+	p, _ := net.Pipe()
+	defer p.Close()
+	done := make(chan struct{})
+	port, err := listener(done)
+	defer close(done)
+	r := newRunner()
+	if _, err := r.mgr.New(p); err != nil {
+		t.Errorf("mgr.New() error = %v", err)
+	}
+	url := fmt.Sprintf("/proxy?host=localhost&port=%v", port)
+	req := httptest.NewRequest("GET", url, nil)
+	req.AddCookie(&http.Cookie{
+		Name:  "origin",
+		Value: "chrome-extension://foo",
+	})
+
+	// Test session limit.
+	wantCode := http.StatusServiceUnavailable
+	if got := testProxyHandle(r, req); got.StatusCode != wantCode {
+		t.Errorf("proxyHandle(%v) status code = %v, want %v", url, got.StatusCode, wantCode)
+	}
+
+	// Test session expiry.
+	time.Sleep(2 * maxAge)
+	wantCode = http.StatusOK
+	got := testProxyHandle(r, req)
+	if got.StatusCode != wantCode {
+		t.Errorf("proxyHandle(%v) status code = %v, want %v", url, got.StatusCode, wantCode)
+	}
+	b, err := ioutil.ReadAll(got.Body)
+	if err != nil {
+		t.Errorf("ReadAll(%v) error = %v", url, err)
+	}
+	if _, err := uuid.ParseBytes(b); err != nil {
+		t.Errorf("uuid.ParseBytes(%v) error = %v", string(b), err)
+	}
+}
+
+func TestProxyHandle_Failures(t *testing.T) {
 	testdata := []struct {
 		url      string
 		cookies  []*http.Cookie
@@ -106,42 +144,5 @@ func TestProxyHandle(t *testing.T) {
 		if got := testProxyHandle(r, req); got.StatusCode != tt.wantCode {
 			t.Errorf("proxyHandle(%v) status code = %v, want %v", tt.url, got.StatusCode, tt.wantCode)
 		}
-	}
-
-	p, _ := net.Pipe()
-	defer p.Close()
-	done := make(chan struct{})
-	port, err := listener(done)
-	defer close(done)
-	r := newRunner()
-	if _, err := r.mgr.New(p); err != nil {
-		t.Errorf("mgr.New() error = %v", err)
-	}
-	url := fmt.Sprintf("/proxy?host=localhost&port=%v", port)
-	req := httptest.NewRequest("GET", url, nil)
-	req.AddCookie(&http.Cookie{
-		Name:  "origin",
-		Value: "chrome-extension://foo",
-	})
-
-	// Test session limit.
-	wantCode := http.StatusServiceUnavailable
-	if got := testProxyHandle(r, req); got.StatusCode != wantCode {
-		t.Errorf("proxyHandle(%v) status code = %v, want %v", url, got.StatusCode, wantCode)
-	}
-
-	// Test session expiry.
-	time.Sleep(2 * maxAge)
-	wantCode = http.StatusOK
-	got := testProxyHandle(r, req)
-	if got.StatusCode != wantCode {
-		t.Errorf("proxyHandle(%v) status code = %v, want %v", url, got.StatusCode, wantCode)
-	}
-	b, err := ioutil.ReadAll(got.Body)
-	if err != nil {
-		t.Errorf("ReadAll(%v) error = %v", url, err)
-	}
-	if _, err := uuid.ParseBytes(b); err != nil {
-		t.Errorf("uuid.ParseBytes(%v) error = %v", string(b), err)
 	}
 }

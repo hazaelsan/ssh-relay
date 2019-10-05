@@ -27,22 +27,22 @@ func isDone(c <-chan struct{}, d time.Duration) bool {
 }
 
 func TestNew(t *testing.T) {
-	duration := 100 * time.Millisecond
+	timeout := 300 * time.Millisecond
 	a, _ := net.Pipe()
 	conn := &testConn{Conn: a}
-	_, c := New(conn, duration)
-	if isDone(c, duration) {
-		t.Errorf("done = true before %v expired", duration)
+	c := New(conn, timeout)
+	if isDone(c.Done(), timeout) {
+		t.Errorf("done = true before %v expired", timeout)
 	}
 	if conn.closed {
-		t.Errorf("conn.closed = true before %v expired", duration)
+		t.Errorf("conn.closed = true before %v expired", timeout)
 	}
 
-	time.Sleep(2 * duration)
-	if !isDone(c, duration) {
-		t.Errorf("done = false after %v expired", duration)
+	time.Sleep(2 * timeout)
+	if !isDone(c.Done(), timeout) {
+		t.Errorf("done = false after %v expired", timeout)
 	}
 	if !conn.closed {
-		t.Errorf("conn.closed = false after %v expired", duration)
+		t.Errorf("conn.closed = false after %v expired", timeout)
 	}
 }
