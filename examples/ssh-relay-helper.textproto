@@ -2,7 +2,8 @@
 #
 # Example usage:
 #   $ bazel run //helper/cmd:ssh_relay_helper -- --logtostderr \
-#     --config=$(bazel info workspace)/examples/ssh-relay-helper.textpb --host=localhost --port=22
+#     --config=$(bazel info workspace)/examples/ssh-relay-helper.textproto \
+#     --host=localhost --port=22
 
 # DO NOT set host/port in the config proto.
 

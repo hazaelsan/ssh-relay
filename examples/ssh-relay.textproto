@@ -2,7 +2,7 @@
 #
 # Example usage:
 #   $ bazel run //relay/cmd:ssh_relay -- --logtostderr \
-#     --config=$(bazel info workspace)/examples/ssh-relay.textpb
+#     --config=$(bazel info workspace)/examples/ssh-relay.textproto
 
 server_options {
   # Optionally listen on a specific address, defaults to the unspecified address.
@@ -13,7 +13,7 @@ server_options {
 
   # Inbound SSL/TLS settings.
   tls_config {
-    # SSL (in PEM format)
+    # SSL (in PEM format).
     cert_file: "/etc/ssh-relay/server.crt"
     key_file: "/etc/ssh-relay/server.key"
 
