@@ -15,7 +15,7 @@ import (
 	"github.com/hazaelsan/ssh-relay/relay/session/manager"
 	"github.com/kylelemons/godebug/pretty"
 
-	pb "github.com/hazaelsan/ssh-relay/relay/proto/config_go_proto"
+	pb "github.com/hazaelsan/ssh-relay/relay/proto/v1/config_go_proto"
 )
 
 const (

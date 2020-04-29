@@ -18,8 +18,8 @@ import (
 	"github.com/golang/protobuf/proto"
 	"github.com/hazaelsan/ssh-relay/helper/agent"
 
-	pb "github.com/hazaelsan/ssh-relay/helper/proto/config_go_proto"
-	httppb "github.com/hazaelsan/ssh-relay/proto/http_go_proto"
+	pb "github.com/hazaelsan/ssh-relay/helper/proto/v1/config_go_proto"
+	httppb "github.com/hazaelsan/ssh-relay/proto/v1/http_go_proto"
 )
 
 var (

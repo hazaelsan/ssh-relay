@@ -12,8 +12,8 @@ import (
 	dpb "github.com/golang/protobuf/ptypes/duration"
 	"github.com/kylelemons/godebug/pretty"
 
-	httppb "github.com/hazaelsan/ssh-relay/proto/http_go_proto"
-	tlspb "github.com/hazaelsan/ssh-relay/proto/tls_go_proto"
+	httppb "github.com/hazaelsan/ssh-relay/proto/v1/http_go_proto"
+	tlspb "github.com/hazaelsan/ssh-relay/proto/v1/tls_go_proto"
 )
 
 func getHeader(h http.Header, s string) string {
@@ -119,6 +119,7 @@ func TestNewServer(t *testing.T) {
 			server: &http.Server{
 				Addr: ":8022",
 				TLSConfig: &tls.Config{
+					ClientAuth: tls.RequireAndVerifyClientCert,
 					MinVersion: tls.VersionTLS12,
 				},
 				Handler: http.NewServeMux(),

@@ -1,0 +1,63 @@
+syntax = "proto3";
+
+package hazaelsan.ssh_relay.v1;
+
+option java_package = "net.hazael.sshrelay.v1";
+option java_outer_classname = "TlsProto";
+option java_multiple_files = true;
+option go_package = "github.com/hazaelsan/ssh-relay/proto/v1/tls_go_proto";
+
+// Generic configuration options for Go TLS clients/servers, see
+// https://golang.org/pkg/crypto/tls/#Config.
+message TlsConfig {
+  // The path to an X.509 certificate (in PEM format).
+  string cert_file = 1;
+
+  // The path to an X.509 private key (in PEM format).
+  string key_file = 2;
+
+  // The list of paths to X.509 Root CA public certificates (in PEM format).
+  // Used by clients to verify server certificates.
+  // If empty, the host's root CA set is used.
+  repeated string root_ca_certs = 3;
+
+  // The list of paths to X.509 Root CA public certificates (in PEM format).
+  // Used by servers to verify client certificates.
+  repeated string client_ca_certs = 4;
+
+  // The policy a server will follow for TLS Client Authentication.
+  enum ClientAuthType {
+
+    // Defaults to [REQUIRE_AND_VERIFY_CLIENT_CERT][].
+    CLIENT_AUTH_TYPE_UNSPECIFIED = 0;
+
+    // Do not perform any client certificate verification.
+    NO_CLIENT_CERT = 1;
+
+    // Request a client certificate, the client may respond with an empty
+    // certificate message.
+    REQUEST_CLIENT_CERT = 2;
+
+    // Require a client present *any* certificate, no validation is performed.
+    REQUIRE_ANY_CLIENT_CERT = 3;
+
+    // Verify a client certificate if given.  If no client certificate is given
+    // the TLS handshake will succeed.
+    VERIFY_CLIENT_CERT_IF_GIVEN = 4;
+
+    // Require a client certificate known to the server's [client_ca_certs][].
+    REQUIRE_AND_VERIFY_CLIENT_CERT = 5;
+
+    reserved 6 to max;  // Next ID.
+  }
+
+  // The policy to use for TLS client authentication, should not need to be
+  // specified in most cases.
+  // Used in conjunction with [client_ca_certs][].
+  //
+  // WARNING: Setting this value to a non-default value other than
+  // [REQUIRE_AND_VERIFY_CLIENT_CERT][] is STRONGLY DISCOURAGED.
+  ClientAuthType client_auth_type = 5;
+
+  reserved 6 to max;  // Next ID.
+}

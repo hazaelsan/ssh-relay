@@ -3,7 +3,7 @@ package runner
 import (
 	"github.com/hazaelsan/ssh-relay/http"
 
-	configpb "github.com/hazaelsan/ssh-relay/cookie-server/proto/config_go_proto"
+	configpb "github.com/hazaelsan/ssh-relay/cookie-server/proto/v1/config_go_proto"
 )
 
 // New instantiates a Runner with a *configpb.Config.

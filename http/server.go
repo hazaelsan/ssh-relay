@@ -12,7 +12,7 @@ import (
 	"github.com/golang/glog"
 
 	dpb "github.com/golang/protobuf/ptypes/duration"
-	httppb "github.com/hazaelsan/ssh-relay/proto/http_go_proto"
+	httppb "github.com/hazaelsan/ssh-relay/proto/v1/http_go_proto"
 )
 
 // HandlerFunc is the function signature for an HTTP handler.

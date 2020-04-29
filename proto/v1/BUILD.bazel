@@ -1,0 +1,50 @@
+package(default_visibility = ["//visibility:public"])
+
+load("@io_bazel_rules_go//proto:def.bzl", "go_proto_library")
+
+proto_library(
+    name = "cookie_proto",
+    srcs = ["cookie.proto"],
+    deps = [
+        "@com_github_googleapis_googleapis//google/api:field_behavior_proto",
+        "@com_google_protobuf//:duration_proto",
+    ],
+)
+
+go_proto_library(
+    name = "cookie_go_proto",
+    importpath = "github.com/hazaelsan/ssh-relay/proto/v1/cookie_go_proto",
+    proto = ":cookie_proto",
+    deps = ["@com_github_googleapis_googleapis//google/api:annotations_go_proto"],
+)
+
+proto_library(
+    name = "http_proto",
+    srcs = ["http.proto"],
+    deps = [
+        ":tls_proto",
+        "@com_github_googleapis_googleapis//google/api:field_behavior_proto",
+        "@com_google_protobuf//:duration_proto",
+    ],
+)
+
+go_proto_library(
+    name = "http_go_proto",
+    importpath = "github.com/hazaelsan/ssh-relay/proto/v1/http_go_proto",
+    proto = ":http_proto",
+    deps = [
+        ":tls_go_proto",
+        "@com_github_googleapis_googleapis//google/api:annotations_go_proto",
+    ],
+)
+
+proto_library(
+    name = "tls_proto",
+    srcs = ["tls.proto"],
+)
+
+go_proto_library(
+    name = "tls_go_proto",
+    importpath = "github.com/hazaelsan/ssh-relay/proto/v1/tls_go_proto",
+    proto = ":tls_proto",
+)

@@ -13,7 +13,7 @@ import (
 	rhttp "github.com/hazaelsan/ssh-relay/http"
 	"github.com/hazaelsan/ssh-relay/response"
 
-	pb "github.com/hazaelsan/ssh-relay/helper/proto/config_go_proto"
+	pb "github.com/hazaelsan/ssh-relay/helper/proto/v1/config_go_proto"
 )
 
 const (

@@ -7,7 +7,7 @@ go_library(
     srcs = ["agent.go"],
     importpath = "github.com/hazaelsan/ssh-relay/helper/agent",
     deps = [
-        "//helper/proto:config_go_proto",
+        "//helper/proto/v1:config_go_proto",
         "//helper/session",
         "//http",
         "//response",

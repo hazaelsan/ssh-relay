@@ -1,0 +1,51 @@
+syntax = "proto3";
+
+package hazaelsan.ssh_relay.helper.v1;
+
+import "google/api/field_behavior.proto";
+import "proto/v1/http.proto";
+
+option java_package = "net.hazael.sshrelay.helper.v1";
+option java_outer_classname = "ConfigProto";
+option java_multiple_files = true;
+option go_package = "github.com/hazaelsan/ssh-relay/helper/proto/v1/config_go_proto";
+
+// Configuration settings for the SSH Relay client helper, used as
+// a `ProxyCommand` option to `ssh`.
+//
+// Example entry in ~/.ssh/config:
+//   Host *.example.org
+//     ProxyCommand ssh-relay-helper --config ~/ssh/relay.textproto --host '%h' --port '%p'
+//
+// Contents of ~/ssh/relay.textproto:
+//   cookie_server_address: "cookie-server.example.org"
+//   cookie_server_transport {
+//     tls_config {
+//       cert_file: "/home/myuser/.ssh/client.crt"
+//       key_file: "/home/myuser/.ssh/client.key"
+//       root_ca_certs: "/home/myuser/.ssh/ca.crt"
+//     }
+//   }
+message Config {
+  // The destination SSH host.
+  // NOTE: This field is loaded from a flag.
+  string host = 1;
+
+  // The destination SSH port.
+  // NOTE: This field is loaded from a flag.
+  string port = 2;
+
+  // The Cookie Server address (and optional :port).
+  // If port is unspecified it defaults to 8022.
+  string cookie_server_address = 3;
+
+  // The settings for talking to the Cookie Server.
+  hazaelsan.ssh_relay.v1.HttpTransport cookie_server_transport = 4
+    [(google.api.field_behavior) = REQUIRED];
+
+  // The settings for talking to an SSH Relay.
+  // If unspecified, [cookie_server_transport][] will be used.
+  hazaelsan.ssh_relay.v1.HttpTransport ssh_relay_transport = 5;
+
+  reserved 6 to max;  // Next ID.
+}

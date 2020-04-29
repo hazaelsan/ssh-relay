@@ -1,0 +1,35 @@
+syntax = "proto3";
+
+package hazaelsan.ssh_relay.v1;
+
+import "google/api/field_behavior.proto";
+import "google/protobuf/duration.proto";
+
+option java_package = "net.hazael.sshrelay.v1";
+option java_outer_classname = "CookieProto";
+option java_multiple_files = true;
+option go_package = "github.com/hazaelsan/ssh-relay/proto/v1/cookie_go_proto";
+
+// Configuration settings for cookies set by the Cookie Server and consumed by
+// the SSH relays.
+// See https://tools.ietf.org/html/rfc6265.
+//
+// NOTE: This message is experimental and subject to change at any time.
+message Cookie {
+  // The name of the cookie.
+  string name = 1 [(google.api.field_behavior) = REQUIRED];
+
+  // The domain to set on the cookie (e.g., ".example.org").
+  // Not required but should nearly always be set.
+  // NOTE: Cookies set by the Cookie Server MUST be readable by the SSH relays.
+  string domain = 2;
+
+  // The path to set on the cookie, typically should be set to "/".
+  string path = 3 [(google.api.field_behavior) = REQUIRED];
+
+  // The lifetime for the cookie, MUST NOT be negative.
+  // NOTE: Per RFC 6265 this value is rounded down to seconds.
+  google.protobuf.Duration max_age = 4;
+
+  reserved 5 to max;  // Next ID.
+}

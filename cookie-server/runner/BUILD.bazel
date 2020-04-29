@@ -11,7 +11,7 @@ go_library(
     ],
     importpath = "github.com/hazaelsan/ssh-relay/cookie-server/runner",
     deps = [
-        "//cookie-server/proto:config_go_proto",
+        "//cookie-server/proto/v1:config_go_proto",
         "//cookie-server/request/cookie",
         "//cookie-server/request/cookie/handler",
         "//http",

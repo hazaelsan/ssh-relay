@@ -1,0 +1,78 @@
+syntax = "proto3";
+
+package hazaelsan.ssh_relay.v1;
+
+import "google/api/field_behavior.proto";
+import "google/protobuf/duration.proto";
+import "proto/v1/tls.proto";
+
+option java_package = "net.hazael.sshrelay.v1";
+option java_outer_classname = "HttpProto";
+option java_multiple_files = true;
+option go_package = "github.com/hazaelsan/ssh-relay/proto/v1/http_go_proto";
+
+// HTTP Server settings, see https://golang.org/pkg/net/http/#Server.
+message HttpServer {
+  // The timeout for reading an entire request.
+  google.protobuf.Duration read_timeout = 1;
+
+  // The timeout for reading request headers.
+  google.protobuf.Duration read_header_timeout = 2;
+
+  // The timeout for writing a response.
+  google.protobuf.Duration write_timeout = 3;
+
+  // The timeout for waiting for the next request.
+  google.protobuf.Duration idle_timeout = 4;
+
+  // The maximum number of bytes the server will read for parsing the request
+  // header.
+  int32 max_header_bytes = 5;
+
+  reserved 6 to max;  // Next ID.
+}
+
+// Configuration settings for HTTPS servers.
+message HttpServerOptions {
+  // The listening address for incoming requests, defaults to the unspecified
+  // address.
+  string addr = 1;
+
+  // The listening port, in numeric or symbolic form.
+  string port = 2 [(google.api.field_behavior) = REQUIRED];
+
+  // HTTP Server settings, see https://golang.org/pkg/net/http/#Server.
+  // NOTE: This field should not need to be specified in most cases.
+  HttpServer http_server = 3;
+
+  // SSL/TLS settings, see https://golang.org/pkg/crypto/tls/#Config.
+  TlsConfig tls_config = 4 [(google.api.field_behavior) = REQUIRED];
+
+  // The maximum age for the HSTS Policy header.
+  // This field SHOULD be set to a long value (in the order of months).
+  // If unset, no HSTS header will be set.  It is then the operator's
+  // responsibility to ensure the HSTS header is set via other ways (i.e., by
+  // setting it at the top-level domain name).
+  google.protobuf.Duration hsts_max_age = 5;
+
+  // Whether to include subdomains in the HSTS Policy.
+  // This field is only effective if [hsts_max_age][] has been set.
+  bool hsts_include_subdomains = 6;
+
+  reserved 7 to max;  // Next ID.
+}
+
+// Transport settings for HTTPS clients, see
+// https://golang.org/pkg/net/http/#Transport.
+message HttpTransport {
+  // SSL/TLS settings, see https://golang.org/pkg/crypto/tls/#Config.
+  TlsConfig tls_config = 1;
+
+  // The timeout for reading request headers.
+  google.protobuf.Duration response_header_timeout = 2;
+
+  // The maximum number of bytes allowed from a server's response.
+  int64 max_response_header_bytes = 3;
+
+  reserved 4 to max;  // Next ID.
+}

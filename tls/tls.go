@@ -9,7 +9,7 @@ import (
 	"fmt"
 	"io/ioutil"
 
-	pb "github.com/hazaelsan/ssh-relay/proto/tls_go_proto"
+	pb "github.com/hazaelsan/ssh-relay/proto/v1/tls_go_proto"
 )
 
 const (
@@ -24,6 +24,7 @@ var (
 
 var (
 	clientAuthMap = map[pb.TlsConfig_ClientAuthType]tls.ClientAuthType{
+		pb.TlsConfig_CLIENT_AUTH_TYPE_UNSPECIFIED:   tls.RequireAndVerifyClientCert,
 		pb.TlsConfig_NO_CLIENT_CERT:                 tls.NoClientCert,
 		pb.TlsConfig_REQUEST_CLIENT_CERT:            tls.RequestClientCert,
 		pb.TlsConfig_REQUIRE_ANY_CLIENT_CERT:        tls.RequireAnyClientCert,

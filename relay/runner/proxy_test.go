@@ -13,7 +13,7 @@ import (
 	"github.com/google/uuid"
 	"github.com/hazaelsan/ssh-relay/relay/session/manager"
 
-	pb "github.com/hazaelsan/ssh-relay/relay/proto/config_go_proto"
+	pb "github.com/hazaelsan/ssh-relay/relay/proto/v1/config_go_proto"
 )
 
 const maxAge = 100 * time.Millisecond

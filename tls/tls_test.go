@@ -10,7 +10,7 @@ import (
 
 	"github.com/kylelemons/godebug/pretty"
 
-	pb "github.com/hazaelsan/ssh-relay/proto/tls_go_proto"
+	pb "github.com/hazaelsan/ssh-relay/proto/v1/tls_go_proto"
 )
 
 func subjectCN(b []byte) (string, error) {
@@ -29,6 +29,14 @@ func TestConfig(t *testing.T) {
 		clientCNs []string
 		ok        bool
 	}{
+		{
+			cfg: &pb.TlsConfig{},
+			want: &tls.Config{
+				ClientAuth: tls.RequireAndVerifyClientCert,
+				MinVersion: tls.VersionTLS12,
+			},
+			ok: true,
+		},
 		{
 			cfg: &pb.TlsConfig{
 				ClientAuthType: pb.TlsConfig_REQUIRE_ANY_CLIENT_CERT,
@@ -58,7 +66,7 @@ func TestConfig(t *testing.T) {
 				ClientCaCerts: []string{"../testdata/test.crt"},
 			},
 			want: &tls.Config{
-				ClientAuth: tls.NoClientCert,
+				ClientAuth: tls.RequireAndVerifyClientCert,
 				MinVersion: tls.VersionTLS12,
 			},
 			clientCNs: []string{

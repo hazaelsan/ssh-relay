@@ -1,0 +1,28 @@
+syntax = "proto3";
+
+package hazaelsan.ssh_relay.cookie_server.v1;
+
+import "proto/v1/cookie.proto";
+import "proto/v1/http.proto";
+
+option java_package = "net.hazael.sshrelay.cookieserver.v1";
+option go_package = "github.com/hazaelsan/ssh-relay/cookie-server/proto/v1/config_go_proto";
+
+// Configuration settings for the Cookie Server.
+message Config {
+  // The HTTP configuration settings for the server.
+  hazaelsan.ssh_relay.v1.HttpServerOptions server_options = 1;
+
+  // The fallback relay host (and optional :port).
+  // Only used if a more suitable relay host cannot be found for a given client.
+  // If this field is not specified and a more specific relay host cannot be
+  // found, an error will be sent to the client instead.
+  // NOTE: Relay selection is not implemented yet, therefore this field is
+  // effectively required.
+  string fallback_relay_host = 2;
+
+  // The settings for the origin cookie.
+  hazaelsan.ssh_relay.v1.Cookie origin_cookie = 3;
+
+  reserved 4 to max;  // Next ID.
+}

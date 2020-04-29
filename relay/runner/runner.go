@@ -7,7 +7,7 @@ import (
 	"github.com/hazaelsan/ssh-relay/http"
 	"github.com/hazaelsan/ssh-relay/relay/session/manager"
 
-	pb "github.com/hazaelsan/ssh-relay/relay/proto/config_go_proto"
+	pb "github.com/hazaelsan/ssh-relay/relay/proto/v1/config_go_proto"
 )
 
 // New instantiates a Runner with a *pb.Config.

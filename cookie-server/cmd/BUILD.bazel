@@ -6,7 +6,7 @@ go_binary(
     name = "cookie_server",
     srcs = ["cookie-server.go"],
     deps = [
-        "//cookie-server/proto:config_go_proto",
+        "//cookie-server/proto/v1:config_go_proto",
         "//cookie-server/runner",
         "@com_github_golang_glog//:glog",
         "@com_github_golang_protobuf//proto:go_default_library",

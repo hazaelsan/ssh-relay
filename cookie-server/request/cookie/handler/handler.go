@@ -12,8 +12,8 @@ import (
 	"github.com/hazaelsan/ssh-relay/duration"
 	"github.com/hazaelsan/ssh-relay/response"
 
-	configpb "github.com/hazaelsan/ssh-relay/cookie-server/proto/config_go_proto"
-	cookiepb "github.com/hazaelsan/ssh-relay/proto/cookie_go_proto"
+	configpb "github.com/hazaelsan/ssh-relay/cookie-server/proto/v1/config_go_proto"
+	cookiepb "github.com/hazaelsan/ssh-relay/proto/v1/cookie_go_proto"
 )
 
 const (

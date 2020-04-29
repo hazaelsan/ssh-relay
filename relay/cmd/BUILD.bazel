@@ -6,7 +6,7 @@ go_binary(
     name = "ssh_relay",
     srcs = ["ssh-relay.go"],
     deps = [
-        "//relay/proto:config_go_proto",
+        "//relay/proto/v1:config_go_proto",
         "//relay/runner",
         "@com_github_golang_glog//:glog",
         "@com_github_golang_protobuf//proto:go_default_library",

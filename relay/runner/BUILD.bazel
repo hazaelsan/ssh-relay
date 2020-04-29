@@ -14,7 +14,7 @@ go_library(
     deps = [
         "//duration",
         "//http",
-        "//relay/proto:config_go_proto",
+        "//relay/proto/v1:config_go_proto",
         "//relay/request",
         "//relay/request/connect",
         "//relay/request/connect/handler",
@@ -30,7 +30,7 @@ go_test(
     srcs = ["connect_test.go"],
     embed = [":runner"],
     deps = [
-        "//relay/proto:config_go_proto",
+        "//relay/proto/v1:config_go_proto",
         "//relay/session",
         "//relay/session/manager",
         "@com_github_gorilla_websocket//:websocket",
@@ -43,7 +43,7 @@ go_test(
     srcs = ["proxy_test.go"],
     embed = [":runner"],
     deps = [
-        "//relay/proto:config_go_proto",
+        "//relay/proto/v1:config_go_proto",
         "//relay/session/manager",
         "@com_github_google_uuid//:uuid",
     ],

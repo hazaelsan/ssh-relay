@@ -15,7 +15,7 @@ import (
 	"github.com/hazaelsan/ssh-relay/session"
 	"github.com/hazaelsan/ssh-relay/tls"
 
-	httppb "github.com/hazaelsan/ssh-relay/proto/http_go_proto"
+	httppb "github.com/hazaelsan/ssh-relay/proto/v1/http_go_proto"
 )
 
 var (

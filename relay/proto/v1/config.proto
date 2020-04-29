@@ -1,0 +1,46 @@
+syntax = "proto3";
+
+package hazaelsan.ssh_relay.relay.v1;
+
+import "google/protobuf/duration.proto";
+import "proto/v1/http.proto";
+
+option java_package = "net.hazael.sshrelay.relay.v1";
+option java_outer_classname = "ConfigProto";
+option java_multiple_files = true;
+option go_package = "github.com/hazaelsan/ssh-relay/relay/proto/v1/config_go_proto";
+
+// Configuration settings for the SSH-over-WebSocket Relay server.
+message Config {
+  // The HTTP configuration settings for the server.
+  hazaelsan.ssh_relay.v1.HttpServerOptions server_options = 1;
+
+  // Options for relay's outbound connections.
+  message ClientOptions {
+    // Tthe timeout for dialing an outbound SSH session.
+    google.protobuf.Duration dial_timeout = 1;
+  }
+
+  // Options for when the relay acts as a client (i.e., talking to an actual SSH
+  // backend).
+  ClientOptions client_options = 2;
+
+  // The maximum number of open SSH sessions the relay supports.
+  // A value <= 0 means no session limit.
+  int32 max_sessions = 3;
+
+  // The maximum SSH session age.
+  // After this timeout is reached the client will need to re-authenticate
+  // against the Cookie Server and re-establish the SSH session.  If unset,
+  // sessions will not be terminated by the relay.
+  // NOTE: This value MUST be < [Cookie.max_age][] in the Cookie Server in order
+  // to ensure session re-authorization is enforced by the Cookie Server.
+  google.protobuf.Duration max_session_age = 4;
+
+  // The name of the origin cookie.
+  // NOTE: This MUST be kept in-sync with the value set for [Cookie.name][] in
+  // the Cookie Server.
+  string origin_cookie_name = 5;
+
+  reserved 6 to max;  // Next ID.
+}

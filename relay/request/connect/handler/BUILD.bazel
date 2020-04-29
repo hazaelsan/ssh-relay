@@ -7,7 +7,7 @@ go_library(
     srcs = ["handler.go"],
     importpath = "github.com/hazaelsan/ssh-relay/relay/request/connect/handler",
     deps = [
-        "//relay/proto:config_go_proto",
+        "//relay/proto/v1:config_go_proto",
         "//relay/request",
         "//relay/request/connect",
         "//relay/session",

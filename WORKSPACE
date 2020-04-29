@@ -49,6 +49,20 @@ rules_proto_dependencies()
 rules_proto_toolchains()
 
 http_archive(
+    name = "com_github_googleapis_googleapis",
+    sha256 = "bb28f5d28f095a013dca653be097c51423d395da62a00d58c55cfe4efb92951b",
+    strip_prefix = "googleapis-3f5f8a2258c6a41f9fbf7b80acbca631dda0a952",
+    url = "https://github.com/googleapis/googleapis/archive/3f5f8a2258c6a41f9fbf7b80acbca631dda0a952.zip",
+)
+
+load("@com_github_googleapis_googleapis//:repository_rules.bzl", "switched_rules_by_language")
+switched_rules_by_language(
+    name = "com_google_googleapis_imports",
+    go = True,
+    grpc = True,
+)
+
+http_archive(
     name = "bazel_skylib",
     sha256 = "97e70364e9249702246c0e9444bccdc4b847bed1eb03c5a3ece4f83dfe6abc44",
     urls = [
@@ -109,9 +123,9 @@ gazelle_dependencies()
 http_archive(
     name = "com_github_golang_glog",
     build_file = "bazel/BUILD.golang_glog",
-    sha256 = "d362bc1d55bafb7ff5e524b0af2abb5d20a29c1858d524afebb0dd4cfe98ebaa",
-    strip_prefix = "glog-master",
-    url = "https://github.com/golang/glog/archive/master.zip",
+    sha256 = "433e5b9696e71828a109cef978312d650dd78f51eb3fd4dc59656013932dd0d1",
+    strip_prefix = "glog-23def4e6c14b4da8ac2ed8007337bc5eb5007998",
+    url = "https://github.com/golang/glog/archive/23def4e6c14b4da8ac2ed8007337bc5eb5007998.zip",
 )
 
 http_archive(
