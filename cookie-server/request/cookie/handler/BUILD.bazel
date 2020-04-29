@@ -12,7 +12,7 @@ go_library(
         "//duration",
         "//proto:cookie_go_proto",
         "//response",
-        "@com_github_golang_glog//:go_default_library",
+        "@com_github_golang_glog//:glog",
     ],
 )
 

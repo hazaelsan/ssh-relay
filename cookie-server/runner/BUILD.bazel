@@ -15,6 +15,6 @@ go_library(
         "//cookie-server/request/cookie",
         "//cookie-server/request/cookie/handler",
         "//http",
-        "@com_github_golang_glog//:go_default_library",
+        "@com_github_golang_glog//:glog",
     ],
 )

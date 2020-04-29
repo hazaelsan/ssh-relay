@@ -9,7 +9,7 @@ go_binary(
         "//helper/agent",
         "//helper/proto:config_go_proto",
         "//proto:http_go_proto",
-        "@com_github_golang_glog//:go_default_library",
+        "@com_github_golang_glog//:glog",
         "@com_github_golang_protobuf//proto:go_default_library",
     ],
 )
