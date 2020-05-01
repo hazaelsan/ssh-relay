@@ -102,8 +102,8 @@ func TestWriteResponse(t *testing.T) {
 			t.Errorf("ioutil.ReadAll(%v) error = %v", i, err)
 			continue
 		}
-		if string(got) != tt.want {
-			t.Errorf("writeResponse(%v) = %v, want %v", i, string(got), tt.want)
+		if diff := pretty.Compare(string(got), tt.want); diff != "" {
+			t.Errorf("writeResponse(%v) diff (-got +want):\n%v", i, diff)
 		}
 	}
 }
@@ -169,8 +169,8 @@ func TestErr(t *testing.T) {
 			t.Errorf("ioutil.ReadAll(%v, %v) error = %v", tt.msg, tt.code, err)
 			continue
 		}
-		if string(got) != tt.wantMsg {
-			t.Errorf("err(%v, %v) body = %v, want %v", tt.msg, tt.code, string(got), tt.wantMsg)
+		if diff := pretty.Compare(string(got), tt.wantMsg); diff != "" {
+			t.Errorf("err(%v, %v) body diff (-got +want):\n%v", tt.msg, tt.code, diff)
 		}
 	}
 }
@@ -296,8 +296,8 @@ func TestRedirectJS(t *testing.T) {
 	if err != nil {
 		t.Fatalf("ioutil.ReadAll() error = %v", err)
 	}
-	if string(got) != wantBody {
-		t.Errorf("redirectJS() body = %v, want %v", string(got), wantBody)
+	if diff := pretty.Compare(string(got), wantBody); diff != "" {
+		t.Errorf("redirectJS() body diff (-got +want):\n%v", diff)
 	}
 }
 
