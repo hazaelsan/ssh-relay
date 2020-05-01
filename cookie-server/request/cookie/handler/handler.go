@@ -72,13 +72,13 @@ func (h *Handler) writeResponse(resp *response.Response) error {
 	if err != nil {
 		return err
 	}
-	redir := fmt.Sprintf("%v%v/%v#%v", extPrefix, h.req.Ext, h.req.Path, enc)
-	glog.V(4).Infof("Redirecting %v to %v", h.r.RemoteAddr, redir)
 	t, err := template.New("html").Parse(redirectTmpl)
 	if err != nil {
 		return err
 	}
-	return t.Execute(h.w, template.JSEscapeString(redir))
+	redir := fmt.Sprintf("%v%v/%v#%v", extPrefix, h.req.Ext, h.req.Path, enc)
+	glog.V(4).Infof("Redirecting %v to %v", h.r.RemoteAddr, redir)
+	return t.Execute(h.w, redir)
 }
 
 // err writes an error to the client, note that code is not used in JSON responses.
