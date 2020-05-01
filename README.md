@@ -61,10 +61,10 @@ directive.
 ```
 # Anything under example.org must go via the WebSocket relay.
 Host *.example.org
-  ProxyCommand ssh_relay_helper --config=/etc/ssh-relay-helper/config.textpb --host=%h --port=%p
+  ProxyCommand ssh_relay_helper --config=/etc/ssh-relay-helper/config.textproto --host=%h --port=%p
 ```
 
-##### /etc/ssh-relay-helper/config.textpb
+##### /etc/ssh-relay-helper/config.textproto
 ```proto
 # DO NOT set host/port in the config proto.
 

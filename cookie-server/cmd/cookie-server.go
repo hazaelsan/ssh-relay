@@ -15,7 +15,7 @@ import (
 )
 
 var (
-	cfgFile = flag.String("config", "", "path to a textpb config file")
+	cfgFile = flag.String("config", "", "path to a textproto config file")
 )
 
 func loadConfig(s string) (*pb.Config, error) {
