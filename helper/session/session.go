@@ -12,7 +12,7 @@ import (
 	"github.com/golang/glog"
 	"github.com/gorilla/websocket"
 	rhttp "github.com/hazaelsan/ssh-relay/http"
-	"github.com/hazaelsan/ssh-relay/session"
+	"github.com/hazaelsan/ssh-relay/session/corprelay"
 	"github.com/hazaelsan/ssh-relay/tls"
 
 	httppb "github.com/hazaelsan/ssh-relay/proto/v1/http_go_proto"
@@ -53,14 +53,14 @@ func New(opts Options) *Session {
 	}
 	return &Session{
 		opts: opts,
-		s:    session.New(ssh),
+		s:    corprelay.New(ssh),
 	}
 }
 
 // A Session is an SSH-over-WebSocket Relay client session.
 type Session struct {
 	opts  Options
-	s     *session.Session
+	s     *corprelay.Session
 	ws    *websocket.Conn
 	query url.Values
 }

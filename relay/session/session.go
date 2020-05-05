@@ -8,14 +8,14 @@ import (
 	"github.com/golang/glog"
 	"github.com/google/uuid"
 	"github.com/gorilla/websocket"
-	"github.com/hazaelsan/ssh-relay/session"
+	"github.com/hazaelsan/ssh-relay/session/corprelay"
 )
 
 // New creates a *Session from an SSH connection with the given lifetime.
 func New(ssh net.Conn, t time.Duration) *Session {
 	s := &Session{
 		SID: uuid.New(),
-		s:   session.New(ssh),
+		s:   corprelay.New(ssh),
 	}
 	glog.V(2).Infof("%v: Creating session with maximum lifetime: %v", s, t)
 	go func() {
@@ -33,7 +33,7 @@ func New(ssh net.Conn, t time.Duration) *Session {
 // A Session is a container for an SSH session.
 type Session struct {
 	SID uuid.UUID
-	s   *session.Session
+	s   *corprelay.Session
 }
 
 func (s Session) String() string {

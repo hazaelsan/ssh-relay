@@ -13,7 +13,7 @@ go_library(
     deps = [
         "//http",
         "//proto/v1:http_go_proto",
-        "//session",
+        "//session/corprelay",
         "//tls",
         "@com_github_golang_glog//:glog",
         "@com_github_gorilla_websocket//:websocket",

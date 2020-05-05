@@ -1,5 +1,6 @@
-// Package session implements common WebSocket session functionality.
-package session
+// Package corprelay implements the corp-relay@google.com protocol, see
+// https://chromium.googlesource.com/apps/libapps/+/HEAD/nassh/doc/relay-protocol.md#corp-relay.
+package corprelay
 
 import (
 	"bufio"
