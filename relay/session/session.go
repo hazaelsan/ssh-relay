@@ -8,6 +8,7 @@ import (
 	"github.com/golang/glog"
 	"github.com/google/uuid"
 	"github.com/gorilla/websocket"
+	"github.com/hazaelsan/ssh-relay/session"
 	"github.com/hazaelsan/ssh-relay/session/corprelay"
 )
 
@@ -33,7 +34,7 @@ func New(ssh net.Conn, t time.Duration) *Session {
 // A Session is a container for an SSH session.
 type Session struct {
 	SID uuid.UUID
-	s   *corprelay.Session
+	s   session.Session
 }
 
 func (s Session) String() string {
