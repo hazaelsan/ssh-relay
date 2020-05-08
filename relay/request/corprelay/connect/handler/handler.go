@@ -1,4 +1,4 @@
-// Package handler implements an HTTP handler for /connect requests.
+// Package handler implements an HTTP handler for corp-relay@google.com /connect requests.
 package handler
 
 import (
@@ -6,7 +6,7 @@ import (
 
 	"github.com/gorilla/websocket"
 	"github.com/hazaelsan/ssh-relay/relay/request"
-	"github.com/hazaelsan/ssh-relay/relay/request/connect"
+	"github.com/hazaelsan/ssh-relay/relay/request/corprelay/connect"
 	"github.com/hazaelsan/ssh-relay/relay/session"
 
 	configpb "github.com/hazaelsan/ssh-relay/relay/proto/v1/config_go_proto"

@@ -5,9 +5,8 @@ load("@io_bazel_rules_go//go:def.bzl", "go_library", "go_test")
 go_library(
     name = "runner",
     srcs = [
-        "connect.go",
+        "corprelay.go",
         "doc.go",
-        "proxy.go",
         "runner.go",
     ],
     importpath = "github.com/hazaelsan/ssh-relay/relay/runner",
@@ -16,9 +15,9 @@ go_library(
         "//http",
         "//relay/proto/v1:config_go_proto",
         "//relay/request",
-        "//relay/request/connect",
-        "//relay/request/connect/handler",
-        "//relay/request/proxy",
+        "//relay/request/corprelay/connect",
+        "//relay/request/corprelay/connect/handler",
+        "//relay/request/corprelay/proxy",
         "//relay/session/manager",
         "//request",
         "@com_github_golang_glog//:glog",
@@ -26,25 +25,15 @@ go_library(
 )
 
 go_test(
-    name = "connect_test",
-    srcs = ["connect_test.go"],
+    name = "corprelay_test",
+    srcs = ["corprelay_test.go"],
     embed = [":runner"],
     deps = [
         "//relay/proto/v1:config_go_proto",
         "//relay/session",
         "//relay/session/manager",
+        "@com_github_google_uuid//:uuid",
         "@com_github_gorilla_websocket//:websocket",
         "@com_github_kylelemons_pretty//:pretty",
-    ],
-)
-
-go_test(
-    name = "proxy_test",
-    srcs = ["proxy_test.go"],
-    embed = [":runner"],
-    deps = [
-        "//relay/proto/v1:config_go_proto",
-        "//relay/session/manager",
-        "@com_github_google_uuid//:uuid",
     ],
 )

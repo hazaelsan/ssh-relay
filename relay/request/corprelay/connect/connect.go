@@ -1,4 +1,4 @@
-// Package connect represents a /connect request to the SSH Relay.
+// Package connect represents a corp-relay@google.com /connect request to the SSH Relay.
 package connect
 
 import (

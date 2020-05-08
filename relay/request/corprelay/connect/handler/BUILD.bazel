@@ -5,11 +5,11 @@ load("@io_bazel_rules_go//go:def.bzl", "go_library")
 go_library(
     name = "handler",
     srcs = ["handler.go"],
-    importpath = "github.com/hazaelsan/ssh-relay/relay/request/connect/handler",
+    importpath = "github.com/hazaelsan/ssh-relay/relay/request/corprelay/connect/handler",
     deps = [
         "//relay/proto/v1:config_go_proto",
         "//relay/request",
-        "//relay/request/connect",
+        "//relay/request/corprelay/connect",
         "//relay/session",
         "@com_github_gorilla_websocket//:websocket",
     ],

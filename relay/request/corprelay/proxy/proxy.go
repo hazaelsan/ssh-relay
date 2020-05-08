@@ -1,4 +1,4 @@
-// Package proxy represents a /proxy request to the SSH Relay.
+// Package proxy represents a corp-relay@google.com /proxy request to the SSH Relay.
 package proxy
 
 import (
