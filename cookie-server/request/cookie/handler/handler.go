@@ -77,7 +77,7 @@ func (h *Handler) writeResponse(resp *response.Response) error {
 		return err
 	}
 	redir := fmt.Sprintf("%v%v/%v#%v", extPrefix, h.req.Ext, h.req.Path, enc)
-	glog.V(4).Infof("Redirecting %v to %v", h.r.RemoteAddr, redir)
+	glog.V(4).Infof("Redirecting %v to %v -> %+v", h.r.RemoteAddr, redir, *resp)
 	return t.Execute(h.w, redir)
 }
 
