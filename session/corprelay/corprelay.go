@@ -12,7 +12,9 @@ import (
 	"sync"
 
 	"github.com/golang/glog"
+	"github.com/google/uuid"
 	"github.com/gorilla/websocket"
+	"github.com/hazaelsan/ssh-relay/session"
 )
 
 const (
@@ -34,6 +36,7 @@ var (
 // New creates a *Session from a plain SSH connection.
 func New(ssh io.ReadWriteCloser) *Session {
 	return &Session{
+		sid:  uuid.New(),
 		ssh:  ssh,
 		done: make(chan struct{}),
 	}
@@ -42,11 +45,26 @@ func New(ssh io.ReadWriteCloser) *Session {
 // A Session is an SSH-over-WebSocket Relay session.
 // One leg of the session is a WebSocket, the other is an io.Reader/io.Writer pair that talks plain SSH.
 type Session struct {
+	sid  uuid.UUID
 	ssh  io.ReadWriteCloser
 	ws   *websocket.Conn
 	c    uint32
 	mu   sync.RWMutex
 	done chan struct{}
+}
+
+func (s Session) String() string {
+	return s.sid.String()
+}
+
+// SID returns the Session ID.
+func (s *Session) SID() uuid.UUID {
+	return s.sid
+}
+
+// Version returns the protocol version in use for the session.
+func (s *Session) Version() session.ProtocolVersion {
+	return session.CorpRelay
 }
 
 // Close closes the SSH connection, causing the Session to be invalid.

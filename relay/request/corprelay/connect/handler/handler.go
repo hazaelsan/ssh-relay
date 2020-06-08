@@ -7,13 +7,13 @@ import (
 	"github.com/gorilla/websocket"
 	"github.com/hazaelsan/ssh-relay/relay/request"
 	"github.com/hazaelsan/ssh-relay/relay/request/corprelay/connect"
-	"github.com/hazaelsan/ssh-relay/relay/session"
+	"github.com/hazaelsan/ssh-relay/session"
 
 	configpb "github.com/hazaelsan/ssh-relay/relay/proto/v1/config_go_proto"
 )
 
 // New creates a *Handler for an HTTP request.
-func New(cfg *configpb.Config, s *session.Session, cr *connect.Request, w http.ResponseWriter, r *http.Request) (*Handler, error) {
+func New(cfg *configpb.Config, s session.Session, cr *connect.Request, w http.ResponseWriter, r *http.Request) (*Handler, error) {
 	h := &Handler{
 		s:  s,
 		cr: cr,
@@ -28,7 +28,7 @@ func New(cfg *configpb.Config, s *session.Session, cr *connect.Request, w http.R
 // A Handler is an HTTP handler for /connect requests, handles bidirectional SSH traffic.
 type Handler struct {
 	origin string
-	s      *session.Session
+	s      session.Session
 	cr     *connect.Request
 	w      http.ResponseWriter
 	r      *http.Request

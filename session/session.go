@@ -2,11 +2,46 @@
 package session
 
 import (
+	"errors"
+	"time"
+
+	"github.com/golang/glog"
+	"github.com/google/uuid"
 	"github.com/gorilla/websocket"
 )
 
-// A Session is an SSH-over-WebSocket Relay session.
+// ProtocolVersion is the version of the SSH relay protocol to use in a session.
+type ProtocolVersion int
+
+const (
+	// CorpRelay is the original corp-relay@google.com protocol version.
+	CorpRelay ProtocolVersion = iota
+
+	// CorpRelayV4 is the corp-relay-v4@google.com protocol version.
+	// NOTE: Not implemented.
+	CorpRelayV4
+
+	// SSHFE is the ssh-fe@google.com protocol version.
+	// NOTE: Not implemented.
+	SSHFE
+)
+
+var (
+	// ErrBadProtocolVersion is returned when a bad protocol version is requested.
+	ErrBadProtocolVersion = errors.New("bad protocol version")
+)
+
+// A Session handles SSH-over-WebSocket Relay sessions.
 type Session interface {
+	// String returns the Session ID as a string, used for logging.
+	String() string
+
+	// SID returns the Session ID.
+	SID() uuid.UUID
+
+	// Version returns the protocol version in use for the session.
+	Version() ProtocolVersion
+
 	// Run starts bidirectional communication between the client and server.
 	Run(ws *websocket.Conn) error
 
@@ -15,4 +50,31 @@ type Session interface {
 
 	// Done notifies when the Session has terminated.
 	Done() <-chan struct{}
+}
+
+// SetDeadline sets a maximum session deadline, after which the session will be terminated.
+func SetDeadline(s Session, t time.Duration) {
+	glog.V(2).Infof("%v: %v session expires in %v", s, s.Version(), t)
+	go func() {
+		select {
+		case <-time.After(t):
+			glog.V(2).Infof("%v: Session expired", s)
+			s.Close()
+		case <-s.Done():
+			return
+		}
+	}()
+}
+
+func (v ProtocolVersion) String() string {
+	switch v {
+	case CorpRelay:
+		return "corp-relay@google.com"
+	case CorpRelayV4:
+		return "corp-relay-v4@google.com"
+	case SSHFE:
+		return "ssh-fe@google.com"
+	default:
+		return "unknown"
+	}
 }

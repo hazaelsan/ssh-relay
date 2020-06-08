@@ -10,7 +10,7 @@ go_library(
         "//relay/proto/v1:config_go_proto",
         "//relay/request",
         "//relay/request/corprelay/connect",
-        "//relay/session",
+        "//session",
         "@com_github_gorilla_websocket//:websocket",
     ],
 )

@@ -13,8 +13,8 @@ import (
 
 	"github.com/google/uuid"
 	"github.com/gorilla/websocket"
-	"github.com/hazaelsan/ssh-relay/relay/session"
 	"github.com/hazaelsan/ssh-relay/relay/session/manager"
+	"github.com/hazaelsan/ssh-relay/session"
 	"github.com/kylelemons/godebug/pretty"
 
 	pb "github.com/hazaelsan/ssh-relay/relay/proto/v1/config_go_proto"
@@ -61,9 +61,9 @@ func newRunner() *Runner {
 	}
 }
 
-func newSSH(r *Runner) (net.Conn, *session.Session, error) {
+func newSSH(r *Runner) (net.Conn, session.Session, error) {
 	a, b := net.Pipe()
-	s, err := r.mgr.New(b)
+	s, err := r.mgr.New(b, session.CorpRelay)
 	if err != nil {
 		return nil, nil, err
 	}
@@ -97,7 +97,7 @@ func TestConnectHandle(t *testing.T) {
 	if err != nil {
 		t.Fatalf("newSSH() error = %v", err)
 	}
-	sid := s.SID.String()
+	sid := s.SID().String()
 
 	// Failure modes.
 	testdata := []struct {
@@ -158,7 +158,7 @@ func TestConnectHandle(t *testing.T) {
 	wantMsg := []byte{0, 0, 0, 0, 0xab, 0xcd, 0xef}
 	go conn.Write(sshMsg)
 	srv := httptest.NewServer(http.HandlerFunc(r.connectHandle))
-	url := fmt.Sprintf("ws%v/connect?sid=%v&ack=0&pos=0&try=1", strings.TrimPrefix(srv.URL, "http"), s.SID)
+	url := fmt.Sprintf("ws%v/connect?sid=%v&ack=0&pos=0&try=1", strings.TrimPrefix(srv.URL, "http"), s.SID())
 	mt, got, err := wsReq(url)
 	if err != nil {
 		t.Fatalf("wsReq(%v) error = %v", url, err)
@@ -190,7 +190,7 @@ func TestProxyHandle(t *testing.T) {
 	port, err := listener(done)
 	defer close(done)
 	r := newRunner()
-	if _, err := r.mgr.New(p); err != nil {
+	if _, err := r.mgr.New(p, session.CorpRelay); err != nil {
 		t.Errorf("mgr.New() error = %v", err)
 	}
 	url := fmt.Sprintf("/proxy?host=localhost&port=%v", port)

@@ -9,7 +9,8 @@ import (
 
 	"github.com/golang/glog"
 	"github.com/google/uuid"
-	"github.com/hazaelsan/ssh-relay/relay/session"
+	"github.com/hazaelsan/ssh-relay/session"
+	"github.com/hazaelsan/ssh-relay/session/corprelay"
 )
 
 var (
@@ -25,7 +26,7 @@ func New(maxSessions int, maxAge time.Duration) *Manager {
 	return &Manager{
 		maxSessions: maxSessions,
 		maxAge:      maxAge,
-		sessions:    make(map[uuid.UUID]*session.Session),
+		sessions:    make(map[uuid.UUID]session.Session),
 	}
 }
 
@@ -34,31 +35,38 @@ func New(maxSessions int, maxAge time.Duration) *Manager {
 type Manager struct {
 	maxAge      time.Duration
 	maxSessions int
-	sessions    map[uuid.UUID]*session.Session
+	sessions    map[uuid.UUID]session.Session
 	mu          sync.RWMutex
 }
 
-// New creates and registers a *Session from an SSH connection.
-func (m *Manager) New(ssh net.Conn) (*session.Session, error) {
+// New creates and registers a Session from an SSH connection.
+func (m *Manager) New(ssh net.Conn, v session.ProtocolVersion) (session.Session, error) {
 	m.mu.Lock()
 	defer m.mu.Unlock()
 	if m.maxSessions > 0 && len(m.sessions) >= m.maxSessions {
 		return nil, ErrSessionLimit
 	}
-	s := session.New(ssh, m.maxAge)
+	var s session.Session
+	switch v {
+	case session.CorpRelay:
+		s = corprelay.New(ssh)
+	default:
+		return nil, session.ErrBadProtocolVersion
+	}
+	session.SetDeadline(s, m.maxAge)
 	go func() {
 		select {
 		case <-s.Done():
-			m.Delete(s)
+			m.Delete(s.SID())
 		}
 	}()
-	m.sessions[s.SID] = s
+	m.sessions[s.SID()] = s
 	glog.V(1).Infof("%v/%v active sessions", len(m.sessions), m.maxSessions)
 	return s, nil
 }
 
-// Get retrieves the *Session with the given UUID.
-func (m *Manager) Get(sid uuid.UUID) (*session.Session, error) {
+// Get retrieves the Session with the given UUID.
+func (m *Manager) Get(sid uuid.UUID) (session.Session, error) {
 	m.mu.RLock()
 	defer m.mu.RUnlock()
 	s, ok := m.sessions[sid]
@@ -68,15 +76,15 @@ func (m *Manager) Get(sid uuid.UUID) (*session.Session, error) {
 	return s, nil
 }
 
-// Delete terminates the *Session and de-registers it.
-func (m *Manager) Delete(s *session.Session) error {
+// Delete terminates the Session with the given UUID and de-registers it.
+func (m *Manager) Delete(sid uuid.UUID) error {
 	m.mu.Lock()
 	defer m.mu.Unlock()
-	s, ok := m.sessions[s.SID]
+	_, ok := m.sessions[sid]
 	if !ok {
 		return ErrNoSuchSID
 	}
-	delete(m.sessions, s.SID)
-	glog.V(4).Infof("%v: Session terminated", s)
+	delete(m.sessions, sid)
+	glog.V(4).Infof("%v: Session terminated", sid)
 	return nil
 }
