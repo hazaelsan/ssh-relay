@@ -102,6 +102,7 @@ func (h *Handler) cookie(c *cookiepb.Cookie, val string) *http.Cookie {
 		MaxAge:   int(h.maxAge.Seconds()),
 		Secure:   true,
 		HttpOnly: true,
+		SameSite: http.SameSiteNoneMode,
 	}
 }
 

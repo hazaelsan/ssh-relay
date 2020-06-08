@@ -185,7 +185,8 @@ func TestSetCookies(t *testing.T) {
 			MaxAge:   3,
 			Secure:   true,
 			HttpOnly: true,
-			Raw:      "cookie=chrome-extension://foo; Path=/; Domain=example.org; Max-Age=3; HttpOnly; Secure",
+			SameSite: http.SameSiteNoneMode,
+			Raw:      "cookie=chrome-extension://foo; Path=/; Domain=example.org; Max-Age=3; HttpOnly; Secure; SameSite=None",
 		},
 	}
 	w := httptest.NewRecorder()
@@ -218,7 +219,8 @@ func TestRedirectHTTP(t *testing.T) {
 			MaxAge:   3,
 			Secure:   true,
 			HttpOnly: true,
-			Raw:      "cookie=chrome-extension://foo; Path=/; Domain=example.org; Max-Age=3; HttpOnly; Secure",
+			SameSite: http.SameSiteNoneMode,
+			Raw:      "cookie=chrome-extension://foo; Path=/; Domain=example.org; Max-Age=3; HttpOnly; Secure; SameSite=None",
 		},
 	}
 	wantCode := http.StatusSeeOther
@@ -265,7 +267,8 @@ func TestRedirectJS(t *testing.T) {
 			MaxAge:   3,
 			Secure:   true,
 			HttpOnly: true,
-			Raw:      "cookie=chrome-extension://foo; Path=/; Domain=example.org; Max-Age=3; HttpOnly; Secure",
+			SameSite: http.SameSiteNoneMode,
+			Raw:      "cookie=chrome-extension://foo; Path=/; Domain=example.org; Max-Age=3; HttpOnly; Secure; SameSite=None",
 		},
 	}
 	w := httptest.NewRecorder()
@@ -313,7 +316,8 @@ func TestRedirectXSSI(t *testing.T) {
 			MaxAge:   3,
 			Secure:   true,
 			HttpOnly: true,
-			Raw:      "cookie=chrome-extension://foo; Path=/; Domain=example.org; Max-Age=3; HttpOnly; Secure",
+			SameSite: http.SameSiteNoneMode,
+			Raw:      "cookie=chrome-extension://foo; Path=/; Domain=example.org; Max-Age=3; HttpOnly; Secure; SameSite=None",
 		},
 	}
 	w := httptest.NewRecorder()
