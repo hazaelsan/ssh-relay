@@ -3,6 +3,7 @@ package request
 
 import (
 	"errors"
+	"fmt"
 	"net/http"
 	"strings"
 )
@@ -20,7 +21,7 @@ func Origin(req *http.Request, name string) (string, error) {
 	}
 	cookie, err := req.Cookie(name)
 	if err != nil {
-		return "", err
+		return "", fmt.Errorf("req.Cookie(%v) error: %w", name, err)
 	}
 	if !strings.Contains(cookie.Value, "://") {
 		return "", ErrBadOrigin
