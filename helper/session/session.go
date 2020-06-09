@@ -70,7 +70,7 @@ type Session struct {
 func (s *Session) Run() error {
 	u := s.proxyURL()
 	if err := s.dial(u); err != nil {
-		return fmt.Errorf("dial(%v) error: %v", u, err)
+		return fmt.Errorf("dial(%v) error: %w", u, err)
 	}
 	return s.s.Run(s.ws)
 }
@@ -131,11 +131,11 @@ func (s *Session) dial(proxyURL string) error {
 	glog.V(2).Infof("Setting up SSH session via %v", proxyURL)
 	c, err := rhttp.NewClient(s.opts.Transport)
 	if err != nil {
-		return fmt.Errorf("rhttp.NewClient() error: %v", err)
+		return fmt.Errorf("rhttp.NewClient() error: %w", err)
 	}
 	req, err := s.cookieReq(proxyURL)
 	if err != nil {
-		return fmt.Errorf("cookieReq(%v) error: %v", proxyURL, err)
+		return fmt.Errorf("cookieReq(%v) error: %w", proxyURL, err)
 	}
 	resp, err := c.Do(req)
 	if err != nil {
@@ -146,18 +146,18 @@ func (s *Session) dial(proxyURL string) error {
 		return errors.New(resp.Status)
 	}
 	if err := s.parseProxyResp(resp.Body); err != nil {
-		return fmt.Errorf("parseProxyResp() error: %v", err)
+		return fmt.Errorf("parseProxyResp() error: %w", err)
 	}
 	connectURL := s.connectURL()
 	glog.V(2).Infof("Copying I/O via %v", connectURL)
 	tlsCfg, err := tls.Config(s.opts.Transport.TlsConfig)
 	if err != nil {
-		return fmt.Errorf("tls.Config() error: %v", err)
+		return fmt.Errorf("tls.Config() error: %w", err)
 	}
 	d := &websocket.Dialer{TLSClientConfig: tlsCfg}
 	s.ws, _, err = d.Dial(connectURL, s.connectHeader())
 	if err != nil {
-		return fmt.Errorf("Dial(%v) error: %v", connectURL, err)
+		return fmt.Errorf("Dial(%v) error: %w", connectURL, err)
 	}
 	return nil
 }

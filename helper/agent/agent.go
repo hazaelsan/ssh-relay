@@ -40,7 +40,7 @@ func AddDefaultPort(addr, port string) string {
 func New(cfg *pb.Config) (*Agent, error) {
 	c, err := rhttp.NewClient(cfg.CookieServerTransport)
 	if err != nil {
-		return nil, fmt.Errorf("rhttp.NewClient() error: %v", err)
+		return nil, fmt.Errorf("rhttp.NewClient() error: %w", err)
 	}
 	return &Agent{
 		cfg:    cfg,
@@ -58,7 +58,7 @@ type Agent struct {
 func (a *Agent) Run() error {
 	relay, cookies, err := a.auth()
 	if err != nil {
-		return fmt.Errorf("auth() error: %v", err)
+		return fmt.Errorf("auth() error: %w", err)
 	}
 	opts := session.Options{
 		Relay:     relay,
@@ -84,7 +84,7 @@ func (a *Agent) auth() (string, []*http.Cookie, error) {
 	defer resp.Body.Close()
 	r, err := response.FromReader(resp.Body)
 	if err != nil {
-		return "", nil, fmt.Errorf("response.FromReader() error: %v", err)
+		return "", nil, fmt.Errorf("response.FromReader() error: %w", err)
 	}
 	return AddDefaultPort(r.Endpoint, DefaultPort), resp.Cookies(), nil
 }
