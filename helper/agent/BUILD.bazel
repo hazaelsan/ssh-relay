@@ -8,7 +8,7 @@ go_library(
     importpath = "github.com/hazaelsan/ssh-relay/helper/agent",
     deps = [
         "//helper/proto/v1:config_go_proto",
-        "//helper/session",
+        "//helper/session/corprelay",
         "//http",
         "//response",
         "@com_github_golang_glog//:glog",

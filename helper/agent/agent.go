@@ -9,7 +9,7 @@ import (
 	"strconv"
 
 	"github.com/golang/glog"
-	"github.com/hazaelsan/ssh-relay/helper/session"
+	"github.com/hazaelsan/ssh-relay/helper/session/corprelay"
 	rhttp "github.com/hazaelsan/ssh-relay/http"
 	"github.com/hazaelsan/ssh-relay/response"
 
@@ -60,7 +60,7 @@ func (a *Agent) Run() error {
 	if err != nil {
 		return fmt.Errorf("auth() error: %w", err)
 	}
-	opts := session.Options{
+	opts := corprelay.Options{
 		Relay:     relay,
 		Host:      a.cfg.Host,
 		Port:      a.cfg.Port,
@@ -68,7 +68,7 @@ func (a *Agent) Run() error {
 		Cookies:   cookies,
 		Transport: a.cfg.SshRelayTransport,
 	}
-	s := session.New(opts)
+	s := corprelay.New(opts)
 	return s.Run()
 }
 

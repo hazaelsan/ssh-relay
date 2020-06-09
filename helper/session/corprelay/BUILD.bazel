@@ -3,13 +3,13 @@ package(default_visibility = ["//helper:__subpackages__"])
 load("@io_bazel_rules_go//go:def.bzl", "go_library")
 
 go_library(
-    name = "session",
+    name = "corprelay",
     srcs = [
+        "corprelay.go",
         "doc.go",
-        "session.go",
         "ssh.go",
     ],
-    importpath = "github.com/hazaelsan/ssh-relay/helper/session",
+    importpath = "github.com/hazaelsan/ssh-relay/helper/session/corprelay",
     deps = [
         "//http",
         "//proto/v1:http_go_proto",

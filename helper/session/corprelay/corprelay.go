@@ -1,4 +1,4 @@
-package session
+package corprelay
 
 import (
 	"errors"
@@ -58,7 +58,7 @@ func New(opts Options) *Session {
 	}
 }
 
-// A Session is an SSH-over-WebSocket Relay client session.
+// A Session is a corp-relay@google.com SSH-over-WebSocket Relay client session.
 type Session struct {
 	opts  Options
 	s     session.Session
@@ -169,7 +169,7 @@ func (s *Session) parseProxyResp(r io.Reader) error {
 		return err
 	}
 	// Body is a query string minus the leading "sid=".
-	// e.g, 4b2fbe8f4eff640b&host=foovpn-1.system.example.com
+	// e.g., 4b2fbe8f4eff640b&host=foovpn-1.system.example.com
 	u := url.URL{RawQuery: fmt.Sprintf("sid=%v", string(b))}
 	s.query = u.Query()
 	if s.query.Get("sid") == "" {
