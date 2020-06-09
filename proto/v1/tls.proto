@@ -27,7 +27,6 @@ message TlsConfig {
 
   // The policy a server will follow for TLS Client Authentication.
   enum ClientAuthType {
-
     // Defaults to [REQUIRE_AND_VERIFY_CLIENT_CERT][].
     CLIENT_AUTH_TYPE_UNSPECIFIED = 0;
 
