@@ -7,7 +7,7 @@
 
 # DO NOT set host/port in the config proto.
 
-# This can also be passed via --cookie_server_address
+# This can also be passed via --cookie_server_address,
 # port defaults to 8022 if unspecified.
 cookie_server_address: "cookie-server.example.org:8022"
 
@@ -28,3 +28,6 @@ ssh_relay_transport {
     root_ca_certs: "/etc/ssh-relay-helper/relay_ca.crt"
   }
 }
+
+# Use the corp-relay-v4@google.com protocol version.
+protocol_version: CORP_RELAY_V4

@@ -1,3 +1,10 @@
+// Package corprelay implements a corp-relay@google.com SSH-over-WebSocket Relay client session.
+//
+// Sessions are established in two parts:
+// * /proxy: Tells the Relay to set up the SSH connection, returns a Session ID
+// * /connect: SSH-over-WebSocket Relay session
+//
+// NOTE: Reconnections are not implemented.
 package corprelay
 
 import (
@@ -11,47 +18,17 @@ import (
 
 	"github.com/golang/glog"
 	"github.com/gorilla/websocket"
+	hsession "github.com/hazaelsan/ssh-relay/helper/session"
 	rhttp "github.com/hazaelsan/ssh-relay/http"
 	"github.com/hazaelsan/ssh-relay/session"
 	"github.com/hazaelsan/ssh-relay/session/corprelay"
 	"github.com/hazaelsan/ssh-relay/tls"
-
-	httppb "github.com/hazaelsan/ssh-relay/proto/v1/http_go_proto"
 )
-
-var (
-	// ErrBadSessionID is returned if the Session ID could not be parsed.
-	ErrBadSessionID = errors.New("bad Session ID")
-)
-
-// Options specifies a set of options to create a *Session.
-type Options struct {
-	// Relay is the address:port of the WebSocket Relay.
-	Relay string
-
-	// Host is the address of the SSH host.
-	Host string
-
-	// Port is the port of the SSH host.
-	Port string
-
-	// Origin is the WebSocket origin.
-	Origin string
-
-	// Cookies is a list of cookies to send on outgoing requests.
-	Cookies []*http.Cookie
-
-	// Transport specifies settings for creating HTTP/WebSocket connections.
-	Transport *httppb.HttpTransport
-}
 
 // New creates a *Session.
 // Communication to ssh(1) is done via stdin/stdout.
-func New(opts Options) *Session {
-	ssh := &sshWrapper{
-		in:  os.Stdin,
-		out: os.Stdout,
-	}
+func New(opts hsession.Options) *Session {
+	ssh := hsession.NewWrapper(os.Stdin, os.Stdout)
 	return &Session{
 		opts: opts,
 		s:    corprelay.New(ssh),
@@ -60,7 +37,7 @@ func New(opts Options) *Session {
 
 // A Session is a corp-relay@google.com SSH-over-WebSocket Relay client session.
 type Session struct {
-	opts  Options
+	opts  hsession.Options
 	s     session.Session
 	ws    *websocket.Conn
 	query url.Values
@@ -73,6 +50,11 @@ func (s *Session) Run() error {
 		return fmt.Errorf("dial(%v) error: %w", u, err)
 	}
 	return s.s.Run(s.ws)
+}
+
+// Done notifies when the Session has terminated.
+func (s *Session) Done() <-chan struct{} {
+	return s.s.Done()
 }
 
 // connectHeader builds an http.Header for a /connect request.
@@ -142,7 +124,7 @@ func (s *Session) dial(proxyURL string) error {
 		return err
 	}
 	defer resp.Body.Close()
-	if resp.StatusCode != 200 {
+	if resp.StatusCode != http.StatusOK {
 		return errors.New(resp.Status)
 	}
 	if err := s.parseProxyResp(resp.Body); err != nil {
@@ -173,7 +155,7 @@ func (s *Session) parseProxyResp(r io.Reader) error {
 	u := url.URL{RawQuery: fmt.Sprintf("sid=%v", string(b))}
 	s.query = u.Query()
 	if s.query.Get("sid") == "" {
-		return ErrBadSessionID
+		return hsession.ErrBadSessionID
 	}
 	return nil
 }

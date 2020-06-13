@@ -39,13 +39,37 @@ message Config {
   // If port is unspecified it defaults to 8022.
   string cookie_server_address = 3;
 
-  // The settings for talking to the Cookie Server.
+  // The transport settings for talking to the Cookie Server.
   hazaelsan.ssh_relay.v1.HttpTransport cookie_server_transport = 4
     [(google.api.field_behavior) = REQUIRED];
 
-  // The settings for talking to an SSH Relay.
+  // The transport settings for talking to an SSH Relay.
   // If unspecified, [cookie_server_transport][] will be used.
   hazaelsan.ssh_relay.v1.HttpTransport ssh_relay_transport = 5;
 
-  reserved 6 to max;  // Next ID.
+  // The SSH Relay protocol version to use in a session.
+  enum ProtocolVersion {
+    // Defaults to [CORP_RELAY][].
+    PROTOCOL_VERSION_UNSPECIFIED = 0;
+
+    // The original protocol version, corp-relay@google.com, see
+    // https://chromium.googlesource.com/apps/libapps/+/HEAD/nassh/doc/relay-protocol.md#corp-relay.
+    CORP_RELAY = 1;
+
+    // SSH Relay v4, corp-relay-v4@google.com, see
+    // https://chromium.googlesource.com/apps/libapps/+/HEAD/nassh/doc/relay-protocol.md#corp-relay-v4.
+    CORP_RELAY_V4 = 2;
+
+    // SSH-FE, ssh-fe@google.com, see
+    // https://chromium.googlesource.com/apps/libapps/+/HEAD/nassh/doc/relay-protocol.md#ssh_fe.
+    // NOTE: Not supported.
+    SSH_FE = 3;
+
+    reserved 4 to max;  // Next ID.
+  }
+
+  // The SSH Relay protocol version to use for the session.
+  ProtocolVersion protocol_version = 6;
+
+  reserved 7 to max;  // Next ID.
 }

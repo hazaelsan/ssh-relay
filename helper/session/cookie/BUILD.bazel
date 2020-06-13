@@ -1,0 +1,14 @@
+package(default_visibility = ["//helper:__subpackages__"])
+
+load("@io_bazel_rules_go//go:def.bzl", "go_library")
+
+go_library(
+    name = "cookie",
+    srcs = ["cookie.go"],
+    importpath = "github.com/hazaelsan/ssh-relay/helper/session/cookie",
+    deps = [
+        "//helper/session",
+        "//response",
+        "@com_github_golang_glog//:glog",
+    ],
+)

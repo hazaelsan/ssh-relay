@@ -17,6 +17,7 @@ import (
 	"github.com/golang/glog"
 	"github.com/golang/protobuf/proto"
 	"github.com/hazaelsan/ssh-relay/helper/agent"
+	"github.com/hazaelsan/ssh-relay/helper/session"
 
 	pb "github.com/hazaelsan/ssh-relay/helper/proto/v1/config_go_proto"
 	httppb "github.com/hazaelsan/ssh-relay/proto/v1/http_go_proto"
@@ -55,7 +56,7 @@ func buildConfig(s string) (*pb.Config, error) {
 	if cfg.CookieServerAddress == "" {
 		return nil, errors.New("cookie_server_address must be specified")
 	}
-	cfg.CookieServerAddress = agent.AddDefaultPort(cfg.CookieServerAddress, agent.DefaultPort)
+	cfg.CookieServerAddress = session.AddDefaultPort(cfg.CookieServerAddress, session.DefaultPort)
 	if cfg.CookieServerTransport == nil {
 		cfg.CookieServerTransport = new(httppb.HttpTransport)
 	}

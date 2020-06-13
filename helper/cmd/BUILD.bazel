@@ -8,6 +8,7 @@ go_binary(
     deps = [
         "//helper/agent",
         "//helper/proto/v1:config_go_proto",
+        "//helper/session",
         "//proto/v1:http_go_proto",
         "@com_github_golang_glog//:glog",
         "@com_github_golang_protobuf//proto:go_default_library",
