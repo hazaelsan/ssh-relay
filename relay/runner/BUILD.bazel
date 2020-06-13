@@ -6,6 +6,7 @@ go_library(
     name = "runner",
     srcs = [
         "corprelay.go",
+        "corprelayv4.go",
         "doc.go",
         "runner.go",
     ],

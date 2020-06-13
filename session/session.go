@@ -18,12 +18,22 @@ const (
 	CorpRelay ProtocolVersion = iota
 
 	// CorpRelayV4 is the corp-relay-v4@google.com protocol version.
-	// NOTE: Not implemented.
 	CorpRelayV4
 
 	// SSHFE is the ssh-fe@google.com protocol version.
 	// NOTE: Not implemented.
 	SSHFE
+)
+
+// Role indicates the role within a session.
+type Role int
+
+const (
+	// Server indicates that this is the server side of a session.
+	Server Role = iota
+
+	// Client indicates that this is the client side of a session.
+	Client
 )
 
 var (

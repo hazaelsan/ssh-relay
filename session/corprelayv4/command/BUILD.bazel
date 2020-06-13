@@ -1,0 +1,16 @@
+package(default_visibility = ["//:__subpackages__"])
+
+load("@io_bazel_rules_go//go:def.bzl", "go_library", "go_test")
+
+go_library(
+    name = "command",
+    srcs = ["command.go"],
+    importpath = "github.com/hazaelsan/ssh-relay/session/corprelayv4/command",
+)
+
+go_test(
+    name = "command_test",
+    srcs = ["command_test.go"],
+    embed = [":command"],
+    deps = ["@com_github_kylelemons_pretty//:pretty"],
+)

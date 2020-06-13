@@ -26,8 +26,9 @@ func New(cfg *pb.Config) (*Runner, error) {
 		server: s,
 	}
 	for path, fun := range map[string]http.HandlerFunc{
-		"/connect": r.connectHandle,
-		"/proxy":   r.proxyHandle,
+		"/connect":    r.connectHandle,
+		"/proxy":      r.proxyHandle,
+		"/v4/connect": r.connectHandleV4,
 	} {
 		s.HandleFunc(path, fun)
 	}

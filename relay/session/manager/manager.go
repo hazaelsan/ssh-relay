@@ -11,6 +11,7 @@ import (
 	"github.com/google/uuid"
 	"github.com/hazaelsan/ssh-relay/session"
 	"github.com/hazaelsan/ssh-relay/session/corprelay"
+	"github.com/hazaelsan/ssh-relay/session/corprelayv4"
 )
 
 var (
@@ -50,6 +51,8 @@ func (m *Manager) New(ssh net.Conn, v session.ProtocolVersion) (session.Session,
 	switch v {
 	case session.CorpRelay:
 		s = corprelay.New(ssh)
+	case session.CorpRelayV4:
+		s = corprelayv4.New(ssh, session.Server)
 	default:
 		return nil, session.ErrBadProtocolVersion
 	}
