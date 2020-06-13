@@ -12,7 +12,8 @@ App][chrome-app], but the client helper makes it possible to use with ssh's
 
 ## Features
 
-* Supports client/server version 2 of the Relay Protocol.
+* **NEW:** Supports the `corp-relay-v4@google.com` version of the Relay Protocol.
+* Supports client/server version 2 of the Cookie Protocol.
   Version 1 is supported by the SSH Relay, though this version is deprecated.
 * Supports WebSockets for the SSH transport (via `/connect`), the older
   XHR-based method (via `/read` and `/write`) is NOT supported.
@@ -81,6 +82,10 @@ cookie_server_transport {
   }
 }
 ```
+
+See the [examples
+directory](https://github.com/hazaelsan/ssh-relay/tree/master/examples) for
+additional configuration examples.
 
 ## Bugs / Feature Requests
 
