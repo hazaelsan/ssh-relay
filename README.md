@@ -25,6 +25,24 @@ functionality.
 
 Building of all components is done via [Bazel](http://bazel.build).
 
+## Chrome Extension / App Usage
+
+Add something like this to the `SSH relay server options`:
+
+### `corp-relay-v4@google.com` (New Protocol)
+```none
+--proxy-host=cookie-server.example.org --proxy-port=8022 --use-ssl --proxy-mode=corp-relay-v4@google.com
+```
+
+### `corp-relay@google.com` (Old Protocol)
+```none
+--relay-protocol=v2 --report-ack-latency=true --report-connect-attempts=true --proxy-host=cookie-server.choppytones.net --proxy-port=8022 --use-ssl
+```
+
+If you are using a security key (e.g., the [Titan Security
+Key](https://store.google.com/us/product/titan_security_key)), add
+`--ssh-agent=gnubby` to the options above.
+
 ## Components
 
 NOTE: It's possible to host the Cookie Server and the SSH Relay on the same
