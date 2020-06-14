@@ -36,7 +36,7 @@ Add something like this to the `SSH relay server options`:
 
 ### `corp-relay@google.com` (Old Protocol)
 ```none
---relay-protocol=v2 --report-ack-latency=true --report-connect-attempts=true --proxy-host=cookie-server.choppytones.net --proxy-port=8022 --use-ssl
+--relay-protocol=v2 --report-ack-latency=true --report-connect-attempts=true --proxy-host=cookie-server.example.org --proxy-port=8022 --use-ssl
 ```
 
 If you are using a security key (e.g., the [Titan Security
