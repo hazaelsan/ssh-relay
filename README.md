@@ -97,7 +97,8 @@ All bugs/feature requests should be done via GitHub, pull requests are welcome.
 **This project is NOT affiliated or endorsed by Google.**
 
 All code was written based on Google's [public documentation][relay-protocol]
-and minimally tested using the [Secure Shell Chrome App][chrome-app].
+and minimally tested using the [Secure Shell Chrome App][chrome-app] and the
+[Secure Shell Chrome Extension][chrome-extension].
 
 [relay-protocol]: https://chromium.googlesource.com/apps/libapps/+/HEAD/nassh/doc/relay-protocol.md
 [chrome-app]: https://chrome.google.com/webstore/detail/secure-shell-app/pnhechapfaindjhompbnflcldabbghjo
