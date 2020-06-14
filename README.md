@@ -7,8 +7,9 @@ Relay, as defined in
 https://chromium.googlesource.com/apps/libapps/+/HEAD/nassh/doc/relay-protocol.md.
 
 The primary use case for this is using the [Secure Shell Chrome
-App][chrome-app], but the client helper makes it possible to use with ssh's
-`ProxyCommand` functionality.
+App][chrome-app] and the [Secure Shell Chrome Extension][chrome-extension], but
+the client helper makes it possible to use with ssh's `ProxyCommand`
+functionality.
 
 ## Features
 
@@ -100,3 +101,4 @@ and minimally tested using the [Secure Shell Chrome App][chrome-app].
 
 [relay-protocol]: https://chromium.googlesource.com/apps/libapps/+/HEAD/nassh/doc/relay-protocol.md
 [chrome-app]: https://chrome.google.com/webstore/detail/secure-shell-app/pnhechapfaindjhompbnflcldabbghjo
+[chrome-extension]: https://chrome.google.com/webstore/detail/secure-shell/iodihamcpbpeioajjeobimgagajmlibd
