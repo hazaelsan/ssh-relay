@@ -6,6 +6,8 @@ import "proto/v1/cookie.proto";
 import "proto/v1/http.proto";
 
 option java_package = "net.hazael.sshrelay.cookieserver.v1";
+option java_outer_classname = "ConfigProto";
+option java_multiple_files = true;
 option go_package = "github.com/hazaelsan/ssh-relay/cookie-server/proto/v1/config_go_proto";
 
 // Configuration settings for the Cookie Server.
