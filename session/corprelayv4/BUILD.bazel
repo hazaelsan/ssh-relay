@@ -1,6 +1,6 @@
-package(default_visibility = ["//:__subpackages__"])
-
 load("@io_bazel_rules_go//go:def.bzl", "go_library", "go_test")
+
+package(default_visibility = ["//:__subpackages__"])
 
 go_library(
     name = "corprelayv4",
@@ -19,5 +19,8 @@ go_test(
     name = "corprelayv4_test",
     srcs = ["corprelayv4_test.go"],
     embed = [":corprelayv4"],
-    deps = ["@com_github_kylelemons_pretty//:pretty"],
+    deps = [
+        "//session",
+        "@com_github_kylelemons_pretty//:pretty",
+    ],
 )

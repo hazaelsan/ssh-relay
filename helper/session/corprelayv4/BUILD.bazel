@@ -1,6 +1,6 @@
-package(default_visibility = ["//helper:__subpackages__"])
-
 load("@io_bazel_rules_go//go:def.bzl", "go_library")
+
+package(default_visibility = ["//helper:__subpackages__"])
 
 go_library(
     name = "corprelayv4",
@@ -8,8 +8,6 @@ go_library(
     importpath = "github.com/hazaelsan/ssh-relay/helper/session/corprelayv4",
     deps = [
         "//helper/session",
-        "//http",
-        "//proto/v1:http_go_proto",
         "//session",
         "//session/corprelayv4",
         "//tls",

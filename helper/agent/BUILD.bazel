@@ -1,6 +1,6 @@
-package(default_visibility = ["//helper:__subpackages__"])
-
 load("@io_bazel_rules_go//go:def.bzl", "go_library")
+
+package(default_visibility = ["//helper:__subpackages__"])
 
 go_library(
     name = "agent",
@@ -9,11 +9,9 @@ go_library(
     deps = [
         "//helper/proto/v1:config_go_proto",
         "//helper/session",
+        "//helper/session/cookie",
         "//helper/session/corprelay",
         "//helper/session/corprelayv4",
-        "//helper/session/cookie",
         "//http",
-        "//response",
-        "@com_github_golang_glog//:glog",
     ],
 )

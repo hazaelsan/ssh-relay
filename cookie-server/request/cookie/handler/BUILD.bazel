@@ -1,6 +1,6 @@
-package(default_visibility = ["//cookie-server:__subpackages__"])
-
 load("@io_bazel_rules_go//go:def.bzl", "go_library", "go_test")
+
+package(default_visibility = ["//cookie-server:__subpackages__"])
 
 go_library(
     name = "handler",
@@ -22,6 +22,7 @@ go_test(
     embed = [":handler"],
     deps = [
         "//cookie-server/proto/v1:config_go_proto",
+        "//cookie-server/proto/v1:request_go_proto",
         "//proto/v1:cookie_go_proto",
         "//response",
         "@com_github_kylelemons_pretty//:pretty",
