@@ -21,3 +21,16 @@ go_proto_library(
         "//proto/v1:http_go_proto",
     ],
 )
+
+proto_library(
+    name = "request_proto",
+    srcs = ["request.proto"],
+    deps = ["@com_github_googleapis_googleapis//google/api:field_behavior_proto"],
+)
+
+go_proto_library(
+    name = "request_go_proto",
+    importpath = "github.com/hazaelsan/ssh-relay/cookie-server/proto/v1/request_go_proto",
+    proto = ":request_proto",
+    deps = ["@com_github_googleapis_googleapis//google/api:annotations_go_proto"],
+)

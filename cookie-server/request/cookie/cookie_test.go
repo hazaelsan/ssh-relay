@@ -5,51 +5,53 @@ import (
 	"testing"
 
 	"github.com/kylelemons/godebug/pretty"
+
+	requestpb "github.com/hazaelsan/ssh-relay/cookie-server/proto/v1/request_go_proto"
 )
 
 func TestNew(t *testing.T) {
 	testdata := []struct {
 		uri  string
-		want *Request
+		want *requestpb.Request
 		ok   bool
 	}{
 		{
 			uri: "/cookie?ext=foo&path=/&version=2&method=js-redirect",
-			want: &Request{
+			want: &requestpb.Request{
 				Ext:     "foo",
 				Path:    "/",
 				Version: 2,
-				Method:  JSRedirect,
+				Method:  requestpb.Request_JS_REDIRECT,
 			},
 			ok: true,
 		},
 		{
 			uri: "/cookie?ext=foo&path=/&version=2&method=direct",
-			want: &Request{
+			want: &requestpb.Request{
 				Ext:     "foo",
 				Path:    "/",
 				Version: 2,
-				Method:  Direct,
+				Method:  requestpb.Request_DIRECT,
 			},
 			ok: true,
 		},
 		{
 			uri: "/cookie?ext=foo&path=/",
-			want: &Request{
+			want: &requestpb.Request{
 				Ext:     "foo",
 				Path:    "/",
 				Version: 1,
-				Method:  HTTPRedirect,
+				Method:  requestpb.Request_HTTP_REDIRECT,
 			},
 			ok: true,
 		},
 		{
 			uri: "/cookie?ext=foo&path=/&version=1",
-			want: &Request{
+			want: &requestpb.Request{
 				Ext:     "foo",
 				Path:    "/",
 				Version: 1,
-				Method:  HTTPRedirect,
+				Method:  requestpb.Request_HTTP_REDIRECT,
 			},
 			ok: true,
 		},

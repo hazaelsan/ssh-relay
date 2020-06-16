@@ -8,11 +8,11 @@ import (
 	"time"
 
 	"github.com/golang/glog"
-	"github.com/hazaelsan/ssh-relay/cookie-server/request/cookie"
 	"github.com/hazaelsan/ssh-relay/duration"
 	"github.com/hazaelsan/ssh-relay/response"
 
 	configpb "github.com/hazaelsan/ssh-relay/cookie-server/proto/v1/config_go_proto"
+	requestpb "github.com/hazaelsan/ssh-relay/cookie-server/proto/v1/request_go_proto"
 	cookiepb "github.com/hazaelsan/ssh-relay/proto/v1/cookie_go_proto"
 )
 
@@ -30,7 +30,7 @@ const (
 )
 
 // New creates a *Handler for an HTTP request.
-func New(cfg *configpb.Config, req *cookie.Request, w http.ResponseWriter, r *http.Request) (*Handler, error) {
+func New(cfg *configpb.Config, req *requestpb.Request, w http.ResponseWriter, r *http.Request) (*Handler, error) {
 	h := &Handler{
 		cfg: cfg,
 		req: req,
@@ -46,7 +46,7 @@ func New(cfg *configpb.Config, req *cookie.Request, w http.ResponseWriter, r *ht
 // A Handler is an HTTP handler for /cookie requests.
 type Handler struct {
 	cfg    *configpb.Config
-	req    *cookie.Request
+	req    *requestpb.Request
 	maxAge time.Duration
 	w      http.ResponseWriter
 	r      *http.Request
@@ -55,11 +55,11 @@ type Handler struct {
 // Handle processes the /cookie HTTP request, redirecting clients according to the configured method.
 func (h *Handler) Handle() error {
 	switch h.req.Method {
-	case cookie.HTTPRedirect:
+	case requestpb.Request_HTTP_REDIRECT:
 		return h.redirectHTTP()
-	case cookie.Direct:
+	case requestpb.Request_DIRECT:
 		return h.redirectXSSI()
-	case cookie.JSRedirect:
+	case requestpb.Request_JS_REDIRECT:
 		return h.redirectJS()
 	default:
 		return fmt.Errorf("bad redirection method: %v", h.req.Method)

@@ -1,0 +1,52 @@
+syntax = "proto3";
+
+import "google/api/field_behavior.proto";
+
+package hazaelsan.ssh_relay.cookie_server.v1;
+
+option java_package = "net.hazael.sshrelay.cookieserver.v1";
+option java_outer_classname = "RequestProto";
+option java_multiple_files = true;
+option go_package = "github.com/hazaelsan/ssh-relay/cookie-server/proto/v1/request_go_proto";
+
+// A normalized /cookie request, see
+// https://chromium.googlesource.com/apps/libapps/+/HEAD/nassh/doc/relay-protocol.md#corp-relay-cookie
+// for the protocol specification.
+message Request {
+  // The client's Chrome extension ID, used to redirect clients after the
+  // authorization step has completed.
+  string ext = 1 [(google.api.field_behavior) = REQUIRED];
+
+  // The path under the extension that the Cookie Server should redirect clients
+  // after the authorization step has completed.
+  string path = 2 [(google.api.field_behavior) = REQUIRED];
+
+  // The version of the Cookie protocol.
+  // If unset, defaults to version 1.
+  // NOTE: Version 1 is deprecated.
+  int32 version = 3;
+
+  // The redirection method to use for request responses, only semantically
+  // meaningful for version 2 responses -- version 1 responses always use HTTP
+  // redirection.
+  // There is no meaningful zero-value -- version 2 requests MUST explicitly
+  // specify a redirection method.
+  enum RedirectionMethod {
+    // The redirection method used for version 1 requests.
+    // This is not a valid version 2 method, but is included here to make it
+    // simpler to express version 1 requests.
+    HTTP_REDIRECT = 0;
+
+    // Direct method, returns a JSON response with an XSSI header.  Requires
+    // clients to perform their own redirection.
+    DIRECT = 1;
+
+    // JavaScript redirection, generates an HTML document that will redirect
+    // clients to a base64-encoded JSON response.
+    JS_REDIRECT = 2;
+  }
+
+  // The redirection method to use for request responses.
+  // Required for version 2 requests, forbidden for version 1 requests.
+  RedirectionMethod method = 4;
+}

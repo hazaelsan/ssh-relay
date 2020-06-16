@@ -8,7 +8,7 @@ go_library(
     importpath = "github.com/hazaelsan/ssh-relay/cookie-server/request/cookie/handler",
     deps = [
         "//cookie-server/proto/v1:config_go_proto",
-        "//cookie-server/request/cookie",
+        "//cookie-server/proto/v1:request_go_proto",
         "//duration",
         "//proto/v1:cookie_go_proto",
         "//response",
@@ -22,7 +22,6 @@ go_test(
     embed = [":handler"],
     deps = [
         "//cookie-server/proto/v1:config_go_proto",
-        "//cookie-server/request/cookie",
         "//proto/v1:cookie_go_proto",
         "//response",
         "@com_github_kylelemons_pretty//:pretty",

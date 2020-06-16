@@ -6,12 +6,18 @@ go_library(
     name = "cookie",
     srcs = ["cookie.go"],
     importpath = "github.com/hazaelsan/ssh-relay/cookie-server/request/cookie",
-    deps = ["//request"],
+    deps = [
+        "//cookie-server/proto/v1:request_go_proto",
+        "//request",
+    ],
 )
 
 go_test(
     name = "cookie_test",
     srcs = ["cookie_test.go"],
     embed = [":cookie"],
-    deps = ["@com_github_kylelemons_pretty//:pretty"],
+    deps = [
+        "//cookie-server/proto/v1:request_go_proto",
+        "@com_github_kylelemons_pretty//:pretty",
+    ],
 )

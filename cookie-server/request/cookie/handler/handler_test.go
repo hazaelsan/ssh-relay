@@ -10,11 +10,11 @@ import (
 	"testing"
 	"time"
 
-	"github.com/hazaelsan/ssh-relay/cookie-server/request/cookie"
 	"github.com/hazaelsan/ssh-relay/response"
 	"github.com/kylelemons/godebug/pretty"
 
 	configpb "github.com/hazaelsan/ssh-relay/cookie-server/proto/v1/config_go_proto"
+	requestpb "github.com/hazaelsan/ssh-relay/cookie-server/proto/v1/request_go_proto"
 	cookiepb "github.com/hazaelsan/ssh-relay/proto/v1/cookie_go_proto"
 )
 
@@ -47,14 +47,14 @@ func jsRedir(redir string) string {
 func TestWriteResponse(t *testing.T) {
 	testdata := []struct {
 		resp *response.Response
-		req  *cookie.Request
+		req  *requestpb.Request
 		w    responseWriter
 		want string
 		ok   bool
 	}{
 		{
 			resp: &response.Response{Endpoint: "foo"},
-			req: &cookie.Request{
+			req: &requestpb.Request{
 				Ext:  "foo",
 				Path: "path",
 			},
@@ -64,7 +64,7 @@ func TestWriteResponse(t *testing.T) {
 		},
 		{
 			resp: &response.Response{Error: "foo"},
-			req: &cookie.Request{
+			req: &requestpb.Request{
 				Ext:  "foo",
 				Path: "path",
 			},
@@ -75,7 +75,7 @@ func TestWriteResponse(t *testing.T) {
 		// Write failure.
 		{
 			resp: &response.Response{Endpoint: "foo"},
-			req: &cookie.Request{
+			req: &requestpb.Request{
 				Ext:  "foo",
 				Path: "path",
 			},
@@ -110,7 +110,7 @@ func TestWriteResponse(t *testing.T) {
 
 func TestErr(t *testing.T) {
 	testdata := []struct {
-		version  int
+		version  int32
 		msg      string
 		code     int
 		w        responseWriter
@@ -151,7 +151,7 @@ func TestErr(t *testing.T) {
 	}
 	for _, tt := range testdata {
 		h := &Handler{
-			req: &cookie.Request{
+			req: &requestpb.Request{
 				Ext:     "foo",
 				Path:    "path",
 				Version: tt.version,
@@ -198,7 +198,7 @@ func TestSetCookies(t *testing.T) {
 				Domain: ".example.org",
 			},
 		},
-		req:    &cookie.Request{Ext: "foo"},
+		req:    &requestpb.Request{Ext: "foo"},
 		maxAge: 3 * time.Second,
 		w:      w,
 	}
@@ -234,7 +234,7 @@ func TestRedirectHTTP(t *testing.T) {
 			},
 			FallbackRelayHost: "relay.example.org:8022",
 		},
-		req: &cookie.Request{
+		req: &requestpb.Request{
 			Ext:  "foo",
 			Path: "bar",
 		},
@@ -281,7 +281,7 @@ func TestRedirectJS(t *testing.T) {
 			},
 			FallbackRelayHost: "relay.example.org:8022",
 		},
-		req: &cookie.Request{
+		req: &requestpb.Request{
 			Ext:  "foo",
 			Path: "path",
 		},
@@ -330,7 +330,7 @@ func TestRedirectXSSI(t *testing.T) {
 			},
 			FallbackRelayHost: "relay.example.org:8022",
 		},
-		req: &cookie.Request{
+		req: &requestpb.Request{
 			Ext:  "foo",
 			Path: "path",
 		},
