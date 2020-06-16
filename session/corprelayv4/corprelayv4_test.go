@@ -7,6 +7,7 @@ import (
 	"net"
 	"testing"
 
+	"github.com/hazaelsan/ssh-relay/session"
 	"github.com/kylelemons/godebug/pretty"
 )
 
@@ -163,7 +164,7 @@ func TestParseBinary(t *testing.T) {
 			c <- channel{buf, err}
 		}(c)
 		ws := &rwc{new(bytes.Buffer)}
-		s := New(b)
+		s := New(b, session.Server)
 		s.wFunc = func(int) (io.WriteCloser, error) { return ws, nil }
 		if ok := func() bool {
 			defer b.Close()
