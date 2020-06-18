@@ -10,9 +10,9 @@ import (
 )
 
 // Map of redirection method name to enum.
-var redirectionMethodMap = map[string]requestpb.Request_RedirectionMethod{
-	"direct":      requestpb.Request_DIRECT,
-	"js-redirect": requestpb.Request_JS_REDIRECT,
+var redirectionMethodMap = map[string]requestpb.RedirectionMethod{
+	"direct":      requestpb.RedirectionMethod_DIRECT,
+	"js-redirect": requestpb.RedirectionMethod_JS_REDIRECT,
 }
 
 // New creates a *Request from an *http.Request.
@@ -26,7 +26,7 @@ func New(req *http.Request) (*requestpb.Request, error) {
 		Ext:     req.URL.Query().Get("ext"),
 		Path:    req.URL.Query().Get("path"),
 		Version: 1,
-		Method:  requestpb.Request_HTTP_REDIRECT,
+		Method:  requestpb.RedirectionMethod_HTTP_REDIRECT,
 	}
 	if r.Ext == "" || r.Path == "" {
 		return nil, request.ErrBadRequest

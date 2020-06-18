@@ -9,6 +9,31 @@ option java_outer_classname = "RequestProto";
 option java_multiple_files = true;
 option go_package = "github.com/hazaelsan/ssh-relay/cookie-server/proto/v1/request_go_proto";
 
+// The redirection method to use for request responses, only semantically
+// meaningful for version 2 responses -- version 1 responses always use HTTP
+// redirection.
+// There is no meaningful zero-value -- version 2 requests MUST explicitly
+// specify a redirection method.
+enum RedirectionMethod {
+  // No redirection method specified, not a valid value.
+  REDIRECTION_METHOD_UNSPECIFIED = 0;
+
+  // The redirection method used for version 1 requests.
+  // This is not a valid version 2 method, but is included here to make it
+  // simpler to express version 1 requests.
+  HTTP_REDIRECT = 1;
+
+  // Direct method, returns a JSON response with an XSSI header.  Requires
+  // clients to perform their own redirection.
+  DIRECT = 2;
+
+  // JavaScript redirection, generates an HTML document that will redirect
+  // clients to a base64-encoded JSON response.
+  JS_REDIRECT = 3;
+
+  reserved 4 to max;  // Next ID.
+}
+
 // A normalized /cookie request, see
 // https://chromium.googlesource.com/apps/libapps/+/HEAD/nassh/doc/relay-protocol.md#corp-relay-cookie
 // for the protocol specification.
@@ -26,27 +51,9 @@ message Request {
   // NOTE: Version 1 is deprecated.
   int32 version = 3;
 
-  // The redirection method to use for request responses, only semantically
-  // meaningful for version 2 responses -- version 1 responses always use HTTP
-  // redirection.
-  // There is no meaningful zero-value -- version 2 requests MUST explicitly
-  // specify a redirection method.
-  enum RedirectionMethod {
-    // The redirection method used for version 1 requests.
-    // This is not a valid version 2 method, but is included here to make it
-    // simpler to express version 1 requests.
-    HTTP_REDIRECT = 0;
-
-    // Direct method, returns a JSON response with an XSSI header.  Requires
-    // clients to perform their own redirection.
-    DIRECT = 1;
-
-    // JavaScript redirection, generates an HTML document that will redirect
-    // clients to a base64-encoded JSON response.
-    JS_REDIRECT = 2;
-  }
-
   // The redirection method to use for request responses.
   // Required for version 2 requests, forbidden for version 1 requests.
   RedirectionMethod method = 4;
+
+  reserved 5 to max;  // Next ID.
 }

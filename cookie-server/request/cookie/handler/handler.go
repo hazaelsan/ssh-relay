@@ -55,11 +55,11 @@ type Handler struct {
 // Handle processes the /cookie HTTP request, redirecting clients according to the configured method.
 func (h *Handler) Handle() error {
 	switch h.req.Method {
-	case requestpb.Request_HTTP_REDIRECT:
+	case requestpb.RedirectionMethod_HTTP_REDIRECT:
 		return h.redirectHTTP()
-	case requestpb.Request_DIRECT:
+	case requestpb.RedirectionMethod_DIRECT:
 		return h.redirectXSSI()
-	case requestpb.Request_JS_REDIRECT:
+	case requestpb.RedirectionMethod_JS_REDIRECT:
 		return h.redirectJS()
 	default:
 		return fmt.Errorf("bad redirection method: %v", h.req.Method)
