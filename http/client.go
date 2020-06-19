@@ -19,7 +19,7 @@ func NewClient(cfg *httppb.HttpTransport) (*http.Client, error) {
 	}
 	tlsCfg, err := tls.ClientConfig(cfg.TlsConfig)
 	if err != nil {
-		return nil, fmt.Errorf("tls.Config() error: %v", err)
+		return nil, fmt.Errorf("tls.Config() error: %w", err)
 	}
 	t := &http.Transport{
 		TLSClientConfig:        tlsCfg,
@@ -29,7 +29,7 @@ func NewClient(cfg *httppb.HttpTransport) (*http.Client, error) {
 		&t.ResponseHeaderTimeout: cfg.ResponseHeaderTimeout,
 	} {
 		if err := duration.FromProto(dst, src); err != nil {
-			return nil, fmt.Errorf("duration.FromProto(%v, %v) error: %v", dst, src, err)
+			return nil, fmt.Errorf("duration.FromProto(%v, %v) error: %w", dst, src, err)
 		}
 	}
 	c := new(http.Client)
