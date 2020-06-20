@@ -15,7 +15,7 @@ functionality.
 
 * **NEW:** Supports the `corp-relay-v4@google.com` version of the Relay Protocol.
 * Supports client/server version 2 of the Cookie Protocol.
-  * Version 1 is supported by the SSH Relay, though this version is deprecated.
+  * Version 1 is supported by the Cookie Server, though this version is deprecated.
 * Supports WebSockets for the SSH transport (via `/connect`).
   * The older XHR-based method (via `/read` and `/write`) is NOT supported.
 * Configuration is done almost entirely via [protobuf messages](https://developers.google.com/protocol-buffers/).
