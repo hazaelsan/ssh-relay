@@ -25,7 +25,7 @@ func loadConfig(s string) (*pb.Config, error) {
 	}
 	cfg := new(pb.Config)
 	if err := proto.UnmarshalText(string(buf), cfg); err != nil {
-		glog.Exit(err)
+		return err
 	}
 	if cfg.ServerOptions == nil {
 		return nil, errors.New("server_options must be set")
@@ -45,7 +45,7 @@ func loadConfig(s string) (*pb.Config, error) {
 func main() {
 	flag.Parse()
 	if *cfgFile == "" {
-		glog.Exitf("--config must be set")
+		glog.Exit("--config must be set")
 	}
 	cfg, err := loadConfig(*cfgFile)
 	if err != nil {
