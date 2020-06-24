@@ -25,7 +25,7 @@ func loadConfig(s string) (*pb.Config, error) {
 	}
 	cfg := new(pb.Config)
 	if err := proto.UnmarshalText(string(buf), cfg); err != nil {
-		return err
+		return nil, err
 	}
 	if cfg.ServerOptions == nil {
 		return nil, errors.New("server_options must be set")
