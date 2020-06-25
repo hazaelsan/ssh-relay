@@ -83,7 +83,7 @@ func wsReq(url string) (int, []byte, error) {
 	ws, resp, err := websocket.DefaultDialer.Dial(url, hdr)
 	if err != nil {
 		if b, respErr := ioutil.ReadAll(resp.Body); respErr == nil {
-			return 0, nil, fmt.Errorf("%v: %v", err, string(b))
+			return 0, nil, fmt.Errorf("%w: %v", err, string(b))
 		}
 		return 0, nil, err
 	}

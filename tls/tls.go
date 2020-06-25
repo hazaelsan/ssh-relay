@@ -64,9 +64,9 @@ func Config(cfg *pb.TlsConfig) (*tls.Config, error) {
 	return c, nil
 }
 
-// ClientConfig creates a *tls.Config directive from a proto message,
+// CertConfig creates a *tls.Config directive from a proto message,
 // loading an X.509 certificate from the cert/key files specified.
-func ClientConfig(cfg *pb.TlsConfig) (*tls.Config, error) {
+func CertConfig(cfg *pb.TlsConfig) (*tls.Config, error) {
 	c, err := Config(cfg)
 	if err != nil {
 		return nil, err
@@ -89,10 +89,10 @@ func loadCerts(certs []string) (*x509.CertPool, error) {
 	for _, f := range certs {
 		b, err := ioutil.ReadFile(f)
 		if err != nil {
-			return nil, fmt.Errorf("ReadFile(%v) error: %v", f, err)
+			return nil, fmt.Errorf("ReadFile(%v) error: %w", f, err)
 		}
 		if !pool.AppendCertsFromPEM(b) {
-			return nil, fmt.Errorf("AppendCertsFromPEM(%v) failed", err)
+			return nil, fmt.Errorf("AppendCertsFromPEM() error: %w", err)
 		}
 	}
 	return pool, nil

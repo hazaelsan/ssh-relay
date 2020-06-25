@@ -135,7 +135,7 @@ func TestConfig(t *testing.T) {
 	}
 }
 
-func TestClientConfig(t *testing.T) {
+func TestCertConfig(t *testing.T) {
 	tests := []struct {
 		cfg      *pb.TlsConfig
 		want     *tls.Config
@@ -170,15 +170,15 @@ func TestClientConfig(t *testing.T) {
 		},
 	}
 	for i, tt := range tests {
-		got, err := ClientConfig(tt.cfg)
+		got, err := CertConfig(tt.cfg)
 		if err != nil {
 			if tt.ok {
-				t.Errorf("ClientConfig(%v) error = %v", i, err)
+				t.Errorf("CertConfig(%v) error = %v", i, err)
 			}
 			continue
 		}
 		if !tt.ok {
-			t.Errorf("ClientConfig(%v) error = nil", i)
+			t.Errorf("CertConfig(%v) error = nil", i)
 		}
 
 		var names []string
@@ -210,7 +210,7 @@ func TestClientConfig(t *testing.T) {
 		got.NameToCertificate = nil
 
 		if diff := pretty.Compare(got, tt.want); diff != "" {
-			t.Errorf("ClientConfig(%v) diff (-got +want):\n%v", i, diff)
+			t.Errorf("CertConfig(%v) diff (-got +want):\n%v", i, diff)
 		}
 	}
 }

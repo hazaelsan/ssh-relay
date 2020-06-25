@@ -54,7 +54,7 @@ func NewServer(cfg *httppb.HttpServerOptions) (*Server, error) {
 	}
 	tlsConfig, err := tls.Config(cfg.TlsConfig)
 	if err != nil {
-		return nil, fmt.Errorf("tls.Config() error: %v", err)
+		return nil, fmt.Errorf("tls.Config() error: %w", err)
 	}
 	mux := http.NewServeMux()
 	server := &http.Server{
@@ -70,7 +70,7 @@ func NewServer(cfg *httppb.HttpServerOptions) (*Server, error) {
 		&server.IdleTimeout:       cfg.HttpServer.IdleTimeout,
 	} {
 		if err := duration.FromProto(dst, src); err != nil {
-			return nil, fmt.Errorf("duration.FromProto(%v, %v) error: %v", dst, src, err)
+			return nil, fmt.Errorf("duration.FromProto(%v, %v) error: %w", dst, src, err)
 		}
 	}
 	s := &Server{
@@ -106,5 +106,6 @@ func (s *Server) HandleFunc(pattern string, handler HandlerFunc) {
 
 // Run starts the HTTPS server.
 func (s *Server) Run() error {
+	glog.V(4).Infof("HTTP server listening on %v", s.server.Addr)
 	return s.server.ListenAndServeTLS(s.cfg.TlsConfig.CertFile, s.cfg.TlsConfig.KeyFile)
 }

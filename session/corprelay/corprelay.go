@@ -127,11 +127,11 @@ func (s *Session) runSSH(errc chan<- error) {
 
 			w, err := s.ws.NextWriter(websocket.BinaryMessage)
 			if err != nil {
-				return fmt.Errorf("NextWriter() error: %v", err)
+				return fmt.Errorf("NextWriter() error: %w", err)
 			}
 			defer w.Close()
 			if err := writeAck(w, s.c); err != nil {
-				return fmt.Errorf("writeAck(%v) error: %v", s.c, err)
+				return fmt.Errorf("writeAck(%v) error: %w", s.c, err)
 			}
 			return s.copySSH(w, data)
 		}()
@@ -156,7 +156,7 @@ func (s *Session) runWS(errc chan<- error) {
 	for {
 		t, r, err := s.ws.NextReader()
 		if err != nil {
-			errc <- fmt.Errorf("NextReader() error: %v", err)
+			errc <- fmt.Errorf("NextReader() error: %w", err)
 			return
 		}
 
@@ -180,7 +180,7 @@ func (s *Session) runWS(errc chan<- error) {
 // parseBinary handles a ws->ssh message.
 func (s *Session) parseBinary(r io.Reader) error {
 	if _, err := readAck(r); err != nil {
-		return fmt.Errorf("readAck() error: %v", err)
+		return fmt.Errorf("readAck() error: %w", err)
 	}
 	return s.copyWS(r)
 }
@@ -215,7 +215,7 @@ func (s *Session) copyWS(r io.Reader) error {
 func readAck(r io.Reader) (uint32, error) {
 	b := make([]byte, AckByteSize)
 	if _, err := io.ReadFull(r, b); err != nil {
-		return 0, fmt.Errorf("ReadFull() error: %v", err)
+		return 0, fmt.Errorf("ReadFull() error: %w", err)
 	}
 	ack := binary.BigEndian.Uint32(b)
 	if ack > ChunkSize {

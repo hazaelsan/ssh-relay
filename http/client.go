@@ -17,9 +17,9 @@ func NewClient(cfg *httppb.HttpTransport) (*http.Client, error) {
 	if cfg.TlsConfig == nil {
 		return http.DefaultClient, nil
 	}
-	tlsCfg, err := tls.ClientConfig(cfg.TlsConfig)
+	tlsCfg, err := tls.CertConfig(cfg.TlsConfig)
 	if err != nil {
-		return nil, fmt.Errorf("tls.Config() error: %w", err)
+		return nil, fmt.Errorf("tls.CertConfig() error: %w", err)
 	}
 	t := &http.Transport{
 		TLSClientConfig:        tlsCfg,
