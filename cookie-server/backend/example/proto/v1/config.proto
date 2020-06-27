@@ -1,0 +1,20 @@
+syntax = "proto3";
+
+package hazaelsan.ssh_relay.cookie_server.backend.example.v1;
+
+import "google/api/field_behavior.proto";
+import "proto/v1/grpc.proto";
+
+option java_package = "net.hazael.sshrelay.cookieserver.backend.example.v1";
+option java_outer_classname = "ConfigProto";
+option java_multiple_files = true;
+option go_package = "github.com/hazaelsan/ssh-relay/cookie-server/backend/example/proto/v1/config_go_proto";
+
+// Configuration settings for the Cookie Server gRPC example backend.
+message Config {
+  // gRPC settings for setting up connections.
+  hazaelsan.ssh_relay.v1.GrpcOptions grpc_options = 1
+	  [(google.api.field_behavior) = REQUIRED];
+
+  reserved 2 to max;  // Next ID.
+}

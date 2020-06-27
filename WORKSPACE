@@ -56,7 +56,7 @@ go_rules_dependencies()
 
 go_register_toolchains()
 
-load("@bazel_gazelle//:deps.bzl", "gazelle_dependencies")
+load("@bazel_gazelle//:deps.bzl", "gazelle_dependencies", "go_repository")
 
 gazelle_dependencies()
 
@@ -114,4 +114,28 @@ http_archive(
     sha256 = "a07edfa7b01c277196479e1ec51b92b416f2935c049f96917632e9c000e146f8",
     strip_prefix = "godebug-1.1.0",
     url = "https://github.com/kylelemons/godebug/archive/v1.1.0.zip",
+)
+
+go_repository(
+    name = "org_golang_google_grpc",
+    importpath = "google.golang.org/grpc",
+    tag = "v1.29.1",
+)
+
+go_repository(
+    name = "org_golang_x_net",
+    commit = "627f964",
+    importpath = "golang.org/x/net",
+)
+
+go_repository(
+    name = "org_golang_x_sys",
+    commit = "f1bc736",
+    importpath = "golang.org/x/sys",
+)
+
+go_repository(
+    name = "org_golang_x_text",
+    importpath = "golang.org/x/text",
+    tag = "v0.3.3",
 )

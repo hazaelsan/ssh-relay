@@ -14,18 +14,18 @@ cookie_server_address: "cookie-server.example.org:8022"
 # Settings for talking to the Cookie Server.
 cookie_server_transport {
   tls_config {
-    cert_file: "/etc/ssh-relay-helper/cs_client.crt"
-    key_file: "/etc/ssh-relay-helper/cs_client.key"
-    root_ca_certs: "/etc/ssh-relay-helper/cs_ca.crt"
+    cert_file: "/etc/ssh-relay-helper/cookie-server-client.crt"
+    key_file: "/etc/ssh-relay-helper/cookie-server-client.key"
+    root_ca_certs: "/etc/ssh-relay-helper/ca.crt"
   }
 }
 
 # Optionally use different settings to talk to the SSH Relay.
 ssh_relay_transport {
   tls_config {
-    cert_file: "/etc/ssh-relay-helper/relay_client.crt"
-    key_file: "/etc/ssh-relay-helper/relay_client.key"
-    root_ca_certs: "/etc/ssh-relay-helper/relay_ca.crt"
+    cert_file: "/etc/ssh-relay-helper/ssh-relay-client.crt"
+    key_file: "/etc/ssh-relay-helper/ssh-relay-client.key"
+    root_ca_certs: "/etc/ssh-relay-helper/ca.crt"
   }
 }
 

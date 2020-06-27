@@ -1,0 +1,17 @@
+# Example configuration for the example Cookie Server gRPC backend.
+#
+# Example usage:
+#   $ bazel run //cookie-server/backend/example -- --logtostderr \
+#     --config=$(bazel info workspace)/examples/cookie-server-backend.textproto
+
+grpc_options {
+  port: "8023"
+  tls_config {
+    # SSL (in PEM format).
+    cert_file: "/etc/ssh-relay/cookie-server-backend.crt"
+    key_file: "/etc/ssh-relay/cookie-server-backend.key"
+
+    # Root CA certificate to use for validating frontend certs.
+    client_ca_certs: "/etc/ssh-relay/ca.crt"
+  }
+}

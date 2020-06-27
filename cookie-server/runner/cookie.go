@@ -17,7 +17,7 @@ func (r *Runner) handleCookie(w http.ResponseWriter, req *http.Request) {
 		return
 	}
 
-	h, err := handler.New(r.cfg, cr, w, req)
+	h, err := handler.New(r.c, r.cfg, cr, w, req)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return

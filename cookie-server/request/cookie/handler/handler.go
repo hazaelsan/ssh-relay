@@ -2,6 +2,7 @@
 package handler
 
 import (
+	"context"
 	"fmt"
 	"html/template"
 	"net/http"
@@ -13,6 +14,7 @@ import (
 
 	configpb "github.com/hazaelsan/ssh-relay/cookie-server/proto/v1/config_go_proto"
 	requestpb "github.com/hazaelsan/ssh-relay/cookie-server/proto/v1/request_go_proto"
+	servicepb "github.com/hazaelsan/ssh-relay/cookie-server/proto/v1/service_go_proto"
 	cookiepb "github.com/hazaelsan/ssh-relay/proto/v1/cookie_go_proto"
 )
 
@@ -30,8 +32,9 @@ const (
 )
 
 // New creates a *Handler for an HTTP request.
-func New(cfg *configpb.Config, req *requestpb.Request, w http.ResponseWriter, r *http.Request) (*Handler, error) {
+func New(c servicepb.CookieServerClient, cfg *configpb.Config, req *requestpb.Request, w http.ResponseWriter, r *http.Request) (*Handler, error) {
 	h := &Handler{
+		c:   c,
 		cfg: cfg,
 		req: req,
 		w:   w,
@@ -45,6 +48,7 @@ func New(cfg *configpb.Config, req *requestpb.Request, w http.ResponseWriter, r 
 
 // A Handler is an HTTP handler for /cookie requests.
 type Handler struct {
+	c      servicepb.CookieServerClient
 	cfg    *configpb.Config
 	req    *requestpb.Request
 	maxAge time.Duration
@@ -54,6 +58,10 @@ type Handler struct {
 
 // Handle processes the /cookie HTTP request, redirecting clients according to the configured method.
 func (h *Handler) Handle() error {
+	req := &servicepb.AuthorizeRequest{Request: h.req}
+	if _, err := h.c.Authorize(context.TODO(), req); err != nil {
+		return fmt.Errorf("Authorize(%v) error: %w", req, err)
+	}
 	switch h.req.Method {
 	case requestpb.RedirectionMethod_HTTP_REDIRECT:
 		return h.redirectHTTP()

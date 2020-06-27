@@ -9,6 +9,7 @@ go_library(
     deps = [
         "//cookie-server/proto/v1:config_go_proto",
         "//cookie-server/proto/v1:request_go_proto",
+        "//cookie-server/proto/v1:service_go_proto",
         "//duration",
         "//proto/v1:cookie_go_proto",
         "//response",

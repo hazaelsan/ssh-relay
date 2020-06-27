@@ -2,7 +2,9 @@ syntax = "proto3";
 
 package hazaelsan.ssh_relay.cookie_server.v1;
 
+import "google/api/field_behavior.proto";
 import "proto/v1/cookie.proto";
+import "proto/v1/grpc.proto";
 import "proto/v1/http.proto";
 
 option java_package = "net.hazael.sshrelay.cookieserver.v1";
@@ -26,5 +28,8 @@ message Config {
   // The settings for the origin cookie.
   hazaelsan.ssh_relay.v1.Cookie origin_cookie = 3;
 
-  reserved 4 to max;  // Next ID.
+  // gRPC settings for connecting to the gRPC backend.
+  hazaelsan.ssh_relay.v1.GrpcOptions grpc_options = 4 [(google.api.field_behavior) = REQUIRED];
+
+  reserved 5 to max;  // Next ID.
 }

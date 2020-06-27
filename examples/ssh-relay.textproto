@@ -14,8 +14,8 @@ server_options {
   # Inbound SSL/TLS settings.
   tls_config {
     # SSL (in PEM format).
-    cert_file: "/etc/ssh-relay/server.crt"
-    key_file: "/etc/ssh-relay/server.key"
+    cert_file: "/etc/ssh-relay/ssh-relay.crt"
+    key_file: "/etc/ssh-relay/ssh-relay.key"
 
     # Root CA certificate to use for validating client certs.
     client_ca_certs: "/etc/ssh-relay/ca.crt"

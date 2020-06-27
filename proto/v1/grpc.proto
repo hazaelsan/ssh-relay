@@ -1,0 +1,28 @@
+syntax = "proto3";
+
+package hazaelsan.ssh_relay.v1;
+
+import "google/api/field_behavior.proto";
+import "proto/v1/tls.proto";
+
+option java_package = "net.hazael.sshrelay.v1";
+option java_outer_classname = "GrpcProto";
+option java_multiple_files = true;
+option go_package = "github.com/hazaelsan/ssh-relay/proto/v1/grpc_go_proto";
+
+// Configuration settings for gRPC clients/servers.
+message GrpcOptions {
+  // The address to use for requests, defaults to the unspecified address.
+  // This field is required for clients.
+  // Refer to https://github.com/grpc/grpc/blob/master/doc/naming.md for
+  // alternative name resolution methods for clients.
+  string addr = 1;
+
+  // The port to use for requests, in numeric or symbolic form.
+  string port = 2 [(google.api.field_behavior) = REQUIRED];
+
+  // SSL/TLS settings, see https://golang.org/pkg/crypto/tls/#Config.
+  TlsConfig tls_config = 3 [(google.api.field_behavior) = REQUIRED];
+
+  reserved 4 to max;  // Next ID.
+}

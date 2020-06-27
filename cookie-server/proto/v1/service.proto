@@ -1,0 +1,32 @@
+syntax = "proto3";
+
+import "cookie-server/proto/v1/request.proto";
+import "google/api/field_behavior.proto";
+
+package hazaelsan.ssh_relay.cookie_server.v1;
+
+option java_package = "net.hazael.sshrelay.cookieserver.v1";
+option java_outer_classname = "ServiceProto";
+option java_multiple_files = true;
+option go_package = "github.com/hazaelsan/ssh-relay/cookie-server/proto/v1/service_go_proto";
+
+// A service for authenticating/authorizing /cookie requests before forwarding
+// them to an SSH relay, see
+// https://chromium.googlesource.com/apps/libapps/+/HEAD/nassh/doc/relay-protocol.md#corp-relay-cookie
+// for the /cookie protocol.
+service CookieServer {
+  // Performs authentication/authorization of a client.
+  rpc Authorize(AuthorizeRequest) returns (AuthorizeResponse);
+}
+
+// A request for authenticating/authorizing a /cookie request.
+message AuthorizeRequest {
+  // The normalized /cookie request from the client.
+  Request request = 1 [(google.api.field_behavior) = REQUIRED];
+
+  reserved 2 to max;  // Next ID.
+}
+
+// A response for a /cookie authorization request.
+// TODO: Relay selection should be handled by this service.
+message AuthorizeResponse {}

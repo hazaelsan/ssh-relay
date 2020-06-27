@@ -14,8 +14,8 @@ server_options {
   # Inbound SSL/TLS settings.
   tls_config {
     # SSL (in PEM format).
-    cert_file: "/etc/ssh-relay/server.crt"
-    key_file: "/etc/ssh-relay/server.key"
+    cert_file: "/etc/ssh-relay/cookie-server-frontend.crt"
+    key_file: "/etc/ssh-relay/cookie-server-frontend.key"
 
     # Root CA certificate to use for validating client certs.
     client_ca_certs: "/etc/ssh-relay/ca.crt"
@@ -35,4 +35,21 @@ origin_cookie {
   domain: ".example.org"
   max_age { seconds: 86400 }  # 24 hours
   path: "/"
+}
+
+# Settings for connecting to the gRPC backend.
+grpc_options {
+  addr: "cookie-server-backend.example.org"
+  port: "8023"
+  tls_config {
+    # SSL (in PEM format).
+    cert_file: "/etc/ssh-relay/cookie-server-frontend.crt"
+    key_file: "/etc/ssh-relay/cookie-server-frontend.key"
+
+    # Root CA certificate to use for validating client certs.
+    root_ca_certs: "/etc/ssh-relay/ca.crt"
+
+    # Require valid client certs.
+    client_auth_type: REQUIRE_AND_VERIFY_CLIENT_CERT
+}
 }
