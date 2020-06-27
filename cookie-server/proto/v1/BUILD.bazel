@@ -2,7 +2,7 @@ load("@rules_proto//proto:defs.bzl", "proto_library")
 
 package(default_visibility = ["//visibility:public"])
 
-load("@io_bazel_rules_go//proto:def.bzl", "go_grpc_library", "go_proto_library")
+load("@io_bazel_rules_go//proto:def.bzl", "go_proto_library")
 
 proto_library(
     name = "config_proto",
@@ -11,8 +11,7 @@ proto_library(
         "//proto/v1:cookie_proto",
         "//proto/v1:grpc_proto",
         "//proto/v1:http_proto",
-        "@com_github_googleapis_googleapis//google/api:field_behavior_proto",
-        "@com_google_protobuf//:duration_proto",
+        "@go_googleapis//google/api:annotations_proto",
     ],
 )
 
@@ -24,21 +23,21 @@ go_proto_library(
         "//proto/v1:cookie_go_proto",
         "//proto/v1:grpc_go_proto",
         "//proto/v1:http_go_proto",
-        "@com_github_googleapis_googleapis//google/api:annotations_go_proto",
+        "@go_googleapis//google/api:annotations_go_proto",
     ],
 )
 
 proto_library(
     name = "request_proto",
     srcs = ["request.proto"],
-    deps = ["@com_github_googleapis_googleapis//google/api:field_behavior_proto"],
+    deps = ["@go_googleapis//google/api:annotations_proto"],
 )
 
 go_proto_library(
     name = "request_go_proto",
     importpath = "github.com/hazaelsan/ssh-relay/cookie-server/proto/v1/request_go_proto",
     proto = ":request_proto",
-    deps = ["@com_github_googleapis_googleapis//google/api:annotations_go_proto"],
+    deps = ["@go_googleapis//google/api:annotations_go_proto"],
 )
 
 proto_library(
@@ -46,16 +45,17 @@ proto_library(
     srcs = ["service.proto"],
     deps = [
         ":request_proto",
-        "@com_github_googleapis_googleapis//google/api:field_behavior_proto",
+        "@go_googleapis//google/api:annotations_proto",
     ],
 )
 
-go_grpc_library(
+go_proto_library(
     name = "service_go_proto",
+    compilers = ["@io_bazel_rules_go//proto:go_grpc"],
     importpath = "github.com/hazaelsan/ssh-relay/cookie-server/proto/v1/service_go_proto",
     proto = ":service_proto",
     deps = [
         ":request_go_proto",
-        "@com_github_googleapis_googleapis//google/api:annotations_go_proto",
+        "@go_googleapis//google/api:annotations_go_proto",
     ],
 )
