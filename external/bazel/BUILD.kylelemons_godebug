@@ -14,3 +14,19 @@ go_test(
     srcs = glob(["diff/diff_test.go"]),
     embed = [":diff"],
 )
+
+go_library(
+    name = "pretty",
+    srcs = glob(
+        ["pretty/*.go"],
+        exclude = ["**/*_test.go"],
+    ),
+    importpath = "github.com/kylelemons/godebug/pretty",
+    deps = [":diff"],
+)
+
+go_test(
+    name = "pretty_test",
+    srcs = glob(["pretty/*_test.go"]),
+    embed = [":pretty"],
+)

@@ -18,6 +18,6 @@ go_test(
     embed = [":connect"],
     deps = [
         "@com_github_google_uuid//:uuid",
-        "@com_github_kylelemons_pretty//:pretty",
+        "@com_github_kylelemons_godebug//:pretty",
     ],
 )

@@ -17,7 +17,7 @@ go_test(
     srcs = ["duration_test.go"],
     embed = [":duration"],
     deps = [
-        "@com_github_kylelemons_pretty//:pretty",
+        "@com_github_kylelemons_godebug//:pretty",
         "@io_bazel_rules_go//proto/wkt:duration_go_proto",
     ],
 )

@@ -37,6 +37,6 @@ go_test(
         "//session",
         "@com_github_google_uuid//:uuid",
         "@com_github_gorilla_websocket//:websocket",
-        "@com_github_kylelemons_pretty//:pretty",
+        "@com_github_kylelemons_godebug//:pretty",
     ],
 )

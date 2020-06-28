@@ -86,7 +86,7 @@ http_archive(
 
 http_archive(
     name = "com_github_google_uuid",
-    build_file = "bazel/BUILD.uuid",
+    build_file = "bazel/BUILD.google_uuid",
     sha256 = "b2041c5847c227bb5feee5fa5aaa32736e094a2d26357e66fcc5cc405c36386a",
     strip_prefix = "uuid-1.1.1",
     urls = ["https://github.com/google/uuid/archive/v1.1.1.zip"],
@@ -94,23 +94,15 @@ http_archive(
 
 http_archive(
     name = "com_github_gorilla_websocket",
-    build_file = "bazel/BUILD.websocket",
+    build_file = "bazel/BUILD.gorilla_websocket",
     sha256 = "335a84a456112cce890d00ec82e59cfe5a07581f53bd0b9284d21714d0527bc1",
     strip_prefix = "websocket-1.4.2",
     urls = ["https://github.com/gorilla/websocket/archive/v1.4.2.zip"],
 )
 
 http_archive(
-    name = "com_github_kylelemons_diff",
-    build_file = "bazel/BUILD.godebug_diff",
-    sha256 = "a07edfa7b01c277196479e1ec51b92b416f2935c049f96917632e9c000e146f8",
-    strip_prefix = "godebug-1.1.0",
-    url = "https://github.com/kylelemons/godebug/archive/v1.1.0.zip",
-)
-
-http_archive(
-    name = "com_github_kylelemons_pretty",
-    build_file = "bazel/BUILD.godebug_pretty",
+    name = "com_github_kylelemons_godebug",
+    build_file = "bazel/BUILD.kylelemons_godebug",
     sha256 = "a07edfa7b01c277196479e1ec51b92b416f2935c049f96917632e9c000e146f8",
     strip_prefix = "godebug-1.1.0",
     url = "https://github.com/kylelemons/godebug/archive/v1.1.0.zip",

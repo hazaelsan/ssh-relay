@@ -18,6 +18,6 @@ go_test(
     embed = [":cookie"],
     deps = [
         "//cookie-server/proto/v1:request_go_proto",
-        "@com_github_kylelemons_pretty//:pretty",
+        "@com_github_kylelemons_godebug//:pretty",
     ],
 )

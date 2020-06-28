@@ -12,5 +12,5 @@ go_test(
     name = "command_test",
     srcs = ["command_test.go"],
     embed = [":command"],
-    deps = ["@com_github_kylelemons_pretty//:pretty"],
+    deps = ["@com_github_kylelemons_godebug//:pretty"],
 )

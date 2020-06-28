@@ -28,7 +28,7 @@ go_test(
     deps = [
         "//proto/v1:http_go_proto",
         "//proto/v1:tls_go_proto",
-        "@com_github_kylelemons_pretty//:pretty",
+        "@com_github_kylelemons_godebug//:pretty",
         "@io_bazel_rules_go//proto/wkt:duration_go_proto",
     ],
 )
@@ -41,7 +41,7 @@ go_test(
     deps = [
         "//proto/v1:http_go_proto",
         "//proto/v1:tls_go_proto",
-        "@com_github_kylelemons_pretty//:pretty",
+        "@com_github_kylelemons_godebug//:pretty",
         "@io_bazel_rules_go//proto/wkt:duration_go_proto",
     ],
 )
