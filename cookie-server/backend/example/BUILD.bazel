@@ -1,4 +1,4 @@
-load("@io_bazel_rules_go//go:def.bzl", "go_binary")
+load("@io_bazel_rules_go//go:def.bzl", "go_binary", "go_library")
 
 package(default_visibility = ["//cookie-server:__subpackages__"])
 
@@ -6,8 +6,8 @@ go_binary(
     name = "example",
     srcs = ["example.go"],
     deps = [
-        "//cookie-server/proto/v1:service_go_proto",
         "//cookie-server/backend/example/proto/v1:config_go_proto",
+        "//cookie-server/proto/v1:service_go_proto",
         "//tls",
         "@com_github_golang_glog//:glog",
         "@com_github_golang_protobuf//proto:go_default_library",
