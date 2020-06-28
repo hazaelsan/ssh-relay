@@ -1,0 +1,8 @@
+load("@bazel_gazelle//:def.bzl", "gazelle")
+
+# gazelle:prefix github.com/hazaelsan/ssh-relay
+# gazelle:proto package
+# gazelle:proto_group go_package
+# gazelle:resolve go github.com/kylelemons/diff @com_github_kylelemons_godebug//:diff
+# gazelle:resolve go github.com/kylelemons/pretty @com_github_kylelemons_godebug//:pretty
+gazelle(name = "gazelle")

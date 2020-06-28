@@ -8,7 +8,7 @@ go_binary(
     deps = [
         "//relay/proto/v1:config_go_proto",
         "//relay/runner",
-        "@com_github_golang_glog//:glog",
+        "@com_github_golang_glog//:go_default_library",
         "@com_github_golang_protobuf//proto:go_default_library",
     ],
 )

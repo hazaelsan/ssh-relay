@@ -15,7 +15,7 @@ go_library(
         "//duration",
         "//proto/v1:http_go_proto",
         "//tls",
-        "@com_github_golang_glog//:glog",
+        "@com_github_golang_glog//:go_default_library",
         "@io_bazel_rules_go//proto/wkt:duration_go_proto",
     ],
 )

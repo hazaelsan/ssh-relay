@@ -1,7 +1,7 @@
 load("@io_bazel_rules_go//go:def.bzl", "go_library", "go_test")
 
 go_library(
-    name = "uuid",
+    name = "go_default_library",
     srcs = glob(
         ["*.go"],
         exclude = ["*_test.go"],
@@ -11,7 +11,7 @@ go_library(
 )
 
 go_test(
-    name = "uuid_test",
+    name = "go_default_test",
     srcs = glob(["*_test.go"]),
-    embed = [":uuid"],
+    embed = [":go_default_library"],
 )

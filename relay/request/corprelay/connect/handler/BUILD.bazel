@@ -11,6 +11,6 @@ go_library(
         "//relay/request",
         "//relay/request/corprelay/connect",
         "//session",
-        "@com_github_gorilla_websocket//:websocket",
+        "@com_github_gorilla_websocket//:go_default_library",
     ],
 )

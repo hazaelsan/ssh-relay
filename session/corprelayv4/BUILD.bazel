@@ -9,9 +9,9 @@ go_library(
     deps = [
         "//session",
         "//session/corprelayv4/command",
-        "@com_github_golang_glog//:glog",
-        "@com_github_google_uuid//:uuid",
-        "@com_github_gorilla_websocket//:websocket",
+        "@com_github_golang_glog//:go_default_library",
+        "@com_github_google_uuid//:go_default_library",
+        "@com_github_gorilla_websocket//:go_default_library",
     ],
 )
 
