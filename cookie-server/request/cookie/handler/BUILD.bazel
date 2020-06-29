@@ -26,6 +26,6 @@ go_test(
         "//cookie-server/proto/v1:request_go_proto",
         "//proto/v1:cookie_go_proto",
         "//response",
-        "@com_github_kylelemons_godebug//:pretty",
+        "@com_github_kylelemons_godebug//pretty:go_default_library",
     ],
 )

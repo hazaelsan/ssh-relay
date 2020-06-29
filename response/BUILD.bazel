@@ -12,5 +12,5 @@ go_test(
     name = "response_test",
     srcs = ["response_test.go"],
     embed = [":response"],
-    deps = ["@com_github_kylelemons_godebug//:pretty"],
+    deps = ["@com_github_kylelemons_godebug//pretty:go_default_library"],
 )
