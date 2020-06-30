@@ -10,8 +10,5 @@ require (
 	github.com/googleapis/googleapis v0.0.0-20200626212039-7c577e89f1c8 // indirect
 	github.com/gorilla/websocket v1.4.2 // indirect
 	github.com/kylelemons/godebug v1.1.0 // indirect
-	golang.org/x/net v0.0.0-20200625001655-4c5254603344 // indirect
-	golang.org/x/sys v0.0.0-20200625212154-ddb9806d33ae // indirect
-	golang.org/x/text v0.3.3 // indirect
 	google.golang.org/grpc v1.30.0 // indirect
 )
