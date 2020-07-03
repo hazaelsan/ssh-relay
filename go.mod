@@ -10,6 +10,6 @@ require (
 	github.com/google/uuid v1.1.1
 	github.com/googleapis/googleapis v0.0.0-20200626212039-7c577e89f1c8 // indirect
 	github.com/gorilla/websocket v1.4.2
-	github.com/kylelemons/godebug v1.1.0 // indirect
-	google.golang.org/grpc v1.30.0 // indirect
+	github.com/kylelemons/godebug v1.1.0
+	google.golang.org/grpc v1.30.0
 )
