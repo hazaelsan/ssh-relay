@@ -22,7 +22,7 @@ func (r *Runner) handleCookie(w http.ResponseWriter, req *http.Request) {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
-	if err := h.Handle(); err != nil {
+	if err := h.Handle(req.Context()); err != nil {
 		glog.Error(err)
 	}
 }

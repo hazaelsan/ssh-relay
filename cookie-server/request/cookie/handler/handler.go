@@ -57,9 +57,9 @@ type Handler struct {
 }
 
 // Handle processes the /cookie HTTP request, redirecting clients according to the configured method.
-func (h *Handler) Handle() error {
+func (h *Handler) Handle(ctx context.Context) error {
 	req := &servicepb.AuthorizeRequest{Request: h.req}
-	if _, err := h.c.Authorize(context.TODO(), req); err != nil {
+	if _, err := h.c.Authorize(ctx, req); err != nil {
 		return fmt.Errorf("Authorize(%v) error: %w", req, err)
 	}
 	switch h.req.Method {
