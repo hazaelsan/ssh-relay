@@ -9,7 +9,6 @@ import (
 )
 
 // handleCookie services /cookie requests.
-// TODO: Implement actual client authnz.
 func (r *Runner) handleCookie(w http.ResponseWriter, req *http.Request) {
 	cr, err := cookie.New(req)
 	if err != nil {
