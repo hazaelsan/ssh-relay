@@ -3,6 +3,7 @@ package handler
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"html/template"
 	"net/http"
@@ -11,6 +12,7 @@ import (
 	"github.com/golang/glog"
 	"github.com/hazaelsan/ssh-relay/duration"
 	"github.com/hazaelsan/ssh-relay/response"
+	"google.golang.org/grpc/status"
 
 	configpb "github.com/hazaelsan/ssh-relay/cookie-server/proto/v1/config_go_proto"
 	requestpb "github.com/hazaelsan/ssh-relay/cookie-server/proto/v1/request_go_proto"
@@ -29,6 +31,11 @@ const (
 	</head>
 	<body></body>
 </html>`
+)
+
+var (
+	errBadMethod  = errors.New("bad redirection method")
+	errNoRedirect = errors.New("no redirect in response")
 )
 
 // New creates a *Handler for an HTTP request.
@@ -59,24 +66,26 @@ type Handler struct {
 // Handle processes the /cookie HTTP request, redirecting clients according to the configured method.
 func (h *Handler) Handle(ctx context.Context) error {
 	req := &servicepb.AuthorizeRequest{Request: h.req}
-	if _, err := h.c.Authorize(ctx, req); err != nil {
+	resp, err := h.c.Authorize(ctx, req)
+	if err != nil {
 		return fmt.Errorf("Authorize(%v) error: %w", req, err)
 	}
-	switch h.req.Method {
-	case requestpb.RedirectionMethod_HTTP_REDIRECT:
-		return h.redirectHTTP()
-	case requestpb.RedirectionMethod_DIRECT:
-		return h.redirectXSSI()
-	case requestpb.RedirectionMethod_JS_REDIRECT:
-		return h.redirectJS()
+	if err := status.ErrorProto(resp.GetStatus()); err != nil {
+		return fmt.Errorf("Authorize(%v) error: %w", req, err)
+	}
+	switch resp.GetRedirect().(type) {
+	case *servicepb.AuthorizeResponse_NextUri:
+		return h.redirectURI(resp.GetNextUri(), resp.GetMethod())
+	case *servicepb.AuthorizeResponse_Endpoint:
+		return h.redirectEndpoint(resp.GetEndpoint(), resp.GetMethod())
 	default:
-		return fmt.Errorf("bad redirection method: %v", h.req.Method)
+		return errNoRedirect
 	}
 }
 
 // writeResponse sends a JSON response as a base64-encoded URI fragment as a JavaScript redirect.
-func (h *Handler) writeResponse(resp *response.Response) error {
-	enc, err := resp.Encode()
+func (h *Handler) writeResponse(r *response.Response) error {
+	enc, err := r.Encode()
 	if err != nil {
 		return err
 	}
@@ -84,14 +93,14 @@ func (h *Handler) writeResponse(resp *response.Response) error {
 	if err != nil {
 		return err
 	}
-	redir := fmt.Sprintf("%v%v/%v#%v", extPrefix, h.req.Ext, h.req.Path, enc)
-	glog.V(4).Infof("Redirecting %v to %v %+v", h.r.RemoteAddr, redir, *resp)
-	return t.Execute(h.w, redir)
+	uri := fmt.Sprintf("%v%v/%v#%v", extPrefix, h.req.GetExt(), h.req.GetPath(), enc)
+	glog.V(4).Infof("Redirecting %v to %v %+v", h.r.RemoteAddr, uri, *r)
+	return t.Execute(h.w, uri)
 }
 
 // err writes an error to the client, note that code is not used in JSON responses.
 func (h *Handler) err(msg string, code int) {
-	if h.req.Version == 2 {
+	if h.req.GetVersion() == 2 {
 		if err := h.writeResponse(response.FromError(msg)); err == nil {
 			return
 		}
@@ -117,36 +126,56 @@ func (h *Handler) cookie(c *cookiepb.Cookie, val string) *http.Cookie {
 // setCookies sets all requisite cookies for redirection to work.
 func (h *Handler) setCookies() {
 	for c, val := range map[*cookiepb.Cookie]string{
-		h.cfg.OriginCookie: extPrefix + h.req.Ext,
+		h.cfg.OriginCookie: extPrefix + h.req.GetExt(),
 	} {
 		http.SetCookie(h.w, h.cookie(c, val))
 	}
 }
 
-// relay returns the address of the SSH Relay to use for a given client.
-// TODO: Improve relay selection instead of a hardcoded address.
-func (h *Handler) relay() string {
-	return h.cfg.FallbackRelayHost
+// redirectURI redirects clients to a URI.
+func (h *Handler) redirectURI(uri string, method requestpb.RedirectionMethod) error {
+	switch method {
+	case requestpb.RedirectionMethod_HTTP_REDIRECT:
+		return h.redirectHTTP(uri)
+	case requestpb.RedirectionMethod_DIRECT:
+		return h.redirectXSSI(response.FromEndpoint(uri))
+	case requestpb.RedirectionMethod_JS_REDIRECT:
+		return h.redirectJS(response.FromEndpoint(uri))
+	}
+	return errBadMethod
 }
 
 // redirectHTTP redirects clients by sending an HTTP redirect.
-func (h *Handler) redirectHTTP() error {
-	redir := fmt.Sprintf("%v%v/%v#%v@%v", extPrefix, h.req.Ext, h.req.Path, "anonymous", h.relay())
-	glog.V(4).Infof("Redirecting %v to %v", h.r.RemoteAddr, redir)
+func (h *Handler) redirectHTTP(uri string) error {
+	glog.V(4).Infof("Redirecting %v to %v", h.r.RemoteAddr, uri)
 	h.setCookies()
-	http.Redirect(h.w, h.r, redir, http.StatusSeeOther)
+	http.Redirect(h.w, h.r, uri, http.StatusSeeOther)
 	return nil
 }
 
+// redirectEndpoint redirects clients to an SSH relay endpoint.
+func (h *Handler) redirectEndpoint(endpoint string, method requestpb.RedirectionMethod) error {
+	switch method {
+	case requestpb.RedirectionMethod_HTTP_REDIRECT:
+		uri := fmt.Sprintf("%v%v/%v#%v@%v", extPrefix, h.req.GetExt(), h.req.GetPath(), "anonymous", endpoint)
+		return h.redirectHTTP(uri)
+	case requestpb.RedirectionMethod_DIRECT:
+		return h.redirectXSSI(response.FromEndpoint(endpoint))
+	case requestpb.RedirectionMethod_JS_REDIRECT:
+		return h.redirectJS(response.FromEndpoint(endpoint))
+	}
+	return errBadMethod
+}
+
 // redirectJS redirects clients via a JavaScript redirect with a base64-encoded JSON response embedded in the URI fragment.
-func (h *Handler) redirectJS() error {
+func (h *Handler) redirectJS(r *response.Response) error {
 	h.setCookies()
-	return h.writeResponse(response.FromEndpoint(h.relay()))
+	return h.writeResponse(r)
 }
 
 // redirectXSSI redirects clients by sending a JSON response with an XSSI header.
-func (h *Handler) redirectXSSI() error {
-	b, err := response.FromEndpoint(h.relay()).MarshalXSSI()
+func (h *Handler) redirectXSSI(r *response.Response) error {
+	b, err := r.MarshalXSSI()
 	if err != nil {
 		h.err(http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
 		return err

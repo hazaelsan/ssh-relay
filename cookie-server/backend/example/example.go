@@ -38,6 +38,9 @@ func loadConfig(s string) (*configpb.Config, error) {
 	if cfg.GrpcOptions == nil {
 		return nil, errors.New("grpc_options must be set")
 	}
+	if cfg.GetSshRelayAddr() == "" {
+		return nil, errors.New("ssh_relay_addr must be set")
+	}
 	return cfg, nil
 }
 
@@ -78,5 +81,8 @@ func (s *Server) Run() error {
 
 // Authorize responds to a /cookie authorization request, it always succeeds.
 func (s *Server) Authorize(ctx context.Context, req *servicepb.AuthorizeRequest) (*servicepb.AuthorizeResponse, error) {
-	return new(servicepb.AuthorizeResponse), nil
+	return &servicepb.AuthorizeResponse{
+		Redirect: &servicepb.AuthorizeResponse_Endpoint{s.cfg.GetSshRelayAddr()},
+		Method:   req.GetRequest().GetMethod(),
+	}, nil
 }

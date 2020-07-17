@@ -209,6 +209,7 @@ func TestSetCookies(t *testing.T) {
 }
 
 func TestRedirectHTTP(t *testing.T) {
+	uri := "chrome-extension://foo/bar#anonymous@relay.example.org:8022"
 	wantLocation := []string{"chrome-extension://foo/bar#anonymous@relay.example.org:8022"}
 	wantCookies := []*http.Cookie{
 		&http.Cookie{
@@ -232,7 +233,6 @@ func TestRedirectHTTP(t *testing.T) {
 				Path:   "/",
 				Domain: ".example.org",
 			},
-			FallbackRelayHost: "relay.example.org:8022",
 		},
 		req: &requestpb.Request{
 			Ext:  "foo",
@@ -242,21 +242,22 @@ func TestRedirectHTTP(t *testing.T) {
 		r:      httptest.NewRequest("GET", "/foo", nil),
 		w:      w,
 	}
-	if err := h.redirectHTTP(); err != nil {
-		t.Fatalf("redirectHTTP() error = %v", err)
+	if err := h.redirectHTTP(uri); err != nil {
+		t.Fatalf("redirectHTTP(%v) error = %v", uri, err)
 	}
 	if diff := pretty.Compare(w.Result().Cookies(), wantCookies); diff != "" {
-		t.Errorf("redirectHTTP() cookies diff (-got +want):\n%v", diff)
+		t.Errorf("redirectHTTP(%v) cookies diff (-got +want):\n%v", uri, diff)
 	}
 	if got := w.Result().StatusCode; got != wantCode {
-		t.Errorf("redirectHTTP() StatusCode = %v, want %v", got, wantCode)
+		t.Errorf("redirectHTTP(%v) StatusCode = %v, want %v", uri, got, wantCode)
 	}
 	if diff := pretty.Compare(w.Result().Header["Location"], wantLocation); diff != "" {
-		t.Errorf("redirectHTTP() Location diff (-got +want):\n%v, diff", diff)
+		t.Errorf("redirectHTTP(%v) Location diff (-got +want):\n%v, diff", uri, diff)
 	}
 }
 
 func TestRedirectJS(t *testing.T) {
+	resp := &response.Response{Endpoint: "relay.example.org:8022"}
 	wantBody := jsRedir(`{"endpoint":"relay.example.org:8022"}`)
 	wantCookies := []*http.Cookie{
 		&http.Cookie{
@@ -279,7 +280,6 @@ func TestRedirectJS(t *testing.T) {
 				Path:   "/",
 				Domain: ".example.org",
 			},
-			FallbackRelayHost: "relay.example.org:8022",
 		},
 		req: &requestpb.Request{
 			Ext:  "foo",
@@ -289,22 +289,23 @@ func TestRedirectJS(t *testing.T) {
 		r:      httptest.NewRequest("GET", "/foo", nil),
 		w:      w,
 	}
-	if err := h.redirectJS(); err != nil {
-		t.Fatalf("redirectJS() error = %v", err)
+	if err := h.redirectJS(resp); err != nil {
+		t.Fatalf("redirectJS(%v) error = %v", resp, err)
 	}
 	if diff := pretty.Compare(w.Result().Cookies(), wantCookies); diff != "" {
-		t.Errorf("redirectJS() cookies diff (-got +want):\n%v", diff)
+		t.Errorf("redirectJS(%v) cookies diff (-got +want):\n%v", resp, diff)
 	}
 	got, err := ioutil.ReadAll(w.Result().Body)
 	if err != nil {
 		t.Fatalf("ioutil.ReadAll() error = %v", err)
 	}
 	if diff := pretty.Compare(string(got), wantBody); diff != "" {
-		t.Errorf("redirectJS() body diff (-got +want):\n%v", diff)
+		t.Errorf("redirectJS(%v) body diff (-got +want):\n%v", resp, diff)
 	}
 }
 
 func TestRedirectXSSI(t *testing.T) {
+	resp := &response.Response{Endpoint: "relay.example.org:8022"}
 	wantBody := ")]}'\n" + `{"endpoint":"relay.example.org:8022"}`
 	wantMIME := []string{"application/json"}
 	wantCookies := []*http.Cookie{
@@ -328,7 +329,6 @@ func TestRedirectXSSI(t *testing.T) {
 				Path:   "/",
 				Domain: ".example.org",
 			},
-			FallbackRelayHost: "relay.example.org:8022",
 		},
 		req: &requestpb.Request{
 			Ext:  "foo",
@@ -338,21 +338,21 @@ func TestRedirectXSSI(t *testing.T) {
 		r:      httptest.NewRequest("GET", "/foo", nil),
 		w:      w,
 	}
-	if err := h.redirectXSSI(); err != nil {
-		t.Fatalf("redirectXSSI() error = %v", err)
+	if err := h.redirectXSSI(resp); err != nil {
+		t.Fatalf("redirectXSSI(%v) error = %v", resp, err)
 	}
 	if diff := pretty.Compare(w.Result().Header["Content-Type"], wantMIME); diff != "" {
-		t.Errorf("redirectHTTP() Content-Type diff (-got +want):\n%v, diff", diff)
+		t.Errorf("redirectXSSI(%v) Content-Type diff (-got +want):\n%v, diff", resp, diff)
 	}
 	if diff := pretty.Compare(w.Result().Cookies(), wantCookies); diff != "" {
-		t.Errorf("redirectXSSI() cookies diff (-got +want):\n%v", diff)
+		t.Errorf("redirectXSSI(%v) cookies diff (-got +want):\n%v", resp, diff)
 	}
 	got, err := ioutil.ReadAll(w.Result().Body)
 	if err != nil {
 		t.Fatalf("ioutil.ReadAll() error = %v", err)
 	}
 	if string(got) != wantBody {
-		t.Errorf("redirectXSSI() body = %v, want %v", string(got), wantBody)
+		t.Errorf("redirectXSSI(%v) body = %v, want %v", resp, string(got), wantBody)
 	}
 
 }

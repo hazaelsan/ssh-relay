@@ -46,6 +46,7 @@ proto_library(
     deps = [
         ":request_proto",
         "@go_googleapis//google/api:annotations_proto",
+        "@go_googleapis//google/rpc:status_proto",
     ],
 )
 
@@ -57,5 +58,6 @@ go_proto_library(
     deps = [
         ":request_go_proto",
         "@go_googleapis//google/api:annotations_go_proto",
+        "@go_googleapis//google/rpc:status_go_proto",
     ],
 )

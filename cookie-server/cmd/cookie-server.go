@@ -33,9 +33,6 @@ func loadConfig(s string) (*pb.Config, error) {
 	if cfg.ServerOptions.Port == "" {
 		cfg.ServerOptions.Port = "8022"
 	}
-	if cfg.FallbackRelayHost == "" {
-		return nil, errors.New("fallback_relay_host must be set")
-	}
 	if cfg.OriginCookie.Name == "" {
 		return nil, errors.New("origin_cookie.name must be set")
 	}

@@ -2,6 +2,7 @@ syntax = "proto3";
 
 import "cookie-server/proto/v1/request.proto";
 import "google/api/field_behavior.proto";
+import "google/rpc/status.proto";
 
 package hazaelsan.ssh_relay.cookie_server.v1;
 
@@ -28,5 +29,26 @@ message AuthorizeRequest {
 }
 
 // A response for a /cookie authorization request.
-// TODO: Relay selection should be handled by this service.
-message AuthorizeResponse {}
+message AuthorizeResponse {
+  // Where to redirect a client as the next step of the authorization request.
+  oneof redirect {
+    // An intermediate URI where to redirect clients as part of the
+    // authorization request (e.g., a 2FA interstitial).
+    // It is the responsibility of the authorization flow to ultimately redirect
+    // the client to an SSH relay endpoint or an error.
+    string next_uri = 1;
+
+    // The SSH relay address in host[:port] format, if port is unspecified then
+    // the client may use 443, 8022, or the port used for connecting to the
+    // Cookie Server.  Therefore, it's recommended to always specify the port.
+    string endpoint = 2;
+  }
+
+  // The status of the authorization request.
+  google.rpc.Status status = 3;
+
+  // The method to use for redirecting clients to [next_uri][].
+  RedirectionMethod method = 4;
+
+  reserved 5 to max;  // Next ID.
+}
