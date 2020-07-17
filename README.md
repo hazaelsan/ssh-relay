@@ -57,9 +57,6 @@ redirecting them to a suitable SSH Relay.
 This component is only used for the first phase of the connection, as such it
 has minimal requirements and is not latency sensitive.
 
-NOTE: Dynamic SSH Relay selection is not implemented yet, only a single static
-SSH Relay is supported.
-
 ### SSH Relay
 
 The SSH Relay takes a client that's been authorized by the Cookie Server, and
