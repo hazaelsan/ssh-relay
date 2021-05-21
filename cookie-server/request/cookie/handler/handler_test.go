@@ -1,6 +1,7 @@
 package handler
 
 import (
+	"context"
 	"encoding/base64"
 	"errors"
 	"fmt"
@@ -12,11 +13,39 @@ import (
 
 	"github.com/hazaelsan/ssh-relay/response"
 	"github.com/kylelemons/godebug/pretty"
+	"google.golang.org/grpc"
 
+	dpb "github.com/golang/protobuf/ptypes/duration"
 	configpb "github.com/hazaelsan/ssh-relay/cookie-server/proto/v1/config_go_proto"
 	requestpb "github.com/hazaelsan/ssh-relay/cookie-server/proto/v1/request_go_proto"
+	servicepb "github.com/hazaelsan/ssh-relay/cookie-server/proto/v1/service_go_proto"
 	cookiepb "github.com/hazaelsan/ssh-relay/proto/v1/cookie_go_proto"
+	statuspb "google.golang.org/genproto/googleapis/rpc/status"
 )
+
+type authServer struct {
+	endpoint string
+	uri      string
+	status   *statuspb.Status
+	err      error
+}
+
+func (a *authServer) Authorize(_ context.Context, req *servicepb.AuthorizeRequest, _ ...grpc.CallOption) (*servicepb.AuthorizeResponse, error) {
+	if a.err != nil {
+		return nil, a.err
+	}
+	resp := &servicepb.AuthorizeResponse{
+		Method: req.GetRequest().GetMethod(),
+		Status: a.status,
+	}
+	if a.endpoint != "" {
+		resp.Redirect = &servicepb.AuthorizeResponse_Endpoint{a.endpoint}
+	}
+	if a.uri != "" {
+		resp.Redirect = &servicepb.AuthorizeResponse_NextUri{a.uri}
+	}
+	return resp, nil
+}
 
 type responseWriter interface {
 	http.ResponseWriter
@@ -44,8 +73,52 @@ func jsRedir(redir string) string {
 </html>`, enc)
 }
 
+func TestNew(t *testing.T) {
+	testdata := []struct {
+		name string
+		cfg  *configpb.Config
+		want time.Duration
+		ok   bool
+	}{
+		{
+			name: "good",
+			cfg: &configpb.Config{
+				OriginCookie: &cookiepb.Cookie{
+					MaxAge: &dpb.Duration{Seconds: 3},
+				},
+			},
+			want: 3 * time.Second,
+			ok:   true,
+		},
+		{
+			name: "bad MaxAge",
+			cfg: &configpb.Config{
+				OriginCookie: &cookiepb.Cookie{
+					MaxAge: &dpb.Duration{Seconds: -3},
+				},
+			},
+		},
+	}
+	for _, tt := range testdata {
+		h, err := New(nil, tt.cfg, nil, nil, nil)
+		if err != nil {
+			if tt.ok {
+				t.Errorf("New(%v) error = %v", tt.name, err)
+			}
+			continue
+		}
+		if !tt.ok {
+			t.Errorf("New(%v) error = nil", tt.name)
+		}
+		if h.maxAge != tt.want {
+			t.Errorf("New(%v) maxAge = %v, want %v", tt.name, h.maxAge, tt.want)
+		}
+	}
+}
+
 func TestWriteResponse(t *testing.T) {
 	testdata := []struct {
+		name string
 		resp *response.Response
 		req  *requestpb.Request
 		w    responseWriter
@@ -53,6 +126,7 @@ func TestWriteResponse(t *testing.T) {
 		ok   bool
 	}{
 		{
+			name: "good",
 			resp: &response.Response{Endpoint: "foo"},
 			req: &requestpb.Request{
 				Ext:  "foo",
@@ -63,6 +137,7 @@ func TestWriteResponse(t *testing.T) {
 			ok:   true,
 		},
 		{
+			name: "good error",
 			resp: &response.Response{Error: "foo"},
 			req: &requestpb.Request{
 				Ext:  "foo",
@@ -72,8 +147,8 @@ func TestWriteResponse(t *testing.T) {
 			want: jsRedir(`{"endpoint":"","error":"foo"}`),
 			ok:   true,
 		},
-		// Write failure.
 		{
+			name: "write error",
 			resp: &response.Response{Endpoint: "foo"},
 			req: &requestpb.Request{
 				Ext:  "foo",
@@ -81,8 +156,17 @@ func TestWriteResponse(t *testing.T) {
 			},
 			w: &badWriter{httptest.NewRecorder()},
 		},
+		{
+			name: "encode error",
+			resp: &response.Response{},
+			req: &requestpb.Request{
+				Ext:  "foo",
+				Path: "path",
+			},
+			w: &badWriter{httptest.NewRecorder()},
+		},
 	}
-	for i, tt := range testdata {
+	for _, tt := range testdata {
 		h := &Handler{
 			req: tt.req,
 			r:   httptest.NewRequest("GET", "/foo", nil),
@@ -90,20 +174,20 @@ func TestWriteResponse(t *testing.T) {
 		}
 		if err := h.writeResponse(tt.resp); err != nil {
 			if tt.ok {
-				t.Errorf("writeResponse(%v) error = %v", i, err)
+				t.Errorf("writeResponse(%v) error = %v", tt.name, err)
 			}
 			continue
 		}
 		if !tt.ok {
-			t.Errorf("writeResponse(%v) error = nil", i)
+			t.Errorf("writeResponse(%v) error = nil", tt.name)
 		}
 		got, err := ioutil.ReadAll(tt.w.Result().Body)
 		if err != nil {
-			t.Errorf("ioutil.ReadAll(%v) error = %v", i, err)
+			t.Errorf("ioutil.ReadAll(%v) error = %v", tt.name, err)
 			continue
 		}
 		if diff := pretty.Compare(string(got), tt.want); diff != "" {
-			t.Errorf("writeResponse(%v) diff (-got +want):\n%v", i, diff)
+			t.Errorf("writeResponse(%v) diff (-got +want):\n%v", tt.name, diff)
 		}
 	}
 }
@@ -354,5 +438,100 @@ func TestRedirectXSSI(t *testing.T) {
 	if string(got) != wantBody {
 		t.Errorf("redirectXSSI(%v) body = %v, want %v", resp, string(got), wantBody)
 	}
+}
 
+func TestHandle(t *testing.T) {
+	testdata := []struct {
+		name   string
+		s      servicepb.CookieServerClient
+		method requestpb.RedirectionMethod
+		ok     bool
+	}{
+		{
+			name:   "good endpoint direct",
+			s:      &authServer{endpoint: "/foo"},
+			method: requestpb.RedirectionMethod_DIRECT,
+			ok:     true,
+		},
+		{
+			name:   "good endpoint http redirect",
+			s:      &authServer{endpoint: "/foo"},
+			method: requestpb.RedirectionMethod_HTTP_REDIRECT,
+			ok:     true,
+		},
+		{
+			name:   "good endpoint js redirect",
+			s:      &authServer{endpoint: "/foo"},
+			method: requestpb.RedirectionMethod_JS_REDIRECT,
+			ok:     true,
+		},
+		{
+			name:   "good uri direct",
+			s:      &authServer{uri: "uri"},
+			method: requestpb.RedirectionMethod_DIRECT,
+			ok:     true,
+		},
+		{
+			name:   "good uri http redirect",
+			s:      &authServer{uri: "uri"},
+			method: requestpb.RedirectionMethod_HTTP_REDIRECT,
+			ok:     true,
+		},
+		{
+			name:   "good uri js redirect",
+			s:      &authServer{uri: "uri"},
+			method: requestpb.RedirectionMethod_JS_REDIRECT,
+			ok:     true,
+		},
+		{
+			name:   "no redirect",
+			s:      new(authServer),
+			method: requestpb.RedirectionMethod_HTTP_REDIRECT,
+		},
+		{
+			name: "authorize error",
+			s:    &authServer{err: errors.New("auth error")},
+		},
+		{
+			name: "status error",
+			s:    &authServer{status: &statuspb.Status{Code: 1, Message: "status error"}},
+		},
+		{
+			name: "endpoint error",
+			s:    &authServer{endpoint: "/foo"},
+		},
+		{
+			name: "next uri error",
+			s:    &authServer{uri: "uri"},
+		},
+	}
+	for _, tt := range testdata {
+		w := httptest.NewRecorder()
+		cfg := &configpb.Config{
+			OriginCookie: &cookiepb.Cookie{
+				Name:   "cookie",
+				Path:   "/",
+				Domain: ".example.org",
+			},
+		}
+		req := &requestpb.Request{
+			Ext:    "foo",
+			Path:   "path",
+			Method: tt.method,
+		}
+		h, err := New(tt.s, cfg, req, w, httptest.NewRequest("GET", "/foo", nil))
+		if err != nil {
+			t.Errorf("New(%v) error = %v", tt.name, err)
+			continue
+		}
+		if err := h.Handle(context.Background()); err != nil {
+			if tt.ok {
+				t.Errorf("Handle(%v) error = %v", tt.name, err)
+			}
+			continue
+		}
+		if !tt.ok {
+			t.Errorf("Handle(%v) error = nil", tt.name)
+		}
+	}
 }

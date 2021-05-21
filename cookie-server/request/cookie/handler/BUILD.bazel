@@ -25,8 +25,12 @@ go_test(
     deps = [
         "//cookie-server/proto/v1:config_go_proto",
         "//cookie-server/proto/v1:request_go_proto",
+        "//cookie-server/proto/v1:service_go_proto",
         "//proto/v1:cookie_go_proto",
         "//response",
         "@com_github_kylelemons_godebug//pretty:go_default_library",
+        "@io_bazel_rules_go//proto/wkt:duration_go_proto",
+        "@org_golang_google_genproto//googleapis/rpc/status:go_default_library",
+        "@org_golang_google_grpc//:go_default_library",
     ],
 )

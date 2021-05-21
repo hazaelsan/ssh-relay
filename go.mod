@@ -13,5 +13,6 @@ require (
 	github.com/jandelgado/gcov2lcov v1.0.5
 	github.com/kylelemons/godebug v1.1.0
 	github.com/wadey/gocovmerge v0.0.0-20160331181800-b5bfa59ec0ad
+	google.golang.org/genproto v0.0.0-20190819201941-24fa4b261c55
 	google.golang.org/grpc v1.30.0
 )
