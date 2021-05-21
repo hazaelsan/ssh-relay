@@ -53,7 +53,7 @@ type Session struct {
 	done chan struct{}
 }
 
-func (s Session) String() string {
+func (s *Session) String() string {
 	return s.sid.String()
 }
 
