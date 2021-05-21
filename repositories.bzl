@@ -193,3 +193,51 @@ def go_repositories():
         sum = "h1:E7g+9GITq07hpfrRu66IVDexMakfv52eLZ2CXBWiKr4=",
         version = "v0.0.0-20191204190536-9bdfabe68543",
     )
+    go_repository(
+        name = "com_github_davecgh_go_spew",
+        importpath = "github.com/davecgh/go-spew",
+        sum = "h1:ZDRjVQ15GmhC3fiQ8ni8+OwkZQO4DARzQgrnXU1Liz8=",
+        version = "v1.1.0",
+    )
+    go_repository(
+        name = "com_github_jandelgado_gcov2lcov",
+        importpath = "github.com/jandelgado/gcov2lcov",
+        sum = "h1:rkBt40h0CVK4oCb8Dps950gvfd1rYvQ8+cWa346lVU0=",
+        version = "v1.0.5",
+    )
+    go_repository(
+        name = "com_github_pmezard_go_difflib",
+        importpath = "github.com/pmezard/go-difflib",
+        sum = "h1:4DBwDE0NGyQoBHbLQYPwSUPoCMWR5BEzIk/f1lZbAQM=",
+        version = "v1.0.0",
+    )
+    go_repository(
+        name = "com_github_stretchr_objx",
+        importpath = "github.com/stretchr/objx",
+        sum = "h1:4G4v2dO3VZwixGIRoQ5Lfboy6nUhCyYzaqnIAPPhYs4=",
+        version = "v0.1.0",
+    )
+    go_repository(
+        name = "com_github_stretchr_testify",
+        importpath = "github.com/stretchr/testify",
+        sum = "h1:2E4SXV/wtOkTonXsotYi4li6zVWxYlZuYNCXe9XRJyk=",
+        version = "v1.4.0",
+    )
+    go_repository(
+        name = "com_github_wadey_gocovmerge",
+        importpath = "github.com/wadey/gocovmerge",
+        sum = "h1:W0LEBv82YCGEtcmPA3uNZBI33/qF//HAAs3MawDjRa0=",
+        version = "v0.0.0-20160331181800-b5bfa59ec0ad",
+    )
+    go_repository(
+        name = "in_gopkg_check_v1",
+        importpath = "gopkg.in/check.v1",
+        sum = "h1:yhCVgyC4o1eVCa2tZl7eS0r+SDo693bJlVdllGtEeKM=",
+        version = "v0.0.0-20161208181325-20d25e280405",
+    )
+    go_repository(
+        name = "in_gopkg_yaml_v2",
+        importpath = "gopkg.in/yaml.v2",
+        sum = "h1:ZCJp+EgiOT7lHqUV2J862kp8Qj64Jo6az82+3Td9dZw=",
+        version = "v2.2.2",
+    )
