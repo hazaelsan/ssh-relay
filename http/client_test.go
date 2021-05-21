@@ -27,12 +27,14 @@ func subjectCN(b []byte) (string, error) {
 
 func TestNewClient(t *testing.T) {
 	testdata := []struct {
+		name    string
 		cfg     *httppb.HttpTransport
 		want    *http.Client
 		rootCNs []string
 		ok      bool
 	}{
 		{
+			name: "good",
 			cfg: &httppb.HttpTransport{
 				TlsConfig: &tlspb.TlsConfig{
 					CertFile:       "../testdata/test.crt",
@@ -59,12 +61,13 @@ func TestNewClient(t *testing.T) {
 			ok: true,
 		},
 		{
-			cfg:  &httppb.HttpTransport{},
+			name: "good defaults",
+			cfg:  new(httppb.HttpTransport),
 			want: http.DefaultClient,
 			ok:   true,
 		},
-		// Bad client cert.
 		{
+			name: "bad client cert",
 			cfg: &httppb.HttpTransport{
 				TlsConfig: &tlspb.TlsConfig{
 					CertFile: "invalid.crt",
@@ -72,8 +75,8 @@ func TestNewClient(t *testing.T) {
 				},
 			},
 		},
-		// Bad client key.
 		{
+			name: "bad client key",
 			cfg: &httppb.HttpTransport{
 				TlsConfig: &tlspb.TlsConfig{
 					CertFile: "../testdata/test.crt",
@@ -81,30 +84,35 @@ func TestNewClient(t *testing.T) {
 				},
 			},
 		},
-		// Bad duration.
 		{
+			name: "bad duration",
 			cfg: &httppb.HttpTransport{
-				TlsConfig:             &tlspb.TlsConfig{},
+				TlsConfig: &tlspb.TlsConfig{
+					CertFile:       "../testdata/test.crt",
+					KeyFile:        "../testdata/test.key",
+					RootCaCerts:    []string{"../testdata/test.crt"},
+					ClientAuthType: tlspb.TlsConfig_REQUEST_CLIENT_CERT,
+				},
 				ResponseHeaderTimeout: &dpb.Duration{Seconds: -1},
 			},
 		},
 	}
-	for i, tt := range testdata {
+	for _, tt := range testdata {
 		got, err := NewClient(tt.cfg)
 		if err != nil {
 			if tt.ok {
-				t.Errorf("NewClient(%v) error = %v", i, err)
+				t.Errorf("NewClient(%v) error = %v", tt.name, err)
 			}
 			continue
 		}
 		if !tt.ok {
-			t.Errorf("NewClient(%v) error = nil", i)
+			t.Errorf("NewClient(%v) error = nil", tt.name)
 		}
 
 		transport, ok := got.Transport.(*http.Transport)
 		if !ok {
 			if tt.cfg.TlsConfig != nil {
-				t.Errorf("got.Transport(%v) bad type assertion", i)
+				t.Errorf("got.Transport(%v) bad type assertion", tt.name)
 			}
 			continue
 		}
@@ -113,13 +121,13 @@ func TestNewClient(t *testing.T) {
 			for j, s := range transport.TLSClientConfig.RootCAs.Subjects() {
 				cn, err := subjectCN(s)
 				if err != nil {
-					t.Errorf("subjectCN(%v, %v) error = %v", i, j, err)
+					t.Errorf("subjectCN(%v, %v) error = %v", tt.name, j, err)
 					continue
 				}
 				cns = append(cns, cn)
 			}
 			if diff := pretty.Compare(cns, tt.rootCNs); diff != "" {
-				t.Errorf("RootCNs(%v) diff (-got +want):\n%v", i, diff)
+				t.Errorf("RootCNs(%v) diff (-got +want):\n%v", tt.name, diff)
 			}
 			transport.TLSClientConfig.RootCAs = nil
 		}
@@ -130,14 +138,14 @@ func TestNewClient(t *testing.T) {
 			for k, tc := range tlsCert.Certificate {
 				cert, err := x509.ParseCertificate(tc)
 				if err != nil {
-					t.Errorf("ParseCertificate(%v, %v, %v) error = %v", i, j, k, err)
+					t.Errorf("ParseCertificate(%v, %v, %v) error = %v", tt.name, j, k, err)
 				}
 				subjects = append(subjects, cert.Subject.String())
 				names = append(names, cert.Subject.CommonName)
 			}
 		}
 		if diff := pretty.Compare(subjects, tt.rootCNs); diff != "" {
-			t.Errorf("subjects(%v) diff (-got +want):\n%v", i, diff)
+			t.Errorf("subjects(%v) diff (-got +want):\n%v", tt.name, diff)
 		}
 		transport.TLSClientConfig.Certificates = nil
 
@@ -148,12 +156,12 @@ func TestNewClient(t *testing.T) {
 		sort.Strings(names)
 		sort.Strings(certNames)
 		if diff := pretty.Compare(names, certNames); diff != "" {
-			t.Errorf("NameToCertificate(%v) diff (-got +want):\n%v", i, diff)
+			t.Errorf("NameToCertificate(%v) diff (-got +want):\n%v", tt.name, diff)
 		}
 		transport.TLSClientConfig.NameToCertificate = nil
 
 		if diff := pretty.Compare(got, tt.want); diff != "" {
-			t.Errorf("NewClient(%v) diff (-got +want):\n%v", i, diff)
+			t.Errorf("NewClient(%v) diff (-got +want):\n%v", tt.name, diff)
 		}
 	}
 }
