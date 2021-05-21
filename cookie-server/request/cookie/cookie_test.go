@@ -87,6 +87,10 @@ func TestNew(t *testing.T) {
 		{
 			uri: "/cookie?ext=foo",
 		},
+		// Bad request.
+		{
+			uri: "/cookie?ext=foo&path=/&version=2&method=invalid",
+		},
 	}
 	for _, tt := range testdata {
 		req, err := http.NewRequest("GET", tt.uri, nil)
