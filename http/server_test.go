@@ -1,7 +1,9 @@
 package http
 
 import (
+	"context"
 	"crypto/tls"
+	"errors"
 	"io/ioutil"
 	"net/http"
 	"net/http/httptest"
@@ -67,12 +69,14 @@ func TestSetHSTS(t *testing.T) {
 
 func TestNewServer(t *testing.T) {
 	testdata := []struct {
+		name       string
 		cfg        *httppb.HttpServerOptions
 		server     *http.Server
 		hstsMaxAge time.Duration
 		ok         bool
 	}{
 		{
+			name: "good",
 			cfg: &httppb.HttpServerOptions{
 				Addr: "::1",
 				Port: "8022",
@@ -107,8 +111,8 @@ func TestNewServer(t *testing.T) {
 			hstsMaxAge: 3 * time.Second,
 			ok:         true,
 		},
-		// No address.
 		{
+			name: "no address",
 			cfg: &httppb.HttpServerOptions{
 				Port: "8022",
 				TlsConfig: &tlspb.TlsConfig{
@@ -126,8 +130,8 @@ func TestNewServer(t *testing.T) {
 			},
 			ok: true,
 		},
-		// Bad address.
 		{
+			name: "bad address",
 			cfg: &httppb.HttpServerOptions{
 				Addr: "1:2",
 				Port: "8022",
@@ -137,8 +141,8 @@ func TestNewServer(t *testing.T) {
 				},
 			},
 		},
-		// No port.
 		{
+			name: "no port",
 			cfg: &httppb.HttpServerOptions{
 				Addr: "::1",
 				TlsConfig: &tlspb.TlsConfig{
@@ -147,14 +151,14 @@ func TestNewServer(t *testing.T) {
 				},
 			},
 		},
-		// No TLS config.
 		{
+			name: "no tls config",
 			cfg: &httppb.HttpServerOptions{
 				Port: "8022",
 			},
 		},
-		// No CertFile.
 		{
+			name: "no cert file",
 			cfg: &httppb.HttpServerOptions{
 				Port: "8022",
 				TlsConfig: &tlspb.TlsConfig{
@@ -162,8 +166,8 @@ func TestNewServer(t *testing.T) {
 				},
 			},
 		},
-		// No KeyFile.
 		{
+			name: "no client file",
 			cfg: &httppb.HttpServerOptions{
 				Port: "8022",
 				TlsConfig: &tlspb.TlsConfig{
@@ -171,8 +175,8 @@ func TestNewServer(t *testing.T) {
 				},
 			},
 		},
-		// Bad clientCAs.
 		{
+			name: "bad client ca",
 			cfg: &httppb.HttpServerOptions{
 				Port: "8022",
 				TlsConfig: &tlspb.TlsConfig{
@@ -182,24 +186,60 @@ func TestNewServer(t *testing.T) {
 				},
 			},
 		},
+		{
+			name: "bad duration",
+			cfg: &httppb.HttpServerOptions{
+				Addr: "::1",
+				Port: "8022",
+				TlsConfig: &tlspb.TlsConfig{
+					CertFile:       "../testdata/test.crt",
+					KeyFile:        "../testdata/test.key",
+					ClientAuthType: tlspb.TlsConfig_REQUEST_CLIENT_CERT,
+				},
+				HttpServer: &httppb.HttpServer{
+					ReadTimeout: &dpb.Duration{Seconds: -1},
+				},
+			},
+			server: &http.Server{
+				Addr:              "[::1]:8022",
+				ReadHeaderTimeout: -1 * time.Second,
+			},
+		},
+		{
+			name: "bad hstsMaxAge",
+			cfg: &httppb.HttpServerOptions{
+				Addr: "::1",
+				Port: "8022",
+				TlsConfig: &tlspb.TlsConfig{
+					CertFile:       "../testdata/test.crt",
+					KeyFile:        "../testdata/test.key",
+					ClientAuthType: tlspb.TlsConfig_REQUEST_CLIENT_CERT,
+				},
+				HstsMaxAge: &dpb.Duration{Seconds: -3},
+			},
+			server: &http.Server{
+				Addr:              "[::1]:8022",
+				ReadHeaderTimeout: -1 * time.Second,
+			},
+		},
 	}
-	for i, tt := range testdata {
+	for _, tt := range testdata {
 		got, err := NewServer(tt.cfg)
 		if err != nil {
 			if tt.ok {
-				t.Errorf("NewServer(%v) error = %v", i, err)
+				t.Errorf("NewServer(%v) error = %v", tt.name, err)
 			}
 			continue
 		}
 		if !tt.ok {
-			t.Errorf("NewServer(%v) error = nil", i)
+			t.Errorf("NewServer(%v) error = nil", tt.name)
 		}
 
 		if got.hstsMaxAge != tt.hstsMaxAge {
-			t.Errorf("hstsMaxAge(%v) = %v, want %v", i, got.hstsMaxAge, tt.hstsMaxAge)
+			t.Errorf("hstsMaxAge(%v) = %v, want %v", tt.name, got.hstsMaxAge, tt.hstsMaxAge)
 		}
 		if diff := pretty.Compare(got.server, tt.server); diff != "" {
-			t.Errorf("NewServer(%v) diff (-got +want)\n%v", i, diff)
+			t.Errorf("NewServer(%v) diff (-got +want)\n%v", tt.name, diff)
 		}
 	}
 }
@@ -238,5 +278,27 @@ func TestHandleFunc(t *testing.T) {
 	}
 	if string(body) != wantMsg {
 		t.Errorf("resp.Body = %v, want %v", string(body), wantMsg)
+	}
+}
+
+func TestRun(t *testing.T) {
+	cfg := &httppb.HttpServerOptions{
+		Addr: "::1",
+		Port: "8022",
+		TlsConfig: &tlspb.TlsConfig{
+			CertFile:       "../testdata/test.crt",
+			KeyFile:        "../testdata/test.key",
+			ClientAuthType: tlspb.TlsConfig_REQUEST_CLIENT_CERT,
+		},
+	}
+	s, err := NewServer(cfg)
+	if err != nil {
+		t.Fatalf("NewServer() error = %v", err)
+	}
+	errc := make(chan error)
+	go func() { errc <- s.Run() }()
+	s.server.Shutdown(context.Background())
+	if err = <-errc; !errors.Is(err, http.ErrServerClosed) {
+		t.Errorf("Run() error = %v, want %v", err, http.ErrServerClosed)
 	}
 }
