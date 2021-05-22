@@ -8,61 +8,61 @@ import (
 
 func TestOrigin(t *testing.T) {
 	testdata := []struct {
-		cookie *http.Cookie
 		name   string
+		cookie *http.Cookie
+		origin string
 		want   string
 		ok     bool
 	}{
 		{
-			cookie: &http.Cookie{
-				Name:  "foo",
-				Value: "http://example.org",
-			},
-			name: "foo",
-			want: "http://example.org",
-			ok:   true,
-		},
-		{
+			name: "good",
 			cookie: &http.Cookie{
 				Name:  "foo",
 				Value: "chrome-extension://foo",
 			},
-			name: "foo",
-			want: "chrome-extension://foo",
-			ok:   true,
+			origin: "foo",
+			want:   "chrome-extension://foo",
+			ok:     true,
 		},
-		// Bad cookie value.
 		{
+			name: "bad cookie",
 			cookie: &http.Cookie{
 				Name:  "foo",
 				Value: "invalid",
 			},
-			name: "foo",
+			origin: "foo",
 		},
-		// Bad cookie name.
 		{
+			name: "bad origin",
 			cookie: &http.Cookie{
 				Name:  "foo",
 				Value: "chrome-extension://foo",
 			},
-			name: "bar",
+			origin: "bar",
+		},
+		{
+			name: "empty origin",
+			cookie: &http.Cookie{
+				Name:  "foo",
+				Value: "chrome-extension://foo",
+			},
 		},
 	}
-	for i, tt := range testdata {
+	for _, tt := range testdata {
 		req := httptest.NewRequest("GET", "/foo", nil)
 		req.AddCookie(tt.cookie)
-		got, err := Origin(req, tt.name)
+		got, err := Origin(req, tt.origin)
 		if err != nil {
 			if tt.ok {
-				t.Errorf("Origin(%v, %v) error = %v", i, tt.name, err)
+				t.Errorf("Origin(%v, %v) error = %v", tt.name, tt.origin, err)
 			}
 			continue
 		}
 		if !tt.ok {
-			t.Errorf("Origin(%v, %v) error = nil", i, tt.name)
+			t.Errorf("Origin(%v, %v) error = nil", tt.name, tt.origin)
 		}
 		if got != tt.want {
-			t.Errorf("Origin(%v, %v) = %v, want %v", i, tt.name, got, tt.want)
+			t.Errorf("Origin(%v, %v) = %v, want %v", tt.name, tt.origin, got, tt.want)
 		}
 	}
 }
