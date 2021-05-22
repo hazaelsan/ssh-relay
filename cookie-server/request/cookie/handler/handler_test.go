@@ -167,10 +167,11 @@ func TestWriteResponse(t *testing.T) {
 		},
 	}
 	for _, tt := range testdata {
-		h := &Handler{
-			req: tt.req,
-			r:   httptest.NewRequest("GET", "/foo", nil),
-			w:   tt.w,
+		cfg := &configpb.Config{OriginCookie: new(cookiepb.Cookie)}
+		h, err := New(nil, cfg, tt.req, tt.w, httptest.NewRequest("GET", "/foo", nil))
+		if err != nil {
+			t.Errorf("New(%v) error = %v", tt.name, err)
+			continue
 		}
 		if err := h.writeResponse(tt.resp); err != nil {
 			if tt.ok {
@@ -194,6 +195,7 @@ func TestWriteResponse(t *testing.T) {
 
 func TestErr(t *testing.T) {
 	testdata := []struct {
+		name     string
 		version  int32
 		msg      string
 		code     int
@@ -202,6 +204,7 @@ func TestErr(t *testing.T) {
 		wantCode int
 	}{
 		{
+			name:     "good v2",
 			version:  2,
 			msg:      "foo bar baz",
 			code:     500,
@@ -210,6 +213,7 @@ func TestErr(t *testing.T) {
 			wantCode: 200,
 		},
 		{
+			name:     "good v1",
 			version:  1,
 			msg:      "foo bar baz",
 			code:     500,
@@ -217,8 +221,8 @@ func TestErr(t *testing.T) {
 			wantMsg:  "foo bar baz\n",
 			wantCode: 500,
 		},
-		// Write failures.
 		{
+			name:     "bad v2",
 			version:  2,
 			msg:      "foo bar baz",
 			code:     401,
@@ -226,6 +230,7 @@ func TestErr(t *testing.T) {
 			wantCode: 401,
 		},
 		{
+			name:     "bad v1",
 			version:  1,
 			msg:      "foo bar baz",
 			code:     401,
@@ -234,27 +239,29 @@ func TestErr(t *testing.T) {
 		},
 	}
 	for _, tt := range testdata {
-		h := &Handler{
-			req: &requestpb.Request{
-				Ext:     "foo",
-				Path:    "path",
-				Version: tt.version,
-			},
-			r: httptest.NewRequest("GET", "/foo", nil),
-			w: tt.w,
+		req := &requestpb.Request{
+			Ext:     "foo",
+			Path:    "path",
+			Version: tt.version,
+		}
+		cfg := &configpb.Config{OriginCookie: new(cookiepb.Cookie)}
+		h, err := New(nil, cfg, req, tt.w, httptest.NewRequest("GET", "/foo", nil))
+		if err != nil {
+			t.Errorf("New(%v) error = %v", tt.name, err)
+			continue
 		}
 		h.err(tt.msg, tt.code)
 		resp := tt.w.Result()
 		if resp.StatusCode != tt.wantCode {
-			t.Errorf("err(%v, %v) code = %v, want %v", tt.msg, tt.code, resp.StatusCode, tt.wantCode)
+			t.Errorf("err(%v) code = %v, want %v", tt.name, resp.StatusCode, tt.wantCode)
 		}
 		got, err := ioutil.ReadAll(resp.Body)
 		if err != nil {
-			t.Errorf("ioutil.ReadAll(%v, %v) error = %v", tt.msg, tt.code, err)
+			t.Errorf("ioutil.ReadAll(%v) error = %v", tt.name, err)
 			continue
 		}
 		if diff := pretty.Compare(string(got), tt.wantMsg); diff != "" {
-			t.Errorf("err(%v, %v) body diff (-got +want):\n%v", tt.msg, tt.code, diff)
+			t.Errorf("err(%v) body diff (-got +want):\n%v", tt.name, diff)
 		}
 	}
 }
@@ -274,17 +281,18 @@ func TestSetCookies(t *testing.T) {
 		},
 	}
 	w := httptest.NewRecorder()
-	h := &Handler{
-		cfg: &configpb.Config{
-			OriginCookie: &cookiepb.Cookie{
-				Name:   "cookie",
-				Path:   "/",
-				Domain: ".example.org",
-			},
+	cfg := &configpb.Config{
+		OriginCookie: &cookiepb.Cookie{
+			Name:   "cookie",
+			Path:   "/",
+			Domain: ".example.org",
+			MaxAge: &dpb.Duration{Seconds: 3},
 		},
-		req:    &requestpb.Request{Ext: "foo"},
-		maxAge: 3 * time.Second,
-		w:      w,
+	}
+	req := &requestpb.Request{Ext: "foo"}
+	h, err := New(nil, cfg, req, w, httptest.NewRequest("GET", "/foo", nil))
+	if err != nil {
+		t.Fatalf("New() error = %v", err)
 	}
 	h.setCookies()
 	if diff := pretty.Compare(w.Result().Cookies(), want); diff != "" {
@@ -310,21 +318,21 @@ func TestRedirectHTTP(t *testing.T) {
 	}
 	wantCode := http.StatusSeeOther
 	w := httptest.NewRecorder()
-	h := &Handler{
-		cfg: &configpb.Config{
-			OriginCookie: &cookiepb.Cookie{
-				Name:   "cookie",
-				Path:   "/",
-				Domain: ".example.org",
-			},
+	cfg := &configpb.Config{
+		OriginCookie: &cookiepb.Cookie{
+			Name:   "cookie",
+			Path:   "/",
+			Domain: ".example.org",
+			MaxAge: &dpb.Duration{Seconds: 3},
 		},
-		req: &requestpb.Request{
-			Ext:  "foo",
-			Path: "bar",
-		},
-		maxAge: 3 * time.Second,
-		r:      httptest.NewRequest("GET", "/foo", nil),
-		w:      w,
+	}
+	req := &requestpb.Request{
+		Ext:  "foo",
+		Path: "bar",
+	}
+	h, err := New(nil, cfg, req, w, httptest.NewRequest("GET", "/foo", nil))
+	if err != nil {
+		t.Fatalf("New() error = %v", err)
 	}
 	if err := h.redirectHTTP(uri); err != nil {
 		t.Fatalf("redirectHTTP(%v) error = %v", uri, err)
@@ -357,21 +365,21 @@ func TestRedirectJS(t *testing.T) {
 		},
 	}
 	w := httptest.NewRecorder()
-	h := &Handler{
-		cfg: &configpb.Config{
-			OriginCookie: &cookiepb.Cookie{
-				Name:   "cookie",
-				Path:   "/",
-				Domain: ".example.org",
-			},
+	cfg := &configpb.Config{
+		OriginCookie: &cookiepb.Cookie{
+			Name:   "cookie",
+			Path:   "/",
+			Domain: ".example.org",
+			MaxAge: &dpb.Duration{Seconds: 3},
 		},
-		req: &requestpb.Request{
-			Ext:  "foo",
-			Path: "path",
-		},
-		maxAge: 3 * time.Second,
-		r:      httptest.NewRequest("GET", "/foo", nil),
-		w:      w,
+	}
+	req := &requestpb.Request{
+		Ext:  "foo",
+		Path: "path",
+	}
+	h, err := New(nil, cfg, req, w, httptest.NewRequest("GET", "/foo", nil))
+	if err != nil {
+		t.Fatalf("New() error = %v", err)
 	}
 	if err := h.redirectJS(resp); err != nil {
 		t.Fatalf("redirectJS(%v) error = %v", resp, err)
@@ -406,21 +414,21 @@ func TestRedirectXSSI(t *testing.T) {
 		},
 	}
 	w := httptest.NewRecorder()
-	h := &Handler{
-		cfg: &configpb.Config{
-			OriginCookie: &cookiepb.Cookie{
-				Name:   "cookie",
-				Path:   "/",
-				Domain: ".example.org",
-			},
+	cfg := &configpb.Config{
+		OriginCookie: &cookiepb.Cookie{
+			Name:   "cookie",
+			Path:   "/",
+			Domain: ".example.org",
+			MaxAge: &dpb.Duration{Seconds: 3},
 		},
-		req: &requestpb.Request{
-			Ext:  "foo",
-			Path: "path",
-		},
-		maxAge: 3 * time.Second,
-		r:      httptest.NewRequest("GET", "/foo", nil),
-		w:      w,
+	}
+	req := &requestpb.Request{
+		Ext:  "foo",
+		Path: "path",
+	}
+	h, err := New(nil, cfg, req, w, httptest.NewRequest("GET", "/foo", nil))
+	if err != nil {
+		t.Fatalf("New() error = %v", err)
 	}
 	if err := h.redirectXSSI(resp); err != nil {
 		t.Fatalf("redirectXSSI(%v) error = %v", resp, err)
@@ -507,13 +515,7 @@ func TestHandle(t *testing.T) {
 	}
 	for _, tt := range testdata {
 		w := httptest.NewRecorder()
-		cfg := &configpb.Config{
-			OriginCookie: &cookiepb.Cookie{
-				Name:   "cookie",
-				Path:   "/",
-				Domain: ".example.org",
-			},
-		}
+		cfg := &configpb.Config{OriginCookie: new(cookiepb.Cookie)}
 		req := &requestpb.Request{
 			Ext:    "foo",
 			Path:   "path",
