@@ -5,6 +5,7 @@ import (
 	"crypto/x509"
 	"crypto/x509/pkix"
 	"encoding/asn1"
+	"errors"
 	"sort"
 	"testing"
 
@@ -23,6 +24,7 @@ func subjectCN(b []byte) (string, error) {
 
 func TestConfig(t *testing.T) {
 	tests := []struct {
+		name      string
 		cfg       *pb.TlsConfig
 		want      *tls.Config
 		rootCNs   []string
@@ -30,7 +32,8 @@ func TestConfig(t *testing.T) {
 		ok        bool
 	}{
 		{
-			cfg: &pb.TlsConfig{},
+			name: "good empty tls config",
+			cfg:  new(pb.TlsConfig),
 			want: &tls.Config{
 				ClientAuth: tls.RequireAndVerifyClientCert,
 				MinVersion: tls.VersionTLS12,
@@ -38,6 +41,7 @@ func TestConfig(t *testing.T) {
 			ok: true,
 		},
 		{
+			name: "good require_any_client_cert",
 			cfg: &pb.TlsConfig{
 				ClientAuthType: pb.TlsConfig_REQUIRE_ANY_CLIENT_CERT,
 			},
@@ -48,6 +52,7 @@ func TestConfig(t *testing.T) {
 			ok: true,
 		},
 		{
+			name: "good require_and_verify_client_cert",
 			cfg: &pb.TlsConfig{
 				ClientAuthType: pb.TlsConfig_REQUIRE_AND_VERIFY_CLIENT_CERT,
 				RootCaCerts:    []string{"../testdata/test.crt"},
@@ -62,6 +67,7 @@ func TestConfig(t *testing.T) {
 			ok: true,
 		},
 		{
+			name: "good client ca certs",
 			cfg: &pb.TlsConfig{
 				ClientCaCerts: []string{"../testdata/test.crt"},
 			},
@@ -74,69 +80,76 @@ func TestConfig(t *testing.T) {
 			},
 			ok: true,
 		},
-		// Bad clientCaCerts.
 		{
+			name: "bad client ca certs",
 			cfg: &pb.TlsConfig{
 				ClientCaCerts: []string{"invalid.crt"},
 			},
 		},
-		// Bad rootCaCerts.
 		{
+			name: "bad root ca certs",
 			cfg: &pb.TlsConfig{
 				RootCaCerts: []string{"invalid.crt"},
 			},
 		},
+		{
+			name: "no client ca certs",
+			cfg: &pb.TlsConfig{
+				ClientCaCerts: []string{"/dev/null"},
+			},
+		},
 	}
-	for i, tt := range tests {
+	for _, tt := range tests {
 		got, err := Config(tt.cfg)
 		if err != nil {
 			if tt.ok {
-				t.Errorf("Config(%v) error = %v", i, err)
+				t.Errorf("Config(%v) error = %v", tt.name, err)
 			}
 			continue
 		}
 		if !tt.ok {
-			t.Errorf("Config(%v) error = nil", i)
+			t.Errorf("Config(%v) error = nil", tt.name)
 		}
 
 		if l := len(tt.cfg.RootCaCerts); l > 0 {
 			var cns []string
-			for j, s := range got.RootCAs.Subjects() {
+			for i, s := range got.RootCAs.Subjects() {
 				cn, err := subjectCN(s)
 				if err != nil {
-					t.Errorf("subjectCN(%v, %v) error = %v", i, j, err)
+					t.Errorf("subjectCN(%v, %v) error = %v", tt.name, i, err)
 					continue
 				}
 				cns = append(cns, cn)
 			}
 			if diff := pretty.Compare(cns, tt.rootCNs); diff != "" {
-				t.Errorf("RootCNs(%v) diff (-got +want):\n%v", i, diff)
+				t.Errorf("RootCNs(%v) diff (-got +want):\n%v", tt.name, diff)
 			}
 			got.RootCAs = nil
 		}
 		if l := len(tt.cfg.ClientCaCerts); l > 0 {
 			var cns []string
-			for j, s := range got.ClientCAs.Subjects() {
+			for i, s := range got.ClientCAs.Subjects() {
 				cn, err := subjectCN(s)
 				if err != nil {
-					t.Errorf("subjectCN(%v, %v) error = %v", i, j, err)
+					t.Errorf("subjectCN(%v, %v) error = %v", tt.name, i, err)
 					continue
 				}
 				cns = append(cns, cn)
 			}
 			if diff := pretty.Compare(cns, tt.clientCNs); diff != "" {
-				t.Errorf("ClientCNs(%v) diff (-got +want):\n%v", i, diff)
+				t.Errorf("ClientCNs(%v) diff (-got +want):\n%v", tt.name, diff)
 			}
 			got.ClientCAs = nil
 		}
 		if diff := pretty.Compare(got, tt.want); diff != "" {
-			t.Errorf("Config(%v) diff (-got +want):\n%v", i, diff)
+			t.Errorf("Config(%v) diff (-got +want):\n%v", tt.name, diff)
 		}
 	}
 }
 
 func TestCertConfig(t *testing.T) {
 	tests := []struct {
+		name     string
 		cfg      *pb.TlsConfig
 		want     *tls.Config
 		subjects []string
@@ -144,6 +157,7 @@ func TestCertConfig(t *testing.T) {
 		ok       bool
 	}{
 		{
+			name: "good",
 			cfg: &pb.TlsConfig{
 				ClientAuthType: pb.TlsConfig_REQUIRE_ANY_CLIENT_CERT,
 				CertFile:       "../testdata/test.crt",
@@ -159,42 +173,43 @@ func TestCertConfig(t *testing.T) {
 			ok: true,
 		},
 		{
+			name: "invalid cert",
 			cfg: &pb.TlsConfig{
 				CertFile: "invalid.crt",
 				KeyFile:  "../testdata/test.key",
 			},
 		},
-		// No cert/key pair.
 		{
-			cfg: &pb.TlsConfig{},
+			name: "no cert/key pair",
+			cfg:  new(pb.TlsConfig),
 		},
 	}
-	for i, tt := range tests {
+	for _, tt := range tests {
 		got, err := CertConfig(tt.cfg)
 		if err != nil {
 			if tt.ok {
-				t.Errorf("CertConfig(%v) error = %v", i, err)
+				t.Errorf("CertConfig(%v) error = %v", tt.name, err)
 			}
 			continue
 		}
 		if !tt.ok {
-			t.Errorf("CertConfig(%v) error = nil", i)
+			t.Errorf("CertConfig(%v) error = nil", tt.name)
 		}
 
 		var names []string
 		var subjects []string
-		for j, tlsCert := range got.Certificates {
+		for i, tlsCert := range got.Certificates {
 			for k, tc := range tlsCert.Certificate {
 				cert, err := x509.ParseCertificate(tc)
 				if err != nil {
-					t.Errorf("ParseCertificate(%v, %v, %v) error = %v", i, j, k, err)
+					t.Errorf("ParseCertificate(%v, %v, %v) error = %v", tt.name, i, k, err)
 				}
 				subjects = append(subjects, cert.Subject.String())
 				names = append(names, cert.Subject.CommonName)
 			}
 		}
 		if diff := pretty.Compare(subjects, tt.subjects); diff != "" {
-			t.Errorf("subjects(%v) diff (-got +want):\n%v", i, diff)
+			t.Errorf("subjects(%v) diff (-got +want):\n%v", tt.name, diff)
 		}
 		got.Certificates = nil
 
@@ -205,12 +220,21 @@ func TestCertConfig(t *testing.T) {
 		sort.Strings(names)
 		sort.Strings(certNames)
 		if diff := pretty.Compare(names, certNames); diff != "" {
-			t.Errorf("NameToCertificate(%v) diff (-got +want):\n%v", i, diff)
+			t.Errorf("NameToCertificate(%v) diff (-got +want):\n%v", tt.name, diff)
 		}
 		got.NameToCertificate = nil
 
 		if diff := pretty.Compare(got, tt.want); diff != "" {
-			t.Errorf("CertConfig(%v) diff (-got +want):\n%v", i, diff)
+			t.Errorf("CertConfig(%v) diff (-got +want):\n%v", tt.name, diff)
 		}
+	}
+}
+
+func TestCertConfig_invalidClientAuthType(t *testing.T) {
+	m := clientAuthMap
+	defer func() { clientAuthMap = m }()
+	clientAuthMap = nil
+	if _, err := CertConfig(new(pb.TlsConfig)); !errors.Is(err, ErrBadClientAuthType) {
+		t.Errorf("CertConfig() error = %v, want %v", err, ErrBadClientAuthType)
 	}
 }
