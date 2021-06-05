@@ -2,183 +2,201 @@ package command
 
 import (
 	"bytes"
+	"errors"
+	"io"
+	"strings"
 	"testing"
 
 	"github.com/kylelemons/godebug/pretty"
 )
 
 var (
-	goodCS = func() []byte {
-		return []byte{
-			0x00, 0x01, // tag
-			0x00, 0x00, 0x00, 0x04, // length
-			0xca, 0xfe, 0xbe, 0xef, // SID
-		}
+	csGood = []byte{
+		0x00, 0x01, // tag
+		0x00, 0x00, 0x00, 0x04, // length
+		0xca, 0xfe, 0xbe, 0xef, // SID
 	}
-	shortCS = func() []byte {
-		return []byte{
-			0x00, 0x01, // tag
-			0x00, 0x00, 0x00, 0xff, // length
-			0xca, 0xfe, // SID
-		}
+	csShort = []byte{
+		0x00, 0x01, // tag
+		0x00, 0x00, 0x00, 0xff, // length
+		0xca, 0xfe, // SID
 	}
-	longCS = func() []byte {
-		return []byte{
-			0x00, 0x01, // tag
-			0x00, 0x00, 0x00, 0x04, // length
-			0xca, 0xfe, 0xbe, 0xef, 0xf0, 0x0f, // SID
-		}
+	csLong = []byte{
+		0x00, 0x01, // tag
+		0x00, 0x00, 0x00, 0x04, // length
+		0xca, 0xfe, 0xbe, 0xef, 0xf0, 0x0f, // SID
 	}
 
-	zeroAckRS = func() []byte {
-		return []byte{
-			0x00, 0x02, // tag
-			0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, // ack
-		}
+	rsZeroAck = []byte{
+		0x00, 0x02, // tag
+		0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, // ack
 	}
-	maxAckRS = func() []byte {
-		return []byte{
-			0x00, 0x02, // tag
-			0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, // ack
-		}
+	rsMaxAck = []byte{
+		0x00, 0x02, // tag
+		0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, // ack
 	}
-	shortAckRS = func() []byte {
-		return []byte{
-			0x00, 0x02, // tag
-			0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, // ack
-		}
+	rsShortAck = []byte{
+		0x00, 0x02, // tag
+		0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, // ack
 	}
-	longAckRS = func() []byte {
-		return []byte{
-			0x00, 0x02, // tag
-			0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, // ack
-		}
+	rsLongAck = []byte{
+		0x00, 0x02, // tag
+		0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, // ack
 	}
 
-	goodData = func() []byte {
-		return []byte{
-			0x00, 0x04, // tag
-			0x00, 0x00, 0x00, 0x10, // length
-			0xca, 0xfe, 0xbe, 0xef, 0xca, 0xfe, 0xbe, 0xef, // data
-			0xca, 0xfe, 0xbe, 0xef, 0xca, 0xfe, 0xbe, 0xef, // data
-		}
+	dataGood = []byte{
+		0x00, 0x04, // tag
+		0x00, 0x00, 0x00, 0x10, // length
+		0xca, 0xfe, 0xbe, 0xef, 0xca, 0xfe, 0xbe, 0xef, // data
+		0xca, 0xfe, 0xbe, 0xef, 0xca, 0xfe, 0xbe, 0xef, // data
 	}
-	shortData = func() []byte {
-		return []byte{
-			0x00, 0x04, // tag
-			0x00, 0x00, 0x00, 0x04, // length
-			0xca, 0xfe, 0xbe, // data
-		}
+	dataShort = []byte{
+		0x00, 0x04, // tag
+		0x00, 0x00, 0x00, 0x04, // length
+		0xca, 0xfe, 0xbe, // data
 	}
-	longData = func() []byte {
-		return []byte{
-			0x00, 0x04, // tag
-			0x00, 0x00, 0x00, 0x04, // length
-			0xca, 0xfe, 0xbe, 0xef, 0xca, 0xfe, 0xbe, 0xef, // data
-		}
+	dataLong = []byte{
+		0x00, 0x04, // tag
+		0x00, 0x00, 0x00, 0x04, // length
+		0xca, 0xfe, 0xbe, 0xef, 0xca, 0xfe, 0xbe, 0xef, // data
+	}
+	dataZero = []byte{
+		0x00, 0x04, // tag
 	}
 
-	zeroAck = func() []byte {
-		return []byte{
-			0x00, 0x07, // tag
-			0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, // ack
-		}
+	ackZero = []byte{
+		0x00, 0x07, // tag
+		0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, // ack
 	}
-	maxAck = func() []byte {
-		return []byte{
-			0x00, 0x07, // tag
-			0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, // ack
-		}
+	ackMax = []byte{
+		0x00, 0x07, // tag
+		0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, // ack
 	}
-	shortAck = func() []byte {
-		return []byte{
-			0x00, 0x07, // tag
-			0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, // ack
-		}
+	ackShort = []byte{
+		0x00, 0x07, // tag
+		0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, // ack
 	}
-	longAck = func() []byte {
-		return []byte{
-			0x00, 0x07, // tag
-			0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, // ack
-		}
+	ackLong = []byte{
+		0x00, 0x07, // tag
+		0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, // ack
 	}
+
+	tagShort       = []byte{0x00}
+	tagInvalid     = []byte{0x00, 0xff}
+	unmarshalShort = []byte{0x00, 0x04}
 )
+
+type badWriter struct{}
+
+func (badWriter) Write([]byte) (int, error) {
+	return 0, errors.New("write error")
+}
+
+func TestTag(t *testing.T) {
+	testdata := map[Tag]string{
+		TagConnectSuccess:   "CONNECT_SUCCESS",
+		TagReconnectSuccess: "RECONNECT_SUCCESS",
+		TagData:             "DATA",
+		TagAck:              "ACK",
+		65535:               "unknown",
+	}
+	for tag, want := range testdata {
+		if got := tag.String(); got != want {
+			t.Errorf("String(%d) = %v, want %v", tag, got, want)
+		}
+	}
+}
 
 func TestUnmarshal(t *testing.T) {
 	testdata := []struct {
-		b   []byte
-		tag Tag
-		ok  bool
+		name string
+		b    []byte
+		tag  Tag
+		ok   bool
 	}{
 		{
-			b:   goodCS(),
-			tag: TagConnectSuccess,
-			ok:  true,
+			name: "cs good",
+			b:    csGood,
+			tag:  TagConnectSuccess,
+			ok:   true,
 		},
 		{
-			b:   shortCS(),
-			tag: TagConnectSuccess,
-			ok:  false,
+			name: "cs short",
+			b:    csShort,
 		},
 		{
-			b:   longCS(),
-			tag: TagConnectSuccess,
-			ok:  false,
+			name: "cs long",
+			b:    csLong,
 		},
 		{
-			b:   zeroAckRS(),
-			tag: TagReconnectSuccess,
-			ok:  true,
+			name: "rs zero ack",
+			b:    rsZeroAck,
+			tag:  TagReconnectSuccess,
+			ok:   true,
 		},
 		{
-			b:   maxAckRS(),
-			tag: TagReconnectSuccess,
-			ok:  true,
+			name: "rs max ack",
+			b:    rsMaxAck,
+			tag:  TagReconnectSuccess,
+			ok:   true,
 		},
 		{
-			b:   shortAckRS(),
-			tag: TagReconnectSuccess,
-			ok:  false,
+			name: "rs short ack",
+			b:    rsShortAck,
 		},
 		{
-			b:   longAckRS(),
-			tag: TagReconnectSuccess,
-			ok:  false,
+			name: "rs long ack",
+			b:    rsLongAck,
 		},
 		{
-			b:   goodData(),
-			tag: TagData,
-			ok:  true,
+			name: "data good",
+			b:    dataGood,
+			tag:  TagData,
+			ok:   true,
 		},
 		{
-			b:   shortData(),
-			tag: TagData,
-			ok:  false,
+			name: "data short",
+			b:    dataShort,
 		},
 		{
-			b:   longData(),
-			tag: TagData,
-			ok:  false,
+			name: "data long",
+			b:    dataLong,
 		},
 		{
-			b:   zeroAck(),
-			tag: TagAck,
-			ok:  true,
+			name: "data zero",
+			b:    dataZero,
 		},
 		{
-			b:   maxAck(),
-			tag: TagAck,
-			ok:  true,
+			name: "ack zero",
+			b:    ackZero,
+			tag:  TagAck,
+			ok:   true,
 		},
 		{
-			b:   shortAck(),
-			tag: TagAck,
-			ok:  false,
+			name: "max ack",
+			b:    ackMax,
+			tag:  TagAck,
+			ok:   true,
 		},
 		{
-			b:   longAck(),
-			tag: TagAck,
-			ok:  false,
+			name: "ack short",
+			b:    ackShort,
+		},
+		{
+			name: "ack long",
+			b:    ackLong,
+		},
+		{
+			name: "tag short",
+			b:    tagShort,
+		},
+		{
+			name: "tag invalid",
+			b:    tagInvalid,
+		},
+		{
+			name: "unmarshal short",
+			b:    unmarshalShort,
 		},
 	}
 	for _, tt := range testdata {
@@ -189,23 +207,110 @@ func TestUnmarshal(t *testing.T) {
 		got, err := Unmarshal(tt.b)
 		if err != nil {
 			if tt.ok {
-				t.Errorf("Unmarshal(%v) error = %v / %v", tt.b, err, got)
+				t.Errorf("Unmarshal(%v) error = %v", tt.name, err)
 			}
 			continue
 		}
 		if !tt.ok {
-			t.Errorf("Unmarshal(%v) error = nil / %v", tt.b, got)
-			continue
+			t.Errorf("Unmarshal(%v) error = nil", tt.name)
 		}
 		if got.Tag() != tt.tag {
-			t.Errorf("Unmarshal(%v) tag = %v, want %v", tt.b, got.Tag(), tt.tag)
+			t.Errorf("Unmarshal(%v) tag = %v, want %v", tt.name, got.Tag(), tt.tag)
 		}
 		w := new(bytes.Buffer)
 		if err := got.Write(w); err != nil {
-			t.Errorf("Write(%v) error = %v", tt.b, err)
+			t.Errorf("Write(%v) error = %v", tt.name, err)
 		}
 		if diff := pretty.Compare(w.Bytes(), want); diff != "" {
-			t.Errorf("Write(%v) diff (-got +want):\n%v", tt.b, diff)
+			t.Errorf("Write(%v) diff (-got +want):\n%v", tt.name, diff)
+		}
+	}
+}
+
+func TestNewConnectSuccess(t *testing.T) {
+	testdata := []struct {
+		name string
+		sid  []byte
+		ok   bool
+	}{
+		{
+			name: "good",
+			sid:  make([]byte, 4),
+			ok:   true,
+		},
+		{
+			name: "short sid",
+			sid:  make([]byte, 3),
+		},
+		{
+			name: "long sid",
+			sid:  make([]byte, 37),
+		},
+	}
+	for _, tt := range testdata {
+		if _, err := NewConnectSuccess(tt.sid); err != nil {
+			if tt.ok {
+				t.Errorf("NewConnectSuccess(%v) error = %v", tt.name, err)
+			}
+			continue
+		}
+		if !tt.ok {
+			t.Errorf("NewConnectSuccess(%v) error = nil", tt.name)
+		}
+	}
+}
+
+func TestNewData(t *testing.T) {
+	testdata := []struct {
+		name string
+		b    []byte
+		ok   bool
+	}{
+		{
+			name: "good",
+			b:    make([]byte, 4),
+			ok:   true,
+		},
+		{
+			name: "no data",
+		},
+		{
+			name: "long data",
+			b:    make([]byte, 16*1024+1),
+		},
+	}
+	for _, tt := range testdata {
+		if _, err := NewData(tt.b); err != nil {
+			if tt.ok {
+				t.Errorf("NewData(%v) error = %v", tt.name, err)
+			}
+			continue
+		}
+		if !tt.ok {
+			t.Errorf("NewData(%v) error = nil", tt.name)
+		}
+	}
+}
+
+func TestWrite(t *testing.T) {
+	testdata := map[string]Command{
+		"cs":   ConnectSuccess{0xaa, 0xbb},
+		"rs":   ReconnectSuccess(123),
+		"data": Data{0x00, 0xff},
+		"ack":  Ack(456),
+	}
+	for name, tt := range testdata {
+		var w io.Writer
+		// Good write.
+		w = new(strings.Builder)
+		if err := tt.Write(w); err != nil {
+			t.Errorf("Write(%v) error = %v", name, err)
+		}
+
+		// Bad writer.
+		w = new(badWriter)
+		if err := tt.Write(w); err == nil {
+			t.Errorf("Write(%v) error = nil", name)
 		}
 	}
 }

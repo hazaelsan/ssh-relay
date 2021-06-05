@@ -121,7 +121,7 @@ func Unmarshal(b []byte) (Command, error) {
 		if err != nil {
 			return nil, err
 		}
-		return NewReconnectSuccess(ack)
+		return NewReconnectSuccess(ack), nil
 	case TagData:
 		data, err := unmarshal32(b)
 		if err != nil {
@@ -133,7 +133,7 @@ func Unmarshal(b []byte) (Command, error) {
 		if err != nil {
 			return nil, err
 		}
-		return NewAck(ack)
+		return NewAck(ack), nil
 	default:
 		return nil, ErrBadCommand
 	}
@@ -144,53 +144,42 @@ type Command interface {
 	// Tag returns the command's tag.
 	Tag() Tag
 
-	// Check verifies the command has a valid structure.
-	Check() error
-
 	// Write writes the command in wire format.
 	Write(w io.Writer) error
 }
 
 // NewConnectSuccess creates a CONNECT_SUCCESS command with the given SID.
-func NewConnectSuccess(sid []byte) (*ConnectSuccess, error) {
-	cs := &ConnectSuccess{sid: sid}
-	return cs, cs.Check()
+func NewConnectSuccess(sid []byte) (ConnectSuccess, error) {
+	cs := ConnectSuccess(sid)
+	return cs, cs.check()
 }
 
 // ConnectSuccess is the first command after a /v4/connect session is established.
 // It is only sent from the server to the client.
-type ConnectSuccess struct {
-	sid []byte
-}
+type ConnectSuccess []byte
 
 // Tag returns the command's tag.
-func (cs *ConnectSuccess) Tag() Tag {
+func (cs ConnectSuccess) Tag() Tag {
 	return TagConnectSuccess
 }
 
-// Check verifies the command has a valid structure.
-func (cs *ConnectSuccess) Check() error {
-	if len(cs.sid) == 0 {
-		return fmt.Errorf("%w: empty SID", ErrBadLen)
+// check verifies the command has a valid structure.
+func (cs ConnectSuccess) check() error {
+	if len(cs) < SIDLen {
+		return fmt.Errorf("%w: SID length %v < %v", ErrBadLen, len(cs), SIDLen)
 	}
-	if len(cs.sid) < SIDLen {
-		return fmt.Errorf("%w: SID length %v < %v", ErrBadLen, len(cs.sid), SIDLen)
-	}
-	if len(cs.sid) > MaxSIDLen {
-		return fmt.Errorf("%w: SID length %v > %v", ErrBadLen, len(cs.sid), MaxSIDLen)
+	if len(cs) > MaxSIDLen {
+		return fmt.Errorf("%w: SID length %v > %v", ErrBadLen, len(cs), MaxSIDLen)
 	}
 	return nil
 }
 
 // Write writes the command in wire format.
-func (cs *ConnectSuccess) Write(w io.Writer) error {
-	if err := cs.Check(); err != nil {
+func (cs ConnectSuccess) Write(w io.Writer) error {
+	if err := binWrite(w, cs.Tag(), uint32(len(cs))); err != nil {
 		return err
 	}
-	if err := binWrite(w, cs.Tag(), uint32(len(cs.sid))); err != nil {
-		return err
-	}
-	_, err := w.Write(cs.sid)
+	_, err := w.Write(cs)
 	return err
 }
 
@@ -198,129 +187,88 @@ func (cs *ConnectSuccess) Write(w io.Writer) error {
 // Even though the spec doesn't specify a format,
 // https://chromium.googlesource.com/apps/libapps/+/HEAD/nassh/js/nassh_stream_relay_corpv4.js
 // restricts us to ASCII SIDs.
-func (cs *ConnectSuccess) SID() string {
-	return string(cs.sid)
+func (cs ConnectSuccess) SID() string {
+	return string(cs)
 }
 
 // NewReconnectSuccess creates a RECONNECT_SUCCESS command with the given ack.
-func NewReconnectSuccess(ack uint64) (*ReconnectSuccess, error) {
-	rs := &ReconnectSuccess{ack: ack}
-	return rs, rs.Check()
+func NewReconnectSuccess(ack uint64) ReconnectSuccess {
+	return ReconnectSuccess(ack)
 }
 
 // ReconnectSuccess is the first command after a /v4/reconnect session is established.
 // It is only sent from the server to the client.
-type ReconnectSuccess struct {
-	ack uint64
-}
+type ReconnectSuccess uint64
 
 // Tag returns the command's tag.
-func (rs *ReconnectSuccess) Tag() Tag {
+func (rs ReconnectSuccess) Tag() Tag {
 	return TagReconnectSuccess
 }
 
-// Check verifies the command has a valid structure.
-func (rs *ReconnectSuccess) Check() error {
-	return nil
-}
-
 // Write writes the command in wire format.
-func (rs *ReconnectSuccess) Write(w io.Writer) error {
-	if err := rs.Check(); err != nil {
-		return err
-	}
-	return binWrite(w, rs.Tag(), rs.ack)
-}
-
-// unmarshalData creates a DATA command from a message in wire format.
-// Note: b must have the tag header stripped.
-func unmarshalData(b []byte) (*Data, error) {
-	if len(b) < DataLen {
-		return nil, fmt.Errorf("%w: no data", ErrBadLen)
-	}
-	l := binary.BigEndian.Uint32(b[0:DataLen])
-	data := b[DataLen:]
-	if len(data) != int(l) {
-		return nil, fmt.Errorf("%w: %v != %v", ErrBadLen, len(data), l)
-	}
-	return NewData(data)
+func (rs ReconnectSuccess) Write(w io.Writer) error {
+	return binWrite(w, rs.Tag(), rs)
 }
 
 // NewData creates a DATA command with the given payload.
-func NewData(b []byte) (*Data, error) {
-	d := &Data{data: b}
-	return d, d.Check()
+func NewData(b []byte) (Data, error) {
+	d := Data(b)
+	return d, d.check()
 }
 
 // Data is arbitrary data sent on the wire.
-type Data struct {
-	data []byte
-}
+type Data []byte
 
 // Tag returns the command's tag.
-func (d *Data) Tag() Tag {
+func (d Data) Tag() Tag {
 	return TagData
 }
 
-// Check verifies the command has a valid structure.
-func (d *Data) Check() error {
-	if len(d.data) == 0 {
-		return fmt.Errorf("%w: empty data", ErrBadLen)
+// check verifies the command has a valid structure.
+func (d Data) check() error {
+	if len(d) == 0 {
+		return fmt.Errorf("%w: no data", ErrBadLen)
 	}
-	if len(d.data) > MaxArrayLen {
-		return fmt.Errorf("%w: data too large %v > %v", ErrBadLen, len(d.data), MaxArrayLen)
+	if len(d) > MaxArrayLen {
+		return fmt.Errorf("%w: data too large %v > %v", ErrBadLen, len(d), MaxArrayLen)
 	}
 	return nil
 }
 
 // Write writes the command in wire format.
-func (d *Data) Write(w io.Writer) error {
-	if err := d.Check(); err != nil {
+func (d Data) Write(w io.Writer) error {
+	if err := binWrite(w, d.Tag(), uint32(len(d))); err != nil {
 		return err
 	}
-	if err := binWrite(w, d.Tag(), uint32(len(d.data))); err != nil {
-		return err
-	}
-	_, err := w.Write(d.data)
+	_, err := w.Write(d)
 	return err
 }
 
 // Data returns the payload.
-func (d *Data) Data() []byte {
-	return d.data
+func (d Data) Data() []byte {
+	return d
 }
 
 // NewAck creates an ACK command with the given ack.
-func NewAck(ack uint64) (*Ack, error) {
-	a := &Ack{ack: ack}
-	return a, a.Check()
+func NewAck(ack uint64) Ack {
+	return Ack(ack)
 }
 
 // Ack is an acknowledgement for received data.
 // It indicates the receiving end should update its buffer to discard all acknowledged data.
-type Ack struct {
-	ack uint64
-}
+type Ack uint64
 
 // Tag returns the command's tag.
-func (a *Ack) Tag() Tag {
+func (a Ack) Tag() Tag {
 	return TagAck
 }
 
-// Check verifies the command has a valid structure.
-func (a *Ack) Check() error {
-	return nil
-}
-
 // Write writes the command in wire format.
-func (a *Ack) Write(w io.Writer) error {
-	if err := a.Check(); err != nil {
-		return err
-	}
-	return binWrite(w, a.Tag(), a.ack)
+func (a Ack) Write(w io.Writer) error {
+	return binWrite(w, a.Tag(), a)
 }
 
 // Ack returns the ack.
-func (a *Ack) Ack() uint64 {
-	return a.ack
+func (a Ack) Ack() uint64 {
+	return uint64(a)
 }

@@ -101,7 +101,7 @@ func (s *Session) recvCmd(b []byte) error {
 	}
 	switch c.Tag() {
 	case command.TagConnectSuccess:
-		b := c.(*command.ConnectSuccess).SID()
+		b := c.(command.ConnectSuccess).SID()
 		// CONNECT_SUCCESS can only be sent to a client as the first command.
 		if s.role != session.Client || !bytes.Equal(s.sid[:], uuid.Nil[:]) {
 			break
@@ -114,12 +114,12 @@ func (s *Session) recvCmd(b []byte) error {
 	case command.TagReconnectSuccess:
 		return errors.New("not implemented")
 	case command.TagData:
-		if err := s.readData(c.(*command.Data)); err != nil {
+		if err := s.readData(c.(command.Data)); err != nil {
 			return err
 		}
 		return s.sendAck()
 	case command.TagAck:
-		return s.readAck(c.(*command.Ack))
+		return s.readAck(c.(command.Ack))
 	}
 	return fmt.Errorf("%w: %v", command.ErrBadCommand, c.Tag())
 }
@@ -156,7 +156,7 @@ func (s *Session) sendReconnect(ack uint64) error {
 }
 
 // readData processes an incoming DATA command.
-func (s *Session) readData(d *command.Data) error {
+func (s *Session) readData(d command.Data) error {
 	data := d.Data()
 	s.rCount += uint64(len(data))
 	glog.V(5).Infof("%v: ws->ssh read %v bytes", s, len(data))
@@ -173,22 +173,19 @@ func (s *Session) sendAck() error {
 		return fmt.Errorf("wFunc() error: %w", err)
 	}
 	defer w.Close()
-	a, err := command.NewAck(s.rCount)
-	if err != nil {
-		return err
-	}
+	a := command.NewAck(s.rCount)
 	return a.Write(w)
 }
 
 // readAck processes an incoming ACK command.
-func (s *Session) readAck(a *command.Ack) error {
+func (s *Session) readAck(a command.Ack) error {
 	ack := a.Ack()
 	diff := ack - s.wCount
 	if diff == 0 {
 		return nil
 	}
 	if diff < 0 {
-		return fmt.Errorf("Reverse ack %v -> %v", s.wCount, ack)
+		return fmt.Errorf("reverse ack %v -> %v", s.wCount, ack)
 	}
 	s.wCount = ack
 	return nil
