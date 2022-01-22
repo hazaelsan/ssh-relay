@@ -241,3 +241,9 @@ def go_repositories():
         sum = "h1:ZCJp+EgiOT7lHqUV2J862kp8Qj64Jo6az82+3Td9dZw=",
         version = "v2.2.2",
     )
+    go_repository(
+        name = "com_github_hazaelsan_go_tls",
+        importpath = "github.com/hazaelsan/go-tls",
+        sum = "h1:fIfJznPLJM15MkiQSP8SHdngcj8PTFq0//CgmuaJ9EY=",
+        version = "v1.0.0",
+    )

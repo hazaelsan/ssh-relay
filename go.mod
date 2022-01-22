@@ -10,9 +10,10 @@ require (
 	github.com/google/uuid v1.1.1
 	github.com/googleapis/googleapis v0.0.0-20200626212039-7c577e89f1c8 // indirect
 	github.com/gorilla/websocket v1.4.2
-	github.com/jandelgado/gcov2lcov v1.0.5
+	github.com/hazaelsan/go-tls v1.0.0
+	github.com/jandelgado/gcov2lcov v1.0.5 // indirect
 	github.com/kylelemons/godebug v1.1.0
-	github.com/wadey/gocovmerge v0.0.0-20160331181800-b5bfa59ec0ad
+	github.com/wadey/gocovmerge v0.0.0-20160331181800-b5bfa59ec0ad // indirect
 	google.golang.org/genproto v0.0.0-20190819201941-24fa4b261c55
 	google.golang.org/grpc v1.30.0
 )

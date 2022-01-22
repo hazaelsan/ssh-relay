@@ -14,8 +14,8 @@ go_library(
     deps = [
         "//duration",
         "//proto/v1:http_go_proto",
-        "//tls",
         "@com_github_golang_glog//:go_default_library",
+        "@com_github_hazaelsan_go_tls//:tls",
         "@io_bazel_rules_go//proto/wkt:duration_go_proto",
     ],
 )
@@ -27,7 +27,7 @@ go_test(
     embed = [":http"],
     deps = [
         "//proto/v1:http_go_proto",
-        "//proto/v1:tls_go_proto",
+        "@com_github_hazaelsan_go_tls//proto/v1:tls_go_proto",
         "@com_github_kylelemons_godebug//pretty:go_default_library",
         "@io_bazel_rules_go//proto/wkt:duration_go_proto",
     ],
@@ -40,7 +40,7 @@ go_test(
     embed = [":http"],
     deps = [
         "//proto/v1:http_go_proto",
-        "//proto/v1:tls_go_proto",
+        "@com_github_hazaelsan_go_tls//proto/v1:tls_go_proto",
         "@com_github_kylelemons_godebug//pretty:go_default_library",
         "@io_bazel_rules_go//proto/wkt:duration_go_proto",
     ],

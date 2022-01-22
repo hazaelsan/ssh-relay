@@ -11,8 +11,8 @@ go_library(
         "//http",
         "//session",
         "//session/corprelay",
-        "//tls",
         "@com_github_golang_glog//:go_default_library",
         "@com_github_gorilla_websocket//:go_default_library",
+        "@com_github_hazaelsan_go_tls//:tls",
     ],
 )
