@@ -3,7 +3,7 @@ module github.com/hazaelsan/ssh-relay
 go 1.14
 
 require (
-	github.com/golang/glog v1.1.0
+	github.com/golang/glog v1.2.4
 	github.com/golang/protobuf v1.5.3
 	github.com/google/uuid v1.3.0
 	github.com/gorilla/websocket v1.4.2
