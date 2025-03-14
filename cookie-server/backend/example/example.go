@@ -9,8 +9,8 @@ import (
 	"errors"
 	"flag"
 	"fmt"
-	"io/ioutil"
 	"net"
+	"os"
 
 	"github.com/golang/glog"
 	"github.com/golang/protobuf/proto"
@@ -27,7 +27,7 @@ var (
 )
 
 func loadConfig(s string) (*configpb.Config, error) {
-	buf, err := ioutil.ReadFile(s)
+	buf, err := os.ReadFile(s)
 	if err != nil {
 		return nil, err
 	}

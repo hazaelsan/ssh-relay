@@ -2,7 +2,7 @@ package corprelay
 
 import (
 	"bytes"
-	"io/ioutil"
+	"io"
 	"testing"
 
 	"github.com/kylelemons/godebug/pretty"
@@ -94,9 +94,9 @@ func TestParseBinary(t *testing.T) {
 		if !tt.ok {
 			t.Errorf("parseBinary(%v) error = nil", i)
 		}
-		got, err := ioutil.ReadAll(s.ssh)
+		got, err := io.ReadAll(s.ssh)
 		if err != nil {
-			t.Errorf("ReadAll(%v) error = %v", i, err)
+			t.Errorf("io.ReadAll(%v) error = %v", i, err)
 		}
 		if diff := pretty.Compare(got, tt.want); diff != "" {
 			t.Errorf("parseBinary(%v) diff (-got +want):\n%v", i, diff)

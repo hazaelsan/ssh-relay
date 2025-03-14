@@ -2,7 +2,7 @@ package runner
 
 import (
 	"fmt"
-	"io/ioutil"
+	"io"
 	"net"
 	"net/http"
 	"net/http/httptest"
@@ -82,7 +82,7 @@ func wsReq(url string) (int, []byte, error) {
 	hdr.Add("Cookie", originCookie.String())
 	ws, resp, err := websocket.DefaultDialer.Dial(url, hdr)
 	if err != nil {
-		if b, respErr := ioutil.ReadAll(resp.Body); respErr == nil {
+		if b, respErr := io.ReadAll(resp.Body); respErr == nil {
 			return 0, nil, fmt.Errorf("%w: %v", err, string(b))
 		}
 		return 0, nil, err
@@ -213,9 +213,9 @@ func TestProxyHandle(t *testing.T) {
 	if got.StatusCode != wantCode {
 		t.Errorf("proxyHandle(%v) status code = %v, want %v", url, got.StatusCode, wantCode)
 	}
-	b, err := ioutil.ReadAll(got.Body)
+	b, err := io.ReadAll(got.Body)
 	if err != nil {
-		t.Errorf("ReadAll(%v) error = %v", url, err)
+		t.Errorf("io.ReadAll(%v) error = %v", url, err)
 	}
 	if _, err := uuid.ParseBytes(b); err != nil {
 		t.Errorf("uuid.ParseBytes(%v) error = %v", string(b), err)

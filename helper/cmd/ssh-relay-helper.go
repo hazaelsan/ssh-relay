@@ -3,8 +3,8 @@
 //
 // Typical use in an ssh_config(5):
 //
-//     Host *.example.org
-//       ProxyCommand ssh-relay-helper --config=/etc/ssh-relay-helper.textproto --host=%h --port=%p
+//	Host *.example.org
+//	  ProxyCommand ssh-relay-helper --config=/etc/ssh-relay-helper.textproto --host=%h --port=%p
 //
 // NOTE: Options passed as flags override those from the config proto.
 package main
@@ -12,7 +12,7 @@ package main
 import (
 	"errors"
 	"flag"
-	"io/ioutil"
+	"os"
 
 	"github.com/golang/glog"
 	"github.com/golang/protobuf/proto"
@@ -34,7 +34,7 @@ var (
 func buildConfig(s string) (*pb.Config, error) {
 	cfg := new(pb.Config)
 	if s != "" {
-		buf, err := ioutil.ReadFile(s)
+		buf, err := os.ReadFile(s)
 		if err != nil {
 			return nil, err
 		}

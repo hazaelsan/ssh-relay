@@ -11,7 +11,6 @@ import (
 	"errors"
 	"fmt"
 	"io"
-	"io/ioutil"
 	"net/http"
 	"net/url"
 	"os"
@@ -146,7 +145,7 @@ func (s *Session) dial(proxyURL string) error {
 
 // parseProxyResp parses a /proxy response, loading the Session ID and other optional query string arguments.
 func (s *Session) parseProxyResp(r io.Reader) error {
-	b, err := ioutil.ReadAll(r)
+	b, err := io.ReadAll(r)
 	if err != nil {
 		return err
 	}

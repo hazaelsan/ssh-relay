@@ -4,7 +4,7 @@ import (
 	"context"
 	"crypto/tls"
 	"errors"
-	"io/ioutil"
+	"io"
 	"net/http"
 	"net/http/httptest"
 	"strings"
@@ -272,9 +272,9 @@ func TestHandleFunc(t *testing.T) {
 			t.Errorf("getHeader(%v) = %v, want %v", hdr, got, want)
 		}
 	}
-	body, err := ioutil.ReadAll(resp.Body)
+	body, err := io.ReadAll(resp.Body)
 	if err != nil {
-		t.Fatalf("ReadAll() error = %v", err)
+		t.Fatalf("io.ReadAll() error = %v", err)
 	}
 	if string(body) != wantMsg {
 		t.Errorf("resp.Body = %v, want %v", string(body), wantMsg)

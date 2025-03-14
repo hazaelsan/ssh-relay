@@ -3,7 +3,6 @@ package corprelayv4
 import (
 	"bytes"
 	"io"
-	"io/ioutil"
 	"net"
 	"testing"
 
@@ -160,7 +159,7 @@ func TestParseBinary(t *testing.T) {
 		c := make(chan channel)
 		go func(c chan<- channel) {
 			defer a.Close()
-			buf, err := ioutil.ReadAll(a)
+			buf, err := io.ReadAll(a)
 			c <- channel{buf, err}
 		}(c)
 		ws := &rwc{new(bytes.Buffer)}

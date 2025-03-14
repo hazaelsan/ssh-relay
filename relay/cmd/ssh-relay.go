@@ -5,7 +5,7 @@ package main
 import (
 	"errors"
 	"flag"
-	"io/ioutil"
+	"os"
 
 	"github.com/golang/glog"
 	"github.com/golang/protobuf/proto"
@@ -19,7 +19,7 @@ var (
 )
 
 func loadConfig(s string) (*pb.Config, error) {
-	buf, err := ioutil.ReadFile(s)
+	buf, err := os.ReadFile(s)
 	if err != nil {
 		return nil, err
 	}

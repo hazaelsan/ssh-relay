@@ -5,7 +5,7 @@ import (
 	"encoding/base64"
 	"errors"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"net/http"
 	"net/http/httptest"
 	"testing"
@@ -182,9 +182,9 @@ func TestWriteResponse(t *testing.T) {
 		if !tt.ok {
 			t.Errorf("writeResponse(%v) error = nil", tt.name)
 		}
-		got, err := ioutil.ReadAll(tt.w.Result().Body)
+		got, err := io.ReadAll(tt.w.Result().Body)
 		if err != nil {
-			t.Errorf("ioutil.ReadAll(%v) error = %v", tt.name, err)
+			t.Errorf("io.ReadAll(%v) error = %v", tt.name, err)
 			continue
 		}
 		if diff := pretty.Compare(string(got), tt.want); diff != "" {
@@ -255,9 +255,9 @@ func TestErr(t *testing.T) {
 		if resp.StatusCode != tt.wantCode {
 			t.Errorf("err(%v) code = %v, want %v", tt.name, resp.StatusCode, tt.wantCode)
 		}
-		got, err := ioutil.ReadAll(resp.Body)
+		got, err := io.ReadAll(resp.Body)
 		if err != nil {
-			t.Errorf("ioutil.ReadAll(%v) error = %v", tt.name, err)
+			t.Errorf("io.ReadAll(%v) error = %v", tt.name, err)
 			continue
 		}
 		if diff := pretty.Compare(string(got), tt.wantMsg); diff != "" {
@@ -387,9 +387,9 @@ func TestRedirectJS(t *testing.T) {
 	if diff := pretty.Compare(w.Result().Cookies(), wantCookies); diff != "" {
 		t.Errorf("redirectJS(%v) cookies diff (-got +want):\n%v", resp, diff)
 	}
-	got, err := ioutil.ReadAll(w.Result().Body)
+	got, err := io.ReadAll(w.Result().Body)
 	if err != nil {
-		t.Fatalf("ioutil.ReadAll() error = %v", err)
+		t.Fatalf("io.ReadAll() error = %v", err)
 	}
 	if diff := pretty.Compare(string(got), wantBody); diff != "" {
 		t.Errorf("redirectJS(%v) body diff (-got +want):\n%v", resp, diff)
@@ -439,9 +439,9 @@ func TestRedirectXSSI(t *testing.T) {
 	if diff := pretty.Compare(w.Result().Cookies(), wantCookies); diff != "" {
 		t.Errorf("redirectXSSI(%v) cookies diff (-got +want):\n%v", resp, diff)
 	}
-	got, err := ioutil.ReadAll(w.Result().Body)
+	got, err := io.ReadAll(w.Result().Body)
 	if err != nil {
-		t.Fatalf("ioutil.ReadAll() error = %v", err)
+		t.Fatalf("io.ReadAll() error = %v", err)
 	}
 	if string(got) != wantBody {
 		t.Errorf("redirectXSSI(%v) body = %v, want %v", resp, string(got), wantBody)
