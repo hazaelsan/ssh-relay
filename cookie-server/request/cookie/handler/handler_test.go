@@ -16,10 +16,10 @@ import (
 	"google.golang.org/grpc"
 
 	dpb "github.com/golang/protobuf/ptypes/duration"
-	configpb "github.com/hazaelsan/ssh-relay/cookie-server/proto/v1/config_go_proto"
-	requestpb "github.com/hazaelsan/ssh-relay/cookie-server/proto/v1/request_go_proto"
-	servicepb "github.com/hazaelsan/ssh-relay/cookie-server/proto/v1/service_go_proto"
-	cookiepb "github.com/hazaelsan/ssh-relay/proto/v1/cookie_go_proto"
+	configpb "github.com/hazaelsan/ssh-relay/cookie-server/proto/v1/config"
+	requestpb "github.com/hazaelsan/ssh-relay/cookie-server/proto/v1/request"
+	servicepb "github.com/hazaelsan/ssh-relay/cookie-server/proto/v1/service"
+	cookiepb "github.com/hazaelsan/ssh-relay/proto/v1/cookie"
 	statuspb "google.golang.org/genproto/googleapis/rpc/status"
 )
 

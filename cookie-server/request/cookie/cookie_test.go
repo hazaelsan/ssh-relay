@@ -6,7 +6,7 @@ import (
 
 	"github.com/kylelemons/godebug/pretty"
 
-	requestpb "github.com/hazaelsan/ssh-relay/cookie-server/proto/v1/request_go_proto"
+	requestpb "github.com/hazaelsan/ssh-relay/cookie-server/proto/v1/request"
 )
 
 func TestNew(t *testing.T) {

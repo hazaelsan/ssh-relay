@@ -11,7 +11,7 @@ import (
 	"github.com/golang/protobuf/proto"
 	"github.com/hazaelsan/ssh-relay/relay/runner"
 
-	pb "github.com/hazaelsan/ssh-relay/relay/proto/v1/config_go_proto"
+	pb "github.com/hazaelsan/ssh-relay/relay/proto/v1/config"
 )
 
 var (

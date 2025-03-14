@@ -9,7 +9,7 @@ import "proto/v1/tls.proto";
 option java_package = "net.hazael.sshrelay.v1";
 option java_outer_classname = "HttpProto";
 option java_multiple_files = true;
-option go_package = "github.com/hazaelsan/ssh-relay/proto/v1/http_go_proto";
+option go_package = "github.com/hazaelsan/ssh-relay/proto/v1/http";
 
 // HTTP Server settings, see https://golang.org/pkg/net/http/#Server.
 message HttpServer {
@@ -46,7 +46,7 @@ message HttpServerOptions {
   HttpServer http_server = 3;
 
   // SSL/TLS settings, see https://golang.org/pkg/crypto/tls/#Config.
-  TlsConfig tls_config = 4 [(google.api.field_behavior) = REQUIRED];
+  hazaelsan.tls.v1.TlsConfig tls_config = 4 [(google.api.field_behavior) = REQUIRED];
 
   // The maximum age for the HSTS Policy header.
   // This field SHOULD be set to a long value (in the order of months).
@@ -66,7 +66,7 @@ message HttpServerOptions {
 // https://golang.org/pkg/net/http/#Transport.
 message HttpTransport {
   // SSL/TLS settings, see https://golang.org/pkg/crypto/tls/#Config.
-  TlsConfig tls_config = 1;
+  hazaelsan.tls.v1.TlsConfig tls_config = 1;
 
   // The timeout for reading request headers.
   google.protobuf.Duration response_header_timeout = 2;

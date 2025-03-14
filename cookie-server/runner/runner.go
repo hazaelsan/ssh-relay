@@ -10,8 +10,8 @@ import (
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials"
 
-	configpb "github.com/hazaelsan/ssh-relay/cookie-server/proto/v1/config_go_proto"
-	servicepb "github.com/hazaelsan/ssh-relay/cookie-server/proto/v1/service_go_proto"
+	configpb "github.com/hazaelsan/ssh-relay/cookie-server/proto/v1/config"
+	servicepb "github.com/hazaelsan/ssh-relay/cookie-server/proto/v1/service"
 )
 
 // New instantiates a Runner with a *configpb.Config.

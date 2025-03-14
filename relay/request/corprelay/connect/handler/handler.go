@@ -9,7 +9,7 @@ import (
 	"github.com/hazaelsan/ssh-relay/relay/request/corprelay/connect"
 	"github.com/hazaelsan/ssh-relay/session"
 
-	configpb "github.com/hazaelsan/ssh-relay/relay/proto/v1/config_go_proto"
+	configpb "github.com/hazaelsan/ssh-relay/relay/proto/v1/config"
 )
 
 // New creates a *Handler for an HTTP request.

@@ -12,7 +12,7 @@ import (
 	"github.com/hazaelsan/ssh-relay/helper/session/corprelayv4"
 	rhttp "github.com/hazaelsan/ssh-relay/http"
 
-	pb "github.com/hazaelsan/ssh-relay/helper/proto/v1/config_go_proto"
+	pb "github.com/hazaelsan/ssh-relay/helper/proto/v1/config"
 )
 
 // New creates an *Agent.

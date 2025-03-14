@@ -9,7 +9,7 @@ package hazaelsan.ssh_relay.cookie_server.v1;
 option java_package = "net.hazael.sshrelay.cookieserver.v1";
 option java_outer_classname = "ServiceProto";
 option java_multiple_files = true;
-option go_package = "github.com/hazaelsan/ssh-relay/cookie-server/proto/v1/service_go_proto";
+option go_package = "github.com/hazaelsan/ssh-relay/cookie-server/proto/v1/service";
 
 // A service for authenticating/authorizing /cookie requests before forwarding
 // them to an SSH relay, see

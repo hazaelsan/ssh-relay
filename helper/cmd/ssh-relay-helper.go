@@ -19,8 +19,8 @@ import (
 	"github.com/hazaelsan/ssh-relay/helper/agent"
 	"github.com/hazaelsan/ssh-relay/helper/session"
 
-	pb "github.com/hazaelsan/ssh-relay/helper/proto/v1/config_go_proto"
-	httppb "github.com/hazaelsan/ssh-relay/proto/v1/http_go_proto"
+	pb "github.com/hazaelsan/ssh-relay/helper/proto/v1/config"
+	httppb "github.com/hazaelsan/ssh-relay/proto/v1/http"
 )
 
 var (

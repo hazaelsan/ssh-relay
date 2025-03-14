@@ -8,7 +8,7 @@ import "proto/v1/grpc.proto";
 option java_package = "net.hazael.sshrelay.cookieserver.backend.example.v1";
 option java_outer_classname = "ConfigProto";
 option java_multiple_files = true;
-option go_package = "github.com/hazaelsan/ssh-relay/cookie-server/backend/example/proto/v1/config_go_proto";
+option go_package = "github.com/hazaelsan/ssh-relay/cookie-server/backend/example/proto/v1/config";
 
 // Configuration settings for the Cookie Server gRPC example backend.
 message Config {

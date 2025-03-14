@@ -13,8 +13,8 @@ import (
 	"github.com/kylelemons/godebug/pretty"
 
 	dpb "github.com/golang/protobuf/ptypes/duration"
-	httppb "github.com/hazaelsan/ssh-relay/proto/v1/http_go_proto"
-	tlspb "github.com/hazaelsan/ssh-relay/proto/v1/tls_go_proto"
+	httppb "github.com/hazaelsan/ssh-relay/proto/v1/http"
+	tlspb "github.com/hazaelsan/ssh-relay/proto/v1/tls"
 )
 
 func subjectCN(b []byte) (string, error) {

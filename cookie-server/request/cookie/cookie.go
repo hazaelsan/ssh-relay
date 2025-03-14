@@ -6,7 +6,7 @@ import (
 
 	"github.com/hazaelsan/ssh-relay/request"
 
-	requestpb "github.com/hazaelsan/ssh-relay/cookie-server/proto/v1/request_go_proto"
+	requestpb "github.com/hazaelsan/ssh-relay/cookie-server/proto/v1/request"
 )
 
 // Map of redirection method name to enum.
@@ -17,10 +17,10 @@ var redirectionMethodMap = map[string]requestpb.RedirectionMethod{
 
 // New creates a *Request from an *http.Request.
 // There's some special logic regarding query params:
-//   * ext/path are required
-//   * If version is unspecified, it defaults to 1
-//   * Version 1 clients only support HTTP redirection
-//   * Version 2 clients MUST specify a redirection method (which MUST NOT be HTTP redirection)
+//   - ext/path are required
+//   - If version is unspecified, it defaults to 1
+//   - Version 1 clients only support HTTP redirection
+//   - Version 2 clients MUST specify a redirection method (which MUST NOT be HTTP redirection)
 func New(req *http.Request) (*requestpb.Request, error) {
 	r := &requestpb.Request{
 		Ext:     req.URL.Query().Get("ext"),
