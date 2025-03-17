@@ -12,9 +12,9 @@ import (
 
 	"github.com/kylelemons/godebug/pretty"
 
-	dpb "github.com/golang/protobuf/ptypes/duration"
-	httppb "github.com/hazaelsan/ssh-relay/proto/v1/http"
-	tlspb "github.com/hazaelsan/ssh-relay/proto/v1/tls"
+	"github.com/hazaelsan/ssh-relay/proto/v1/httppb"
+	"github.com/hazaelsan/ssh-relay/proto/v1/tlspb"
+	"google.golang.org/protobuf/types/known/durationpb"
 )
 
 func subjectCN(b []byte) (string, error) {
@@ -43,7 +43,7 @@ func TestNewClient(t *testing.T) {
 					ClientAuthType: tlspb.TlsConfig_REQUEST_CLIENT_CERT,
 				},
 				MaxResponseHeaderBytes: 5,
-				ResponseHeaderTimeout:  &dpb.Duration{Seconds: 3},
+				ResponseHeaderTimeout:  &durationpb.Duration{Seconds: 3},
 			},
 			want: &http.Client{
 				Transport: &http.Transport{
@@ -93,7 +93,7 @@ func TestNewClient(t *testing.T) {
 					RootCaCerts:    []string{"../testdata/test.crt"},
 					ClientAuthType: tlspb.TlsConfig_REQUEST_CLIENT_CERT,
 				},
-				ResponseHeaderTimeout: &dpb.Duration{Seconds: -1},
+				ResponseHeaderTimeout: &durationpb.Duration{Seconds: -1},
 			},
 		},
 	}

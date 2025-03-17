@@ -6,7 +6,7 @@ import (
 
 	"github.com/hazaelsan/ssh-relay/request"
 
-	requestpb "github.com/hazaelsan/ssh-relay/cookie-server/proto/v1/request"
+	"github.com/hazaelsan/ssh-relay/cookie-server/proto/v1/requestpb"
 )
 
 // Map of redirection method name to enum.

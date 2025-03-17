@@ -11,11 +11,11 @@ import (
 	"testing"
 	"time"
 
-	dpb "github.com/golang/protobuf/ptypes/duration"
 	"github.com/kylelemons/godebug/pretty"
 
-	httppb "github.com/hazaelsan/ssh-relay/proto/v1/http"
-	tlspb "github.com/hazaelsan/ssh-relay/proto/v1/tls"
+	"github.com/hazaelsan/ssh-relay/proto/v1/httppb"
+	"github.com/hazaelsan/ssh-relay/proto/v1/tlspb"
+	"google.golang.org/protobuf/types/known/durationpb"
 )
 
 func getHeader(h http.Header, s string) string {
@@ -86,13 +86,13 @@ func TestNewServer(t *testing.T) {
 					ClientAuthType: tlspb.TlsConfig_REQUEST_CLIENT_CERT,
 				},
 				HttpServer: &httppb.HttpServer{
-					ReadTimeout:       &dpb.Duration{Seconds: 1},
-					ReadHeaderTimeout: &dpb.Duration{Seconds: 2},
-					WriteTimeout:      &dpb.Duration{Seconds: 3},
-					IdleTimeout:       &dpb.Duration{Seconds: 4},
+					ReadTimeout:       &durationpb.Duration{Seconds: 1},
+					ReadHeaderTimeout: &durationpb.Duration{Seconds: 2},
+					WriteTimeout:      &durationpb.Duration{Seconds: 3},
+					IdleTimeout:       &durationpb.Duration{Seconds: 4},
 					MaxHeaderBytes:    10,
 				},
-				HstsMaxAge:            &dpb.Duration{Seconds: 3},
+				HstsMaxAge:            &durationpb.Duration{Seconds: 3},
 				HstsIncludeSubdomains: true,
 			},
 			server: &http.Server{
@@ -197,7 +197,7 @@ func TestNewServer(t *testing.T) {
 					ClientAuthType: tlspb.TlsConfig_REQUEST_CLIENT_CERT,
 				},
 				HttpServer: &httppb.HttpServer{
-					ReadTimeout: &dpb.Duration{Seconds: -1},
+					ReadTimeout: &durationpb.Duration{Seconds: -1},
 				},
 			},
 			server: &http.Server{
@@ -215,7 +215,7 @@ func TestNewServer(t *testing.T) {
 					KeyFile:        "../testdata/test.key",
 					ClientAuthType: tlspb.TlsConfig_REQUEST_CLIENT_CERT,
 				},
-				HstsMaxAge: &dpb.Duration{Seconds: -3},
+				HstsMaxAge: &durationpb.Duration{Seconds: -3},
 			},
 			server: &http.Server{
 				Addr:              "[::1]:8022",

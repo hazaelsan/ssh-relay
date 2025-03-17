@@ -1,16 +1,22 @@
-load("@io_bazel_rules_go//go:def.bzl", "go_binary", "go_library")
+load("@rules_go//go:def.bzl", "go_binary", "go_library")
 
 package(default_visibility = ["//visibility:private"])
 
 go_binary(
     name = "ssh_relay_helper",
+    embed = [":cmd_lib"],
+)
+
+go_library(
+    name = "cmd_lib",
     srcs = ["ssh-relay-helper.go"],
+    importpath = "github.com/hazaelsan/ssh-relay/helper/cmd",
     deps = [
         "//helper/agent",
         "//helper/proto/v1:config_go_proto",
         "//helper/session",
         "//proto/v1:http_go_proto",
-        "@com_github_golang_glog//:go_default_library",
-        "@com_github_golang_protobuf//proto:go_default_library",
+        "@com_github_golang_glog//:glog",
+        "@org_golang_google_protobuf//encoding/prototext",
     ],
 )

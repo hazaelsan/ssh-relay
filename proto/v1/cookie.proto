@@ -8,7 +8,7 @@ import "google/protobuf/duration.proto";
 option java_package = "net.hazael.sshrelay.v1";
 option java_outer_classname = "CookieProto";
 option java_multiple_files = true;
-option go_package = "github.com/hazaelsan/ssh-relay/proto/v1/cookie";
+option go_package = "github.com/hazaelsan/ssh-relay/proto/v1/cookiepb";
 
 // Configuration settings for cookies set by the Cookie Server and consumed by
 // the SSH relays.

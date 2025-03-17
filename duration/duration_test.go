@@ -6,17 +6,17 @@ import (
 
 	"github.com/kylelemons/godebug/pretty"
 
-	dpb "github.com/golang/protobuf/ptypes/duration"
+	"google.golang.org/protobuf/types/known/durationpb"
 )
 
 func TestFromProto(t *testing.T) {
 	testdata := []struct {
-		d    *dpb.Duration
+		d    *durationpb.Duration
 		want time.Duration
 		ok   bool
 	}{
 		{
-			d:    &dpb.Duration{Seconds: 10},
+			d:    &durationpb.Duration{Seconds: 10},
 			want: 10 * time.Second,
 			ok:   true,
 		},
@@ -26,7 +26,7 @@ func TestFromProto(t *testing.T) {
 		},
 		// Negative durations are an error.
 		{
-			d: &dpb.Duration{Seconds: -10},
+			d: &durationpb.Duration{Seconds: -10},
 		},
 	}
 	for _, tt := range testdata {

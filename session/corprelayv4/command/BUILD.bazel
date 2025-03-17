@@ -1,4 +1,4 @@
-load("@io_bazel_rules_go//go:def.bzl", "go_library", "go_test")
+load("@rules_go//go:def.bzl", "go_library", "go_test")
 
 package(default_visibility = ["//:__subpackages__"])
 
@@ -12,5 +12,5 @@ go_test(
     name = "command_test",
     srcs = ["command_test.go"],
     embed = [":command"],
-    deps = ["@com_github_kylelemons_godebug//pretty:go_default_library"],
+    deps = ["@com_github_kylelemons_godebug//pretty"],
 )

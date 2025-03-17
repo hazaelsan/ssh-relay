@@ -1,54 +1,12 @@
-load("@bazel_gazelle//:def.bzl", "gazelle")
+load("@gazelle//:def.bzl", "gazelle")
 
-# gazelle:prefix github.com/hazaelsan/ssh-relay
+# gazelle:go_naming_convention import
+# gazelle:go_test file
 # gazelle:proto package
 # gazelle:proto_group go_package
+# gazelle:resolve proto proto google/api/field_behavior.proto @googleapis//google/api:field_behavior_proto
+# gazelle:resolve proto go google/api/field_behavior.proto  @org_golang_google_genproto_googleapis_api//annotations
+# gazelle:resolve proto proto google/rpc/status.proto @googleapis//google/rpc:status_proto
+# gazelle:resolve proto go google/rpc/status.proto  @org_golang_google_genproto_googleapis_rpc//status
+# gazelle:exclude **/empty.go
 gazelle(name = "gazelle")
-
-filegroup(
-    name = "coverage_files",
-    srcs = glob(["bazel-out/**/coverage.dat"]),
-)
-
-genrule(
-    name = "coverage_gcov",
-    outs = ["coverage.gcov"],
-    cmd = " ".join([
-        "$(locations @com_github_wadey_gocovmerge//:gocovmerge)",
-        "--",
-        "$(locations //:coverage_files)",
-        ">$@",
-    ]),
-    tags = ["manual"],
-    tools = [
-        ":coverage_files",
-        "@com_github_wadey_gocovmerge//:gocovmerge",
-    ],
-)
-
-genrule(
-    name = "coverage_lcov",
-    outs = ["coverage.lcov"],
-    cmd = " ".join([
-        "GOPATH=$(GOPATH)",
-        "$(locations @com_github_jandelgado_gcov2lcov//:gcov2lcov)",
-        "--infile=$(locations :coverage_gcov)",
-        "--outfile=$@",
-    ]),
-    tags = ["manual"],
-    tools = [
-        ":coverage_gcov",
-        "@com_github_jandelgado_gcov2lcov//:gcov2lcov",
-    ],
-)
-
-genrule(
-    name = "coverage_html",
-    outs = ["coverage"],
-    cmd = "genhtml --output-directory $@ $(locations :coverage_lcov)",
-    tags = [
-        "local",
-        "manual",
-    ],
-    tools = [":coverage_lcov"],
-)

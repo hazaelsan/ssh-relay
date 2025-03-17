@@ -8,7 +8,7 @@ import "proto/v1/http.proto";
 option java_package = "net.hazael.sshrelay.relay.v1";
 option java_outer_classname = "ConfigProto";
 option java_multiple_files = true;
-option go_package = "github.com/hazaelsan/ssh-relay/relay/proto/v1/config";
+option go_package = "github.com/hazaelsan/ssh-relay/relay/proto/v1/configpb";
 
 // Configuration settings for the SSH-over-WebSocket Relay server.
 message Config {

@@ -12,11 +12,11 @@ import (
 	"github.com/hazaelsan/ssh-relay/helper/session/corprelayv4"
 	rhttp "github.com/hazaelsan/ssh-relay/http"
 
-	pb "github.com/hazaelsan/ssh-relay/helper/proto/v1/config"
+	"github.com/hazaelsan/ssh-relay/helper/proto/v1/configpb"
 )
 
 // New creates an *Agent.
-func New(cfg *pb.Config) (*Agent, error) {
+func New(cfg *configpb.Config) (*Agent, error) {
 	c, err := rhttp.NewClient(cfg.CookieServerTransport)
 	if err != nil {
 		return nil, fmt.Errorf("rhttp.NewClient() error: %w", err)
@@ -29,7 +29,7 @@ func New(cfg *pb.Config) (*Agent, error) {
 
 // An Agent authenticates against the Cookie Server and sets up an SSH-over-WebSocket session.
 type Agent struct {
-	cfg    *pb.Config
+	cfg    *configpb.Config
 	client *http.Client
 }
 
@@ -49,9 +49,9 @@ func (a *Agent) Run() error {
 	}
 	var s session.Session
 	switch a.cfg.GetProtocolVersion() {
-	case pb.Config_CORP_RELAY, pb.Config_PROTOCOL_VERSION_UNSPECIFIED:
+	case configpb.Config_CORP_RELAY, configpb.Config_PROTOCOL_VERSION_UNSPECIFIED:
 		s = corprelay.New(opts)
-	case pb.Config_CORP_RELAY_V4:
+	case configpb.Config_CORP_RELAY_V4:
 		s = corprelayv4.New(opts)
 	default:
 		return errors.New("unsupported protocol version")

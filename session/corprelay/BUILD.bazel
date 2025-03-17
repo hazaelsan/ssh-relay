@@ -1,4 +1,4 @@
-load("@io_bazel_rules_go//go:def.bzl", "go_library", "go_test")
+load("@rules_go//go:def.bzl", "go_library", "go_test")
 
 package(default_visibility = ["//:__subpackages__"])
 
@@ -8,9 +8,9 @@ go_library(
     importpath = "github.com/hazaelsan/ssh-relay/session/corprelay",
     deps = [
         "//session",
-        "@com_github_golang_glog//:go_default_library",
-        "@com_github_google_uuid//:go_default_library",
-        "@com_github_gorilla_websocket//:go_default_library",
+        "@com_github_golang_glog//:glog",
+        "@com_github_google_uuid//:uuid",
+        "@com_github_gorilla_websocket//:websocket",
     ],
 )
 
@@ -18,5 +18,5 @@ go_test(
     name = "corprelay_test",
     srcs = ["corprelay_test.go"],
     embed = [":corprelay"],
-    deps = ["@com_github_kylelemons_godebug//pretty:go_default_library"],
+    deps = ["@com_github_kylelemons_godebug//pretty"],
 )

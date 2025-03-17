@@ -17,7 +17,7 @@ import (
 	"github.com/hazaelsan/ssh-relay/session"
 	"github.com/kylelemons/godebug/pretty"
 
-	pb "github.com/hazaelsan/ssh-relay/relay/proto/v1/config"
+	"github.com/hazaelsan/ssh-relay/relay/proto/v1/configpb"
 )
 
 const (
@@ -54,7 +54,7 @@ func listener(done <-chan struct{}) (string, error) {
 
 func newRunner() *Runner {
 	return &Runner{
-		cfg: &pb.Config{
+		cfg: &configpb.Config{
 			OriginCookieName: "origin",
 		},
 		mgr: manager.New(1, maxAge),

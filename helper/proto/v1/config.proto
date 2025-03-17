@@ -8,7 +8,7 @@ import "proto/v1/http.proto";
 option java_package = "net.hazael.sshrelay.helper.v1";
 option java_outer_classname = "ConfigProto";
 option java_multiple_files = true;
-option go_package = "github.com/hazaelsan/ssh-relay/helper/proto/v1/config";
+option go_package = "github.com/hazaelsan/ssh-relay/helper/proto/v1/configpb";
 
 // Configuration settings for the SSH Relay client helper, used as
 // a `ProxyCommand` option to `ssh`.

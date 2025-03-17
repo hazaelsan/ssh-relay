@@ -13,13 +13,13 @@ import (
 	"os"
 
 	"github.com/golang/glog"
-	"github.com/golang/protobuf/proto"
 	"github.com/hazaelsan/ssh-relay/tls"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials"
+	"google.golang.org/protobuf/encoding/prototext"
 
-	configpb "github.com/hazaelsan/ssh-relay/cookie-server/backend/example/proto/v1/config"
-	servicepb "github.com/hazaelsan/ssh-relay/cookie-server/proto/v1/service"
+	"github.com/hazaelsan/ssh-relay/cookie-server/backend/example/proto/v1/configpb"
+	"github.com/hazaelsan/ssh-relay/cookie-server/proto/v1/servicepb"
 )
 
 var (
@@ -32,7 +32,7 @@ func loadConfig(s string) (*configpb.Config, error) {
 		return nil, err
 	}
 	cfg := new(configpb.Config)
-	if err := proto.UnmarshalText(string(buf), cfg); err != nil {
+	if err := prototext.Unmarshal(buf, cfg); err != nil {
 		return nil, err
 	}
 	if cfg.GrpcOptions == nil {

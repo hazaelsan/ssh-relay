@@ -15,12 +15,12 @@ import (
 	"github.com/kylelemons/godebug/pretty"
 	"google.golang.org/grpc"
 
-	dpb "github.com/golang/protobuf/ptypes/duration"
-	configpb "github.com/hazaelsan/ssh-relay/cookie-server/proto/v1/config"
-	requestpb "github.com/hazaelsan/ssh-relay/cookie-server/proto/v1/request"
-	servicepb "github.com/hazaelsan/ssh-relay/cookie-server/proto/v1/service"
-	cookiepb "github.com/hazaelsan/ssh-relay/proto/v1/cookie"
+	"github.com/hazaelsan/ssh-relay/cookie-server/proto/v1/configpb"
+	"github.com/hazaelsan/ssh-relay/cookie-server/proto/v1/requestpb"
+	"github.com/hazaelsan/ssh-relay/cookie-server/proto/v1/servicepb"
+	"github.com/hazaelsan/ssh-relay/proto/v1/cookiepb"
 	statuspb "google.golang.org/genproto/googleapis/rpc/status"
+	"google.golang.org/protobuf/types/known/durationpb"
 )
 
 type authServer struct {
@@ -84,7 +84,7 @@ func TestNew(t *testing.T) {
 			name: "good",
 			cfg: &configpb.Config{
 				OriginCookie: &cookiepb.Cookie{
-					MaxAge: &dpb.Duration{Seconds: 3},
+					MaxAge: &durationpb.Duration{Seconds: 3},
 				},
 			},
 			want: 3 * time.Second,
@@ -94,7 +94,7 @@ func TestNew(t *testing.T) {
 			name: "bad MaxAge",
 			cfg: &configpb.Config{
 				OriginCookie: &cookiepb.Cookie{
-					MaxAge: &dpb.Duration{Seconds: -3},
+					MaxAge: &durationpb.Duration{Seconds: -3},
 				},
 			},
 		},
@@ -286,7 +286,7 @@ func TestSetCookies(t *testing.T) {
 			Name:   "cookie",
 			Path:   "/",
 			Domain: ".example.org",
-			MaxAge: &dpb.Duration{Seconds: 3},
+			MaxAge: &durationpb.Duration{Seconds: 3},
 		},
 	}
 	req := &requestpb.Request{Ext: "foo"}
@@ -323,7 +323,7 @@ func TestRedirectHTTP(t *testing.T) {
 			Name:   "cookie",
 			Path:   "/",
 			Domain: ".example.org",
-			MaxAge: &dpb.Duration{Seconds: 3},
+			MaxAge: &durationpb.Duration{Seconds: 3},
 		},
 	}
 	req := &requestpb.Request{
@@ -370,7 +370,7 @@ func TestRedirectJS(t *testing.T) {
 			Name:   "cookie",
 			Path:   "/",
 			Domain: ".example.org",
-			MaxAge: &dpb.Duration{Seconds: 3},
+			MaxAge: &durationpb.Duration{Seconds: 3},
 		},
 	}
 	req := &requestpb.Request{
@@ -419,7 +419,7 @@ func TestRedirectXSSI(t *testing.T) {
 			Name:   "cookie",
 			Path:   "/",
 			Domain: ".example.org",
-			MaxAge: &dpb.Duration{Seconds: 3},
+			MaxAge: &durationpb.Duration{Seconds: 3},
 		},
 	}
 	req := &requestpb.Request{

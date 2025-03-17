@@ -8,8 +8,8 @@ import (
 	"github.com/hazaelsan/ssh-relay/duration"
 	"github.com/hazaelsan/ssh-relay/tls"
 
-	dpb "github.com/golang/protobuf/ptypes/duration"
-	httppb "github.com/hazaelsan/ssh-relay/proto/v1/http"
+	"github.com/hazaelsan/ssh-relay/proto/v1/httppb"
+	"google.golang.org/protobuf/types/known/durationpb"
 )
 
 // NewClient generates an *http.Client from a config message.
@@ -25,7 +25,7 @@ func NewClient(cfg *httppb.HttpTransport) (*http.Client, error) {
 		TLSClientConfig:        tlsCfg,
 		MaxResponseHeaderBytes: cfg.MaxResponseHeaderBytes,
 	}
-	for dst, src := range map[*time.Duration]*dpb.Duration{
+	for dst, src := range map[*time.Duration]*durationpb.Duration{
 		&t.ResponseHeaderTimeout: cfg.ResponseHeaderTimeout,
 	} {
 		if err := duration.FromProto(dst, src); err != nil {

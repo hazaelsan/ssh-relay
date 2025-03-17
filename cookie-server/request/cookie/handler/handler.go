@@ -14,10 +14,10 @@ import (
 	"github.com/hazaelsan/ssh-relay/response"
 	"google.golang.org/grpc/status"
 
-	configpb "github.com/hazaelsan/ssh-relay/cookie-server/proto/v1/config"
-	requestpb "github.com/hazaelsan/ssh-relay/cookie-server/proto/v1/request"
-	servicepb "github.com/hazaelsan/ssh-relay/cookie-server/proto/v1/service"
-	cookiepb "github.com/hazaelsan/ssh-relay/proto/v1/cookie"
+	"github.com/hazaelsan/ssh-relay/cookie-server/proto/v1/configpb"
+	"github.com/hazaelsan/ssh-relay/cookie-server/proto/v1/requestpb"
+	"github.com/hazaelsan/ssh-relay/cookie-server/proto/v1/servicepb"
+	"github.com/hazaelsan/ssh-relay/proto/v1/cookiepb"
 )
 
 const (

@@ -6,13 +6,12 @@ import (
 	"net/http"
 	"time"
 
+	"github.com/golang/glog"
 	"github.com/hazaelsan/ssh-relay/duration"
 	"github.com/hazaelsan/ssh-relay/tls"
 
-	"github.com/golang/glog"
-
-	dpb "github.com/golang/protobuf/ptypes/duration"
-	httppb "github.com/hazaelsan/ssh-relay/proto/v1/http"
+	"github.com/hazaelsan/ssh-relay/proto/v1/httppb"
+	"google.golang.org/protobuf/types/known/durationpb"
 )
 
 // HandlerFunc is the function signature for an HTTP handler.
@@ -63,7 +62,7 @@ func NewServer(cfg *httppb.HttpServerOptions) (*Server, error) {
 		TLSConfig:      tlsConfig,
 		Handler:        mux,
 	}
-	for dst, src := range map[*time.Duration]*dpb.Duration{
+	for dst, src := range map[*time.Duration]*durationpb.Duration{
 		&server.ReadTimeout:       cfg.HttpServer.ReadTimeout,
 		&server.ReadHeaderTimeout: cfg.HttpServer.ReadHeaderTimeout,
 		&server.WriteTimeout:      cfg.HttpServer.WriteTimeout,

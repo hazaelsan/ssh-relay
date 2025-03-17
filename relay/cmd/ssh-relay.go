@@ -8,23 +8,23 @@ import (
 	"os"
 
 	"github.com/golang/glog"
-	"github.com/golang/protobuf/proto"
 	"github.com/hazaelsan/ssh-relay/relay/runner"
+	"google.golang.org/protobuf/encoding/prototext"
 
-	pb "github.com/hazaelsan/ssh-relay/relay/proto/v1/config"
+	"github.com/hazaelsan/ssh-relay/relay/proto/v1/configpb"
 )
 
 var (
 	cfgFile = flag.String("config", "", "path to a textproto config file")
 )
 
-func loadConfig(s string) (*pb.Config, error) {
+func loadConfig(s string) (*configpb.Config, error) {
 	buf, err := os.ReadFile(s)
 	if err != nil {
 		return nil, err
 	}
-	cfg := new(pb.Config)
-	if err := proto.UnmarshalText(string(buf), cfg); err != nil {
+	cfg := new(configpb.Config)
+	if err := prototext.Unmarshal(buf, cfg); err != nil {
 		return nil, err
 	}
 	if cfg.ServerOptions == nil {

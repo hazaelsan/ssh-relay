@@ -6,7 +6,7 @@ import (
 	"net/http"
 	"net/url"
 
-	httppb "github.com/hazaelsan/ssh-relay/proto/v1/http"
+	"github.com/hazaelsan/ssh-relay/proto/v1/httppb"
 )
 
 const (

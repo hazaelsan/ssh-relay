@@ -1,4 +1,4 @@
-load("@io_bazel_rules_go//go:def.bzl", "go_library", "go_test")
+load("@rules_go//go:def.bzl", "go_library", "go_test")
 
 package(default_visibility = ["//visibility:public"])
 
@@ -6,10 +6,7 @@ go_library(
     name = "duration",
     srcs = ["duration.go"],
     importpath = "github.com/hazaelsan/ssh-relay/duration",
-    deps = [
-        "@com_github_golang_protobuf//ptypes:go_default_library_gen",
-        "@io_bazel_rules_go//proto/wkt:duration_go_proto",
-    ],
+    deps = ["@org_golang_google_protobuf//types/known/durationpb"],
 )
 
 go_test(
@@ -17,7 +14,7 @@ go_test(
     srcs = ["duration_test.go"],
     embed = [":duration"],
     deps = [
-        "@com_github_kylelemons_godebug//pretty:go_default_library",
-        "@io_bazel_rules_go//proto/wkt:duration_go_proto",
+        "@com_github_kylelemons_godebug//pretty",
+        "@org_golang_google_protobuf//types/known/durationpb",
     ],
 )

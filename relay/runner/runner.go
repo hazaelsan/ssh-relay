@@ -7,11 +7,11 @@ import (
 	"github.com/hazaelsan/ssh-relay/http"
 	"github.com/hazaelsan/ssh-relay/relay/session/manager"
 
-	pb "github.com/hazaelsan/ssh-relay/relay/proto/v1/config"
+	"github.com/hazaelsan/ssh-relay/relay/proto/v1/configpb"
 )
 
-// New instantiates a Runner with a *pb.Config.
-func New(cfg *pb.Config) (*Runner, error) {
+// New instantiates a Runner with a *configpb.Config.
+func New(cfg *configpb.Config) (*Runner, error) {
 	s, err := http.NewServer(cfg.ServerOptions)
 	if err != nil {
 		return nil, err
@@ -37,7 +37,7 @@ func New(cfg *pb.Config) (*Runner, error) {
 
 // Runner is the main SSH-over-WebSocket Relay connection handler.
 type Runner struct {
-	cfg    *pb.Config
+	cfg    *configpb.Config
 	mgr    *manager.Manager
 	server *http.Server
 }

@@ -15,12 +15,12 @@ import (
 	"os"
 
 	"github.com/golang/glog"
-	"github.com/golang/protobuf/proto"
 	"github.com/hazaelsan/ssh-relay/helper/agent"
 	"github.com/hazaelsan/ssh-relay/helper/session"
+	"google.golang.org/protobuf/encoding/prototext"
 
-	pb "github.com/hazaelsan/ssh-relay/helper/proto/v1/config"
-	httppb "github.com/hazaelsan/ssh-relay/proto/v1/http"
+	"github.com/hazaelsan/ssh-relay/helper/proto/v1/configpb"
+	"github.com/hazaelsan/ssh-relay/proto/v1/httppb"
 )
 
 var (
@@ -31,14 +31,14 @@ var (
 )
 
 // buildConfig builds and validates a proto config message.
-func buildConfig(s string) (*pb.Config, error) {
-	cfg := new(pb.Config)
+func buildConfig(s string) (*configpb.Config, error) {
+	cfg := new(configpb.Config)
 	if s != "" {
 		buf, err := os.ReadFile(s)
 		if err != nil {
 			return nil, err
 		}
-		if err := proto.UnmarshalText(string(buf), cfg); err != nil {
+		if err := prototext.Unmarshal(buf, cfg); err != nil {
 			return nil, err
 		}
 	}
