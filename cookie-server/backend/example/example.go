@@ -82,7 +82,7 @@ func (s *Server) Run() error {
 // Authorize responds to a /cookie authorization request, it always succeeds.
 func (s *Server) Authorize(ctx context.Context, req *servicepb.AuthorizeRequest) (*servicepb.AuthorizeResponse, error) {
 	return &servicepb.AuthorizeResponse{
-		Redirect: &servicepb.AuthorizeResponse_Endpoint{s.cfg.GetSshRelayAddr()},
+		Redirect: &servicepb.AuthorizeResponse_Endpoint{Endpoint: s.cfg.GetSshRelayAddr()},
 		Method:   req.GetRequest().GetMethod(),
 	}, nil
 }

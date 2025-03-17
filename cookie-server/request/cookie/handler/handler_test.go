@@ -39,10 +39,10 @@ func (a *authServer) Authorize(_ context.Context, req *servicepb.AuthorizeReques
 		Status: a.status,
 	}
 	if a.endpoint != "" {
-		resp.Redirect = &servicepb.AuthorizeResponse_Endpoint{a.endpoint}
+		resp.Redirect = &servicepb.AuthorizeResponse_Endpoint{Endpoint: a.endpoint}
 	}
 	if a.uri != "" {
-		resp.Redirect = &servicepb.AuthorizeResponse_NextUri{a.uri}
+		resp.Redirect = &servicepb.AuthorizeResponse_NextUri{NextUri: a.uri}
 	}
 	return resp, nil
 }
