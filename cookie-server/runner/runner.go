@@ -43,7 +43,7 @@ func (r *Runner) Run() error {
 	}
 	addr := net.JoinHostPort(r.cfg.GetGrpcOptions().GetAddr(), r.cfg.GetGrpcOptions().GetPort())
 	glog.V(4).Infof("Connecting to gRPC backend %v", addr)
-	conn, err := grpc.Dial(addr, grpc.WithTransportCredentials(credentials.NewTLS(tlsCfg)), grpc.WithBlock())
+	conn, err := grpc.NewClient(addr, grpc.WithTransportCredentials(credentials.NewTLS(tlsCfg)))
 	if err != nil {
 		return fmt.Errorf("grpc.Dial(%v) error: %w", addr, err)
 	}
