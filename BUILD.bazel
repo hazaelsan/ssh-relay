@@ -1,5 +1,7 @@
 load("@gazelle//:def.bzl", "gazelle")
 
+# gazelle:exclude **/empty.go
+# gazelle:go_grpc_compilers @rules_go//proto:go_grpc
 # gazelle:go_naming_convention import
 # gazelle:go_test file
 # gazelle:proto package
@@ -8,5 +10,4 @@ load("@gazelle//:def.bzl", "gazelle")
 # gazelle:resolve proto go google/api/field_behavior.proto  @org_golang_google_genproto_googleapis_api//annotations
 # gazelle:resolve proto proto google/rpc/status.proto @googleapis//google/rpc:status_proto
 # gazelle:resolve proto go google/rpc/status.proto  @org_golang_google_genproto_googleapis_rpc//status
-# gazelle:exclude **/empty.go
 gazelle(name = "gazelle")
