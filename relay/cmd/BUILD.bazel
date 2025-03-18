@@ -1,6 +1,37 @@
+load("@aspect_bazel_lib//lib:expand_template.bzl", "expand_template")
+load("@aspect_bazel_lib//lib:transitions.bzl", "platform_transition_filegroup")
 load("@rules_go//go:def.bzl", "go_binary", "go_library")
+load("@rules_oci//oci:defs.bzl", "oci_image", "oci_image_index", "oci_load", "oci_push")
+load("@rules_pkg//:pkg.bzl", "pkg_tar")
 
 package(default_visibility = ["//visibility:private"])
+
+expand_template(
+    name = "labels",
+    out = "labels.txt",
+    stamp_substitutions = {
+        "0.0.0": "{{BUILD_EMBED_LABEL}}",
+        "2001-02-03T04:05:06Z": "{{BUILD_TIMESTAMP_ISO8601}}",
+    },
+    template = [
+        "org.opencontainers.image.version=0.0.0",
+        "org.opencontainers.image.source=https://github.com/hazaelsan/ssh-relay/relay/cmd",
+        "org.opencontainers.image.title=SSH Relay",
+        "org.opencontainers.image.description=SSH-over-WebSocket relay.",
+        "org.opencontainers.image.base.name=gcr.io/distroless/base-debian12:nonroot",
+        "org.opencontainers.image.created=2001-02-03T04:05:06Z",
+    ],
+)
+
+expand_template(
+    name = "stamped_tags",
+    out = "stamped.tags.txt",
+    stamp_substitutions = {"0.0.0": "{{BUILD_EMBED_LABEL}}"},
+    template = [
+        "0.0.0",
+        "latest",
+    ],
+)
 
 go_binary(
     name = "ssh_relay",
@@ -17,4 +48,44 @@ go_library(
         "@com_github_golang_glog//:glog",
         "@org_golang_google_protobuf//encoding/prototext",
     ],
+)
+
+pkg_tar(
+    name = "tar",
+    srcs = [":ssh_relay"],
+)
+
+oci_image(
+    name = "image",
+    base = "@distroless_nonroot",
+    entrypoint = ["/ssh_relay"],
+    labels = ":labels",
+    tars = [":tar"],
+)
+
+oci_image_index(
+    name = "image_index",
+    images = [":image"],
+)
+
+platform_transition_filegroup(
+    name = "transitioned_image",
+    srcs = [":image"],
+    target_platform = select({
+        "@platforms//cpu:arm64": "@rules_go//go/toolchain:linux_arm64",
+        "@platforms//cpu:x86_64": "@rules_go//go/toolchain:linux_amd64",
+    }),
+)
+
+oci_load(
+    name = "load",
+    image = ":transitioned_image",
+    repo_tags = ["hazaelsan/ssh-relay:latest"],
+)
+
+oci_push(
+    name = "push",
+    image = ":image_index",
+    remote_tags = ":stamped_tags",
+    repository = "index.docker.io/hazaelsan/ssh-relay",
 )
