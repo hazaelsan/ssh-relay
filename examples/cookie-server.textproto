@@ -51,5 +51,5 @@ grpc_options {
 
     # Require valid client certs.
     client_auth_type: REQUIRE_AND_VERIFY_CLIENT_CERT
-}
+  }
 }

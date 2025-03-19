@@ -17,7 +17,7 @@ message Config {
 
   // Options for relay's outbound connections.
   message ClientOptions {
-    // Tthe timeout for dialing an outbound SSH session.
+    // The timeout for dialing an outbound SSH session.
     google.protobuf.Duration dial_timeout = 1;
   }
 
