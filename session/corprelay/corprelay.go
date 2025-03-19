@@ -1,5 +1,5 @@
 // Package corprelay implements the corp-relay@google.com protocol, see
-// https://chromium.googlesource.com/apps/libapps/+/HEAD/nassh/doc/relay-protocol.md#corp-relay.
+// https://chromium.googlesource.com/apps/libapps/+/HEAD/nassh/docs/relay-protocol.md#corp-relay.
 package corprelay
 
 import (
@@ -186,8 +186,10 @@ func (s *Session) parseBinary(r io.Reader) error {
 }
 
 // parseText handles non-SSH control messages:
-//   ack latency:     A:integer
-//   reply latency:   R:integer
+//
+//	ack latency:     A:integer
+//	reply latency:   R:integer
+//
 // TODO: Do something useful with these.
 func (s *Session) parseText(r io.Reader) error {
 	b := new(bytes.Buffer)

@@ -1,5 +1,5 @@
 // Package corprelayv4 implements the corp-relay-v4@google.com protocol, see
-// https://chromium.googlesource.com/apps/libapps/+/HEAD/nassh/doc/relay-protocol.md#corp-relay-v4.
+// https://chromium.googlesource.com/apps/libapps/+/HEAD/nassh/docs/relay-protocol.md#corp-relay-v4.
 package corprelayv4
 
 import (

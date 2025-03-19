@@ -41,7 +41,7 @@ message Config {
 
   // The transport settings for talking to the Cookie Server.
   hazaelsan.ssh_relay.v1.HttpTransport cookie_server_transport = 4
-    [(google.api.field_behavior) = REQUIRED];
+      [(google.api.field_behavior) = REQUIRED];
 
   // The transport settings for talking to an SSH Relay.
   // If unspecified, [cookie_server_transport][] will be used.
@@ -53,19 +53,24 @@ message Config {
     PROTOCOL_VERSION_UNSPECIFIED = 0;
 
     // The original protocol version, corp-relay@google.com, see
-    // https://chromium.googlesource.com/apps/libapps/+/HEAD/nassh/doc/relay-protocol.md#corp-relay.
+    // https://chromium.googlesource.com/apps/libapps/+/HEAD/nassh/docs/relay-protocol.md#corp-relay.
     CORP_RELAY = 1;
 
     // SSH Relay v4, corp-relay-v4@google.com, see
-    // https://chromium.googlesource.com/apps/libapps/+/HEAD/nassh/doc/relay-protocol.md#corp-relay-v4.
+    // https://chromium.googlesource.com/apps/libapps/+/HEAD/nassh/docs/relay-protocol.md#corp-relay-v4.
     CORP_RELAY_V4 = 2;
 
     // SSH-FE, ssh-fe@google.com, see
-    // https://chromium.googlesource.com/apps/libapps/+/HEAD/nassh/doc/relay-protocol.md#ssh_fe.
+    // https://chromium.googlesource.com/apps/libapps/+/HEAD/nassh/docs/relay-protocol.md#ssh_fe.
     // NOTE: Not supported.
     SSH_FE = 3;
 
-    reserved 4 to max;  // Next ID.
+    // Websockify, see
+    // https://chromium.googlesource.com/apps/libapps/+/HEAD/nassh/docs/relay-protocol.md#websockify.
+    // NOTE: Not supported.
+    WEBSOCKIFY = 4;
+
+    reserved 5 to max;  // Next ID.
   }
 
   // The SSH Relay protocol version to use for the session.

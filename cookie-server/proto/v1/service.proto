@@ -13,7 +13,7 @@ option go_package = "github.com/hazaelsan/ssh-relay/cookie-server/proto/v1/servi
 
 // A service for authenticating/authorizing /cookie requests before forwarding
 // them to an SSH relay, see
-// https://chromium.googlesource.com/apps/libapps/+/HEAD/nassh/doc/relay-protocol.md#corp-relay-cookie
+// https://chromium.googlesource.com/apps/libapps/+/HEAD/nassh/docs/relay-protocol.md#corp-relay-cookie
 // for the /cookie protocol.
 service CookieServer {
   // Performs authentication/authorization of a client.
@@ -40,7 +40,7 @@ message AuthorizeResponse {
 
     // The SSH relay address in host[:port] format, if port is unspecified then
     // the client may use 443, 8022, or the port used for connecting to the
-    // Cookie Server.  Therefore, it's recommended to always specify the port.
+    // Cookie Server. Therefore, it's recommended to always specify the port.
     string endpoint = 2;
   }
 

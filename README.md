@@ -4,7 +4,7 @@
 
 `ssh-relay` is a client/server implementation of Google's SSH-over-WebSocket
 Relay, as defined in
-https://chromium.googlesource.com/apps/libapps/+/HEAD/nassh/doc/relay-protocol.md.
+https://chromium.googlesource.com/apps/libapps/+/HEAD/nassh/docs/relay-protocol.md.
 
 The primary use case for this is using the [Secure Shell Chrome
 App][chrome-app] and the [Secure Shell Chrome Extension][chrome-extension], but
@@ -115,6 +115,6 @@ All code was written based on Google's [public documentation][relay-protocol]
 and minimally tested using the [Secure Shell Chrome App][chrome-app] and the
 [Secure Shell Chrome Extension][chrome-extension].
 
-[relay-protocol]: https://chromium.googlesource.com/apps/libapps/+/HEAD/nassh/doc/relay-protocol.md
+[relay-protocol]: https://chromium.googlesource.com/apps/libapps/+/HEAD/nassh/docs/relay-protocol.md
 [chrome-app]: https://chrome.google.com/webstore/detail/secure-shell-app/pnhechapfaindjhompbnflcldabbghjo
 [chrome-extension]: https://chrome.google.com/webstore/detail/secure-shell/iodihamcpbpeioajjeobimgagajmlibd

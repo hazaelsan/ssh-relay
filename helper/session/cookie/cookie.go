@@ -1,5 +1,5 @@
 // Package cookie implements functionality for interacting with the Cookie Server, see
-// https://chromium.googlesource.com/apps/libapps/+/HEAD/nassh/doc/relay-protocol.md#corp-relay-cookie.
+// https://chromium.googlesource.com/apps/libapps/+/HEAD/nassh/docs/relay-protocol.md#corp-relay-cookie.
 //
 // NOTE: Only version 2 of the cookie protocol is supported.
 package cookie

@@ -9,7 +9,7 @@ import (
 )
 
 // Tag represents the tag for an in-band command, see
-// https://chromium.googlesource.com/apps/libapps/+/HEAD/nassh/doc/relay-protocol.md#commands.
+// https://chromium.googlesource.com/apps/libapps/+/HEAD/nassh/docs/relay-protocol.md#commands.
 type Tag uint16
 
 func (t Tag) String() string {

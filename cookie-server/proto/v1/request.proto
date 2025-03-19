@@ -23,7 +23,7 @@ enum RedirectionMethod {
   // simpler to express version 1 requests.
   HTTP_REDIRECT = 1;
 
-  // Direct method, returns a JSON response with an XSSI header.  Requires
+  // Direct method, returns a JSON response with an XSSI header. Requires
   // clients to perform their own redirection.
   DIRECT = 2;
 
@@ -35,7 +35,7 @@ enum RedirectionMethod {
 }
 
 // A normalized /cookie request, see
-// https://chromium.googlesource.com/apps/libapps/+/HEAD/nassh/doc/relay-protocol.md#corp-relay-cookie
+// https://chromium.googlesource.com/apps/libapps/+/HEAD/nassh/docs/relay-protocol.md#corp-relay-cookie
 // for the protocol specification.
 message Request {
   // The client's Chrome extension ID, used to redirect clients after the

@@ -1,5 +1,5 @@
 // Package runner implements the main SSH-over-WebSocket Relay logic, as defined in
-// https://chromium.googlesource.com/apps/libapps/+/HEAD/nassh/doc/relay-protocol.md.
+// https://chromium.googlesource.com/apps/libapps/+/HEAD/nassh/docs/relay-protocol.md.
 //
 // Notes about this implementation:
 // * XHR support (/read, /write) is not implemented, clients MUST support secure WebSockets (WSS).

@@ -1,5 +1,5 @@
 // Package response implements a JSON response for client redirection, see
-// https://chromium.googlesource.com/apps/libapps/+/HEAD/nassh/doc/relay-protocol.md#corp-relay-method.
+// https://chromium.googlesource.com/apps/libapps/+/HEAD/nassh/docs/relay-protocol.md#corp-relay-method.
 package response
 
 import (
