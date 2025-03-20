@@ -2,7 +2,7 @@
 #
 # Example usage:
 #   $ bazel run //cookie-server/cmd:cookie_server -- --logtostderr \
-#     --config=$(bazel info workspace)/examples/cookie-server.textproto
+#     --config=$(bazel info workspace)/examples/cookie-server-frontend.txtpb
 
 server_options {
   # Optionally listen on a specific address, defaults to the unspecified address.
@@ -24,9 +24,6 @@ server_options {
     client_auth_type: REQUIRE_AND_VERIFY_CLIENT_CERT
   }
 }
-
-# Address of the SSH Relay to send clients, port defaults to 8022.
-fallback_relay_host: "ssh-relay.example.org"
 
 # Settings for the origin cookie.
 # The format of this message may change in future versions.

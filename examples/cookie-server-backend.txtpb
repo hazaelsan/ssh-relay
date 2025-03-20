@@ -2,7 +2,7 @@
 #
 # Example usage:
 #   $ bazel run //cookie-server/backend/example -- --logtostderr \
-#     --config=$(bazel info workspace)/examples/cookie-server-backend.textproto
+#     --config=$(bazel info workspace)/examples/cookie-server-backend.txtpb
 
 grpc_options {
   port: "8023"
@@ -15,3 +15,5 @@ grpc_options {
     client_ca_certs: "/etc/ssh-relay/ca.crt"
   }
 }
+
+ssh_relay_addr: "127.0.1.1:8022"
