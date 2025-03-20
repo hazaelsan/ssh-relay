@@ -32,17 +32,10 @@ func TestConfig(t *testing.T) {
 		ok        bool
 	}{
 		{
-			name: "good empty tls config",
-			cfg:  new(tlspb.TlsConfig),
-			want: &tls.Config{
-				ClientAuth: tls.RequireAndVerifyClientCert,
-				MinVersion: tls.VersionTLS12,
-			},
-			ok: true,
-		},
-		{
 			name: "good require_any_client_cert",
 			cfg: &tlspb.TlsConfig{
+				CertFile:       "cert",
+				KeyFile:        "key",
 				ClientAuthType: tlspb.TlsConfig_REQUIRE_ANY_CLIENT_CERT,
 			},
 			want: &tls.Config{
@@ -54,6 +47,8 @@ func TestConfig(t *testing.T) {
 		{
 			name: "good require_and_verify_client_cert",
 			cfg: &tlspb.TlsConfig{
+				CertFile:       "cert",
+				KeyFile:        "key",
 				ClientAuthType: tlspb.TlsConfig_REQUIRE_AND_VERIFY_CLIENT_CERT,
 				RootCaCerts:    []string{"../testdata/test.crt"},
 			},
@@ -69,6 +64,8 @@ func TestConfig(t *testing.T) {
 		{
 			name: "good client ca certs",
 			cfg: &tlspb.TlsConfig{
+				CertFile:      "cert",
+				KeyFile:       "key",
 				ClientCaCerts: []string{"../testdata/test.crt"},
 			},
 			want: &tls.Config{
@@ -83,20 +80,30 @@ func TestConfig(t *testing.T) {
 		{
 			name: "bad client ca certs",
 			cfg: &tlspb.TlsConfig{
+				CertFile:      "cert",
+				KeyFile:       "key",
 				ClientCaCerts: []string{"invalid.crt"},
 			},
 		},
 		{
 			name: "bad root ca certs",
 			cfg: &tlspb.TlsConfig{
+				CertFile:    "cert",
+				KeyFile:     "key",
 				RootCaCerts: []string{"invalid.crt"},
 			},
 		},
 		{
 			name: "no client ca certs",
 			cfg: &tlspb.TlsConfig{
+				CertFile:      "cert",
+				KeyFile:       "key",
 				ClientCaCerts: []string{"/dev/null"},
 			},
+		},
+		{
+			name: "bad empty tls config",
+			cfg:  new(tlspb.TlsConfig),
 		},
 	}
 	for _, tt := range tests {
@@ -234,7 +241,11 @@ func TestCertConfig_invalidClientAuthType(t *testing.T) {
 	m := clientAuthMap
 	defer func() { clientAuthMap = m }()
 	clientAuthMap = nil
-	if _, err := CertConfig(new(tlspb.TlsConfig)); !errors.Is(err, ErrBadClientAuthType) {
+	cfg := &tlspb.TlsConfig{
+		CertFile: "cert",
+		KeyFile:  "key",
+	}
+	if _, err := CertConfig(cfg); !errors.Is(err, ErrBadClientAuthType) {
 		t.Errorf("CertConfig() error = %v, want %v", err, ErrBadClientAuthType)
 	}
 }

@@ -8,6 +8,7 @@ go_library(
     importpath = "github.com/hazaelsan/ssh-relay/helper/session/corprelayv4",
     deps = [
         "//helper/session",
+        "//proto/v1:tls_go_proto",
         "//session",
         "//session/corprelayv4",
         "//tls",

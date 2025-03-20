@@ -1,6 +1,7 @@
 package runner
 
 import (
+	"fmt"
 	"time"
 
 	"github.com/hazaelsan/ssh-relay/duration"
@@ -14,11 +15,11 @@ import (
 func New(cfg *configpb.Config) (*Runner, error) {
 	s, err := http.NewServer(cfg.ServerOptions)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("http.NewServer() error = %w", err)
 	}
 	var maxAge time.Duration
 	if err := duration.FromProto(&maxAge, cfg.MaxSessionAge); err != nil {
-		return nil, err
+		return nil, fmt.Errorf("duration.FromProto(%v) error = %w", cfg.MaxSessionAge, err)
 	}
 	r := &Runner{
 		cfg:    cfg,

@@ -68,7 +68,7 @@ func SetDeadline(s Session, t time.Duration) {
 	go func() {
 		select {
 		case <-time.After(t):
-			glog.V(2).Infof("%v: Session expired", s)
+			glog.V(1).Infof("%v: Session expired", s)
 			s.Close()
 		case <-s.Done():
 			return

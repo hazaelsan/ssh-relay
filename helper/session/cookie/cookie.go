@@ -24,7 +24,13 @@ const (
 // returns the relay address and cookies to use for the WebSocket session.
 // NOTE: Only version 2 of the cookie protocol is supported.
 func Authenticate(addr string, client *http.Client) (string, []*http.Cookie, error) {
-	u := authURL(addr)
+	insecure := false
+	if t, ok := client.Transport.(*http.Transport); ok {
+		if t.TLSClientConfig == nil {
+			insecure = true
+		}
+	}
+	u := authURL(addr, insecure)
 	glog.V(2).Infof("Authenticating against %v", u)
 	resp, err := client.Get(u)
 	if err != nil {
@@ -39,9 +45,13 @@ func Authenticate(addr string, client *http.Client) (string, []*http.Cookie, err
 }
 
 // authURL builds the correct URL for authenticating against the Cookie Server.
-func authURL(addr string) string {
+func authURL(addr string, insecure bool) string {
+	scheme := "https"
+	if insecure {
+		scheme = "http"
+	}
 	u := url.URL{
-		Scheme: "https",
+		Scheme: scheme,
 		Host:   addr,
 		Path:   "/cookie",
 	}

@@ -8,7 +8,6 @@ import (
 	"github.com/hazaelsan/ssh-relay/http"
 	"github.com/hazaelsan/ssh-relay/tls"
 	"google.golang.org/grpc"
-	"google.golang.org/grpc/credentials"
 
 	"github.com/hazaelsan/ssh-relay/cookie-server/proto/v1/configpb"
 	"github.com/hazaelsan/ssh-relay/cookie-server/proto/v1/servicepb"
@@ -37,15 +36,15 @@ type Runner struct {
 
 // Run executes the main runner loop.
 func (r *Runner) Run() error {
-	tlsCfg, err := tls.CertConfig(r.cfg.GetGrpcOptions().GetTlsConfig())
-	if err != nil {
-		return fmt.Errorf("tls.CertConfig() error: %w", err)
-	}
 	addr := net.JoinHostPort(r.cfg.GetGrpcOptions().GetAddr(), r.cfg.GetGrpcOptions().GetPort())
-	glog.V(4).Infof("Connecting to gRPC backend %v", addr)
-	conn, err := grpc.NewClient(addr, grpc.WithTransportCredentials(credentials.NewTLS(tlsCfg)))
+	creds, err := tls.TransportCreds(r.cfg.GetGrpcOptions().GetTlsConfig())
 	if err != nil {
-		return fmt.Errorf("grpc.Dial(%v) error: %w", addr, err)
+		return err
+	}
+	glog.V(1).Infof("Connecting to gRPC backend %v", addr)
+	conn, err := grpc.NewClient(addr, grpc.WithTransportCredentials(creds))
+	if err != nil {
+		return fmt.Errorf("grpc.NewClient(%v) error: %w", addr, err)
 	}
 	defer conn.Close()
 	r.c = servicepb.NewCookieServerClient(conn)

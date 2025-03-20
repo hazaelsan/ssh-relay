@@ -18,8 +18,8 @@ functionality.
   * Version 1 is supported by the Cookie Server, though this version is deprecated.
 * Supports WebSockets for the SSH transport (via `/connect`).
   * The older XHR-based method (via `/read` and `/write`) is NOT supported.
-* Configuration is done almost entirely via [protobuf messages](https://developers.google.com/protocol-buffers/).
-* TLS is **required** for all operations, though its options are configurable.
+* Configuration is done almost entirely via [protobuf messages](https://protobuf.dev/).
+* TLS is now optional for all operations, its options are configurable.
 
 ## Building
 
@@ -75,14 +75,14 @@ directive.
 
 ##### ~/.ssh/config, /etc/ssh/ssh_config
 
-```
+```none
 # Anything under example.org must go via the WebSocket relay.
 Host *.example.org
-  ProxyCommand ssh_relay_helper --config=/etc/ssh-relay-helper/config.textproto --host=%h --port=%p
+  ProxyCommand ssh_relay_helper --config=/etc/ssh-relay-helper/config.txtpb --host='%h' --port='%p'
 ```
 
-##### /etc/ssh-relay-helper/config.textproto
-```proto
+##### /etc/ssh-relay-helper/config.txtpb
+```none
 # DO NOT set host/port in the config proto.
 
 # This can also be passed via --cookie_server_address,

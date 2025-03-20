@@ -10,6 +10,8 @@ import (
 	"os"
 
 	"github.com/hazaelsan/ssh-relay/proto/v1/tlspb"
+	"google.golang.org/grpc/credentials"
+	"google.golang.org/grpc/credentials/insecure"
 )
 
 const (
@@ -20,6 +22,12 @@ const (
 var (
 	// ErrBadClientAuthType is returned if the corresponding ClientAuthType could not be found.
 	ErrBadClientAuthType = errors.New("bad ClientAuthType")
+
+	// ErrNoCertFile is returned if cert_file is not specified.
+	ErrNoCertFile = errors.New("cert_file must be specified")
+
+	// ErrNoKeyFile is returned if key_file is not specified.
+	ErrNoKeyFile = errors.New("key_file must be specified")
 )
 
 var (
@@ -42,7 +50,17 @@ func ClientAuthType(t tlspb.TlsConfig_ClientAuthType) (tls.ClientAuthType, error
 }
 
 // Config creates a *tls.Config directive from a proto message.
+// Returns nil if TLS is disabled in the config.
 func Config(cfg *tlspb.TlsConfig) (*tls.Config, error) {
+	if cfg.GetTlsMode() == tlspb.TlsConfig_TLS_MODE_DISABLED {
+		return nil, nil
+	}
+	if cfg.GetCertFile() == "" {
+		return nil, ErrNoCertFile
+	}
+	if cfg.GetKeyFile() == "" {
+		return nil, ErrNoKeyFile
+	}
 	cat, err := ClientAuthType(cfg.ClientAuthType)
 	if err != nil {
 		return nil, err
@@ -78,6 +96,18 @@ func CertConfig(cfg *tlspb.TlsConfig) (*tls.Config, error) {
 	c.Certificates = []tls.Certificate{cert}
 	c.BuildNameToCertificate()
 	return c, nil
+}
+
+// TransportCreds returns the correct credentials for a gRPC connection.
+func TransportCreds(cfg *tlspb.TlsConfig) (credentials.TransportCredentials, error) {
+	if cfg.GetTlsMode() == tlspb.TlsConfig_TLS_MODE_DISABLED {
+		return insecure.NewCredentials(), nil
+	}
+	tlsCfg, err := CertConfig(cfg)
+	if err != nil {
+		return nil, fmt.Errorf("CertConfig() error: %w", err)
+	}
+	return credentials.NewTLS(tlsCfg), nil
 }
 
 // loadCerts loads all the public certificates into a CertPool.

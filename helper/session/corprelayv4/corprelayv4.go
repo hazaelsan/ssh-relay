@@ -15,6 +15,8 @@ import (
 	"github.com/hazaelsan/ssh-relay/session"
 	"github.com/hazaelsan/ssh-relay/session/corprelayv4"
 	"github.com/hazaelsan/ssh-relay/tls"
+
+	"github.com/hazaelsan/ssh-relay/proto/v1/tlspb"
 )
 
 // New creates a *Session.
@@ -60,8 +62,12 @@ func (s *Session) connectHeader() http.Header {
 
 // connectURL builds the correct URL for /v4/connect requests.
 func (s *Session) connectURL() string {
+	scheme := "wss"
+	if s.opts.Transport.GetTlsConfig().GetTlsMode() == tlspb.TlsConfig_TLS_MODE_DISABLED {
+		scheme = "ws"
+	}
 	u := url.URL{
-		Scheme: "wss",
+		Scheme: scheme,
 		Host:   s.opts.Relay,
 		Path:   "/v4/connect",
 	}
@@ -75,7 +81,7 @@ func (s *Session) connectURL() string {
 // dial initiates the SSH session and sets up the WebSocket for I/O.
 func (s *Session) dial(u string) error {
 	glog.V(2).Infof("Copying I/O via %v", u)
-	tlsCfg, err := tls.Config(s.opts.Transport.TlsConfig)
+	tlsCfg, err := tls.Config(s.opts.Transport.GetTlsConfig())
 	if err != nil {
 		return fmt.Errorf("tls.Config() error: %w", err)
 	}

@@ -34,7 +34,6 @@ proto_library(
 proto_library(
     name = "tls_proto",
     srcs = ["tls.proto"],
-    deps = ["@googleapis//google/api:field_behavior_proto"],
 )
 
 go_proto_library(
@@ -68,5 +67,4 @@ go_proto_library(
     name = "tls_go_proto",
     importpath = "github.com/hazaelsan/ssh-relay/proto/v1/tlspb",
     proto = ":tls_proto",
-    deps = ["@org_golang_google_genproto_googleapis_api//annotations"],
 )

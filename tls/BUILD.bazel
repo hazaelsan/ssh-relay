@@ -5,7 +5,11 @@ go_library(
     srcs = ["tls.go"],
     importpath = "github.com/hazaelsan/ssh-relay/tls",
     visibility = ["//visibility:public"],
-    deps = ["//proto/v1:tls_go_proto"],
+    deps = [
+        "//proto/v1:tls_go_proto",
+        "@org_golang_google_grpc//credentials",
+        "@org_golang_google_grpc//credentials/insecure",
+    ],
 )
 
 go_test(

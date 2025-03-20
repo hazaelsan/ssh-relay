@@ -15,9 +15,9 @@ option go_package = "github.com/hazaelsan/ssh-relay/helper/proto/v1/configpb";
 //
 // Example entry in ~/.ssh/config:
 //   Host *.example.org
-//     ProxyCommand ssh-relay-helper --config ~/ssh/relay.textproto --host '%h' --port '%p'
+//     ProxyCommand ssh-relay-helper --config ~/ssh/helper.txtpb --host '%h' --port '%p'
 //
-// Contents of ~/ssh/relay.textproto:
+// Contents of ~/ssh/helper.txtpb:
 //   cookie_server_address: "cookie-server.example.org"
 //   cookie_server_transport {
 //     tls_config {

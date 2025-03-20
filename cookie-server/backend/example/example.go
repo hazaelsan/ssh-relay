@@ -15,7 +15,6 @@ import (
 	"github.com/golang/glog"
 	"github.com/hazaelsan/ssh-relay/tls"
 	"google.golang.org/grpc"
-	"google.golang.org/grpc/credentials"
 	"google.golang.org/protobuf/encoding/prototext"
 
 	"github.com/hazaelsan/ssh-relay/cookie-server/backend/example/proto/v1/configpb"
@@ -23,7 +22,7 @@ import (
 )
 
 var (
-	cfgFile = flag.String("config", "", "path to a textproto config file")
+	cfgFile = flag.String("config", "", "path to a text proto config file")
 )
 
 func loadConfig(s string) (*configpb.Config, error) {
@@ -64,18 +63,18 @@ type Server struct {
 
 // Run starts the Server.
 func (s *Server) Run() error {
-	tlsCfg, err := tls.CertConfig(s.cfg.GetGrpcOptions().GetTlsConfig())
-	if err != nil {
-		return fmt.Errorf("tls.CertConfig() error: %w", err)
-	}
 	addr := net.JoinHostPort(s.cfg.GetGrpcOptions().GetAddr(), s.cfg.GetGrpcOptions().GetPort())
+	creds, err := tls.TransportCreds(s.cfg.GetGrpcOptions().GetTlsConfig())
+	if err != nil {
+		return err
+	}
 	l, err := net.Listen("tcp", addr)
 	if err != nil {
 		return fmt.Errorf("net.Listen(%v) error: %w", addr, err)
 	}
-	srv := grpc.NewServer(grpc.Creds(credentials.NewTLS(tlsCfg)))
+	srv := grpc.NewServer(grpc.Creds(creds))
 	servicepb.RegisterCookieServerServer(srv, s)
-	glog.V(4).Infof("gRPC server listening on %v", addr)
+	glog.Infof("gRPC server listening on %v", addr)
 	return srv.Serve(l)
 }
 

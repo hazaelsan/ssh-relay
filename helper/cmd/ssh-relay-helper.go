@@ -4,7 +4,7 @@
 // Typical use in an ssh_config(5):
 //
 //	Host *.example.org
-//	  ProxyCommand ssh-relay-helper --config=/etc/ssh-relay-helper.textproto --host=%h --port=%p
+//	  ProxyCommand ssh-relay-helper --config=/etc/ssh-relay-helper.txtpb --host=%h --port=%p
 //
 // NOTE: Options passed as flags override those from the config proto.
 package main
@@ -24,7 +24,7 @@ import (
 )
 
 var (
-	cfgFile = flag.String("config", "", "path to a textproto config file")
+	cfgFile = flag.String("config", "", "path to a text proto config file")
 	host    = flag.String("host", "", "destination SSH host")
 	port    = flag.String("port", "22", "destination SSH port")
 	csAddr  = flag.String("cookie_server_address", "", "address[:port] of the Cookie Server, port defaults to 8022")

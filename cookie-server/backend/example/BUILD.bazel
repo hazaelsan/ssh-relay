@@ -48,7 +48,6 @@ go_library(
         "//tls",
         "@com_github_golang_glog//:glog",
         "@org_golang_google_grpc//:grpc",
-        "@org_golang_google_grpc//credentials",
         "@org_golang_google_protobuf//encoding/prototext",
     ],
 )

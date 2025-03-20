@@ -11,6 +11,7 @@ import (
 	"github.com/hazaelsan/ssh-relay/tls"
 
 	"github.com/hazaelsan/ssh-relay/proto/v1/httppb"
+	"github.com/hazaelsan/ssh-relay/proto/v1/tlspb"
 	"google.golang.org/protobuf/types/known/durationpb"
 )
 
@@ -44,12 +45,6 @@ func NewServer(cfg *httppb.HttpServerOptions) (*Server, error) {
 	}
 	if cfg.TlsConfig == nil {
 		return nil, ErrNoTLSConfig
-	}
-	if cfg.TlsConfig.CertFile == "" {
-		return nil, ErrNoCertFile
-	}
-	if cfg.TlsConfig.KeyFile == "" {
-		return nil, ErrNoKeyFile
 	}
 	tlsConfig, err := tls.Config(cfg.TlsConfig)
 	if err != nil {
@@ -100,11 +95,15 @@ func (s *Server) HandleFunc(pattern string, handler HandlerFunc) {
 		SetHSTS(w, s.hstsMaxAge, s.cfg.HstsIncludeSubdomains)
 		handler(w, r)
 	})
-	glog.V(3).Infof("Registered handler for %v", pattern)
+	glog.V(1).Infof("Registered handler for %v", pattern)
 }
 
-// Run starts the HTTPS server.
+// Run starts the HTTP(S) server.
 func (s *Server) Run() error {
-	glog.V(4).Infof("HTTP server listening on %v", s.server.Addr)
+	if s.cfg.TlsConfig.GetTlsMode() == tlspb.TlsConfig_TLS_MODE_DISABLED {
+		glog.V(1).Infof("HTTP server listening on %v", s.server.Addr)
+		return s.server.ListenAndServe()
+	}
+	glog.V(1).Infof("HTTPS server listening on %v", s.server.Addr)
 	return s.server.ListenAndServeTLS(s.cfg.TlsConfig.CertFile, s.cfg.TlsConfig.KeyFile)
 }
