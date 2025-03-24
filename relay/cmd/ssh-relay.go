@@ -27,14 +27,17 @@ func loadConfig(s string) (*configpb.Config, error) {
 	if err := prototext.Unmarshal(buf, cfg); err != nil {
 		return nil, err
 	}
-	if cfg.ServerOptions == nil {
+	if cfg.GetServerOptions() == nil {
 		return nil, errors.New("server_options must be set")
 	}
-	if cfg.ServerOptions.Port == "" {
+	if cfg.GetServerOptions().GetPort() == "" {
 		cfg.ServerOptions.Port = "8022"
 	}
-	if cfg.OriginCookieName == "" {
+	if cfg.GetOriginCookieName() == "" {
 		return nil, errors.New("origin_cookie_name must be set")
+	}
+	if len(cfg.GetProtocolVersions()) == 0 {
+		return nil, errors.New("protocol_versions must be set")
 	}
 	return cfg, nil
 }

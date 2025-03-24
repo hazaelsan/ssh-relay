@@ -14,6 +14,7 @@ go_library(
     deps = [
         "//duration",
         "//http",
+        "//proto/v1:protocolversionpb_go_proto",
         "//relay/proto/v1:config_go_proto",
         "//relay/request",
         "//relay/request/corprelay/connect",

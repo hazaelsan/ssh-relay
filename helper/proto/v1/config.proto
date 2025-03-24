@@ -4,6 +4,7 @@ package hazaelsan.ssh_relay.helper.v1;
 
 import "google/api/field_behavior.proto";
 import "proto/v1/http.proto";
+import "proto/v1/protocol_version.proto";
 
 option java_package = "net.hazael.sshrelay.helper.v1";
 option java_outer_classname = "ConfigProto";
@@ -47,34 +48,8 @@ message Config {
   // If unspecified, [cookie_server_transport][] will be used.
   hazaelsan.ssh_relay.v1.HttpTransport ssh_relay_transport = 5;
 
-  // The SSH Relay protocol version to use in a session.
-  enum ProtocolVersion {
-    // Defaults to [CORP_RELAY][].
-    PROTOCOL_VERSION_UNSPECIFIED = 0;
-
-    // The original protocol version, corp-relay@google.com, see
-    // https://chromium.googlesource.com/apps/libapps/+/HEAD/nassh/docs/relay-protocol.md#corp-relay.
-    CORP_RELAY = 1;
-
-    // SSH Relay v4, corp-relay-v4@google.com, see
-    // https://chromium.googlesource.com/apps/libapps/+/HEAD/nassh/docs/relay-protocol.md#corp-relay-v4.
-    CORP_RELAY_V4 = 2;
-
-    // SSH-FE, ssh-fe@google.com, see
-    // https://chromium.googlesource.com/apps/libapps/+/HEAD/nassh/docs/relay-protocol.md#ssh_fe.
-    // NOTE: Not supported.
-    SSH_FE = 3;
-
-    // Websockify, see
-    // https://chromium.googlesource.com/apps/libapps/+/HEAD/nassh/docs/relay-protocol.md#websockify.
-    // NOTE: Not supported.
-    WEBSOCKIFY = 4;
-
-    reserved 5 to max;  // Next ID.
-  }
-
   // The SSH Relay protocol version to use for the session.
-  ProtocolVersion protocol_version = 6;
+  hazaelsan.ssh_relay.v1.ProtocolVersion protocol_version = 6;
 
   reserved 7 to max;  // Next ID.
 }

@@ -2,8 +2,10 @@ syntax = "proto3";
 
 package hazaelsan.ssh_relay.relay.v1;
 
+import "google/api/field_behavior.proto";
 import "google/protobuf/duration.proto";
 import "proto/v1/http.proto";
+import "proto/v1/protocol_version.proto";
 
 option java_package = "net.hazael.sshrelay.relay.v1";
 option java_outer_classname = "ConfigProto";
@@ -13,7 +15,8 @@ option go_package = "github.com/hazaelsan/ssh-relay/relay/proto/v1/configpb";
 // Configuration settings for the SSH-over-WebSocket Relay server.
 message Config {
   // The HTTP configuration settings for the server.
-  hazaelsan.ssh_relay.v1.HttpServerOptions server_options = 1;
+  hazaelsan.ssh_relay.v1.HttpServerOptions server_options = 1
+      [(google.api.field_behavior) = REQUIRED];
 
   // Options for relay's outbound connections.
   message ClientOptions {
@@ -31,7 +34,7 @@ message Config {
 
   // The maximum SSH session age.
   // After this timeout is reached the client will need to re-authenticate
-  // against the Cookie Server and re-establish the SSH session.  If unset,
+  // against the Cookie Server and re-establish the SSH session. If unset,
   // sessions will not be terminated by the relay.
   // NOTE: This value MUST be < [Cookie.max_age][] in the Cookie Server in order
   // to ensure session re-authorization is enforced by the Cookie Server.
@@ -42,5 +45,9 @@ message Config {
   // the Cookie Server.
   string origin_cookie_name = 5;
 
-  reserved 6 to max;  // Next ID.
+  // The protocol versions to support.
+  repeated hazaelsan.ssh_relay.v1.ProtocolVersion protocol_versions = 6
+      [(google.api.field_behavior) = REQUIRED];
+
+  reserved 7 to max;  // Next ID.
 }

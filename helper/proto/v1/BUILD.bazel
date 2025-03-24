@@ -8,6 +8,7 @@ proto_library(
     srcs = ["config.proto"],
     deps = [
         "//proto/v1:http_proto",
+        "//proto/v1:protocolversionpb_proto",
         "@googleapis//google/api:field_behavior_proto",
     ],
 )
@@ -18,6 +19,7 @@ go_proto_library(
     proto = ":config_proto",
     deps = [
         "//proto/v1:http_go_proto",
+        "//proto/v1:protocolversionpb_go_proto",
         "@org_golang_google_genproto_googleapis_api//annotations",
     ],
 )

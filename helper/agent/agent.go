@@ -13,6 +13,7 @@ import (
 	rhttp "github.com/hazaelsan/ssh-relay/http"
 
 	"github.com/hazaelsan/ssh-relay/helper/proto/v1/configpb"
+	"github.com/hazaelsan/ssh-relay/proto/v1/protocolversionpb"
 )
 
 // New creates an *Agent.
@@ -49,9 +50,9 @@ func (a *Agent) Run() error {
 	}
 	var s session.Session
 	switch a.cfg.GetProtocolVersion() {
-	case configpb.Config_CORP_RELAY, configpb.Config_PROTOCOL_VERSION_UNSPECIFIED:
+	case protocolversionpb.ProtocolVersion_CORP_RELAY, protocolversionpb.ProtocolVersion_PROTOCOL_VERSION_UNSPECIFIED:
 		s = corprelay.New(opts)
-	case configpb.Config_CORP_RELAY_V4:
+	case protocolversionpb.ProtocolVersion_CORP_RELAY_V4:
 		s = corprelayv4.New(opts)
 	default:
 		return errors.New("unsupported protocol version")

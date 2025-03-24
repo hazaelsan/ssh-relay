@@ -32,6 +32,11 @@ proto_library(
 )
 
 proto_library(
+    name = "protocolversionpb_proto",
+    srcs = ["protocol_version.proto"],
+)
+
+proto_library(
     name = "tls_proto",
     srcs = ["tls.proto"],
 )
@@ -61,6 +66,12 @@ go_proto_library(
         ":tls_go_proto",
         "@org_golang_google_genproto_googleapis_api//annotations",
     ],
+)
+
+go_proto_library(
+    name = "protocolversionpb_go_proto",
+    importpath = "github.com/hazaelsan/ssh-relay/proto/v1/protocolversionpb",
+    proto = ":protocolversionpb_proto",
 )
 
 go_proto_library(

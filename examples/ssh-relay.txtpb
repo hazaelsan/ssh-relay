@@ -33,3 +33,4 @@ client_options {
 max_session_age { seconds: 86400 }
 
 origin_cookie_name: "o"
+protocol_versions: CORP_RELAY_V4

@@ -8,8 +8,18 @@ import (
 	"github.com/hazaelsan/ssh-relay/http"
 	"github.com/hazaelsan/ssh-relay/relay/session/manager"
 
+	"github.com/hazaelsan/ssh-relay/proto/v1/protocolversionpb"
 	"github.com/hazaelsan/ssh-relay/relay/proto/v1/configpb"
 )
+
+func protocolEnabled(cfg *configpb.Config, pv protocolversionpb.ProtocolVersion) bool {
+	for _, v := range cfg.GetProtocolVersions() {
+		if v == pv {
+			return true
+		}
+	}
+	return false
+}
 
 // New instantiates a Runner with a *configpb.Config.
 func New(cfg *configpb.Config) (*Runner, error) {
@@ -26,13 +36,15 @@ func New(cfg *configpb.Config) (*Runner, error) {
 		mgr:    manager.New(int(cfg.MaxSessions), maxAge),
 		server: s,
 	}
-	for path, fun := range map[string]http.HandlerFunc{
-		"/connect":    r.connectHandle,
-		"/proxy":      r.proxyHandle,
-		"/v4/connect": r.connectHandleV4,
-	} {
-		s.HandleFunc(path, fun)
+
+	if protocolEnabled(cfg, protocolversionpb.ProtocolVersion_CORP_RELAY) {
+		s.HandleFunc("/connect", r.connectHandle)
+		s.HandleFunc("/proxy", r.proxyHandle)
 	}
+	if protocolEnabled(cfg, protocolversionpb.ProtocolVersion_CORP_RELAY_V4) {
+		s.HandleFunc("/v4/connect", r.connectHandleV4)
+	}
+
 	return r, nil
 }
 
