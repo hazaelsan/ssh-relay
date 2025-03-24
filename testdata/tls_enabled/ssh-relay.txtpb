@@ -2,7 +2,7 @@
 #
 # Example usage:
 #   $ bazel run //relay/cmd:ssh_relay -- --logtostderr \
-#     --config=$(bazel info workspace)/examples/ssh-relay.txtpb
+#     --config=$(bazel info workspace)/testdata/tls_enabled/ssh-relay.txtpb
 
 server_options {
   # Optionally listen on a specific address, defaults to the unspecified address.

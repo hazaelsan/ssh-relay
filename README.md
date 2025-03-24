@@ -99,8 +99,8 @@ cookie_server_transport {
 }
 ```
 
-See the [examples
-directory](https://github.com/hazaelsan/ssh-relay/tree/master/examples) for
+See the [testdata
+directory](https://github.com/hazaelsan/ssh-relay/tree/master/testdata) for
 additional configuration examples.
 
 ## Bugs / Feature Requests

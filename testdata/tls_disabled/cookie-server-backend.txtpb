@@ -1,0 +1,15 @@
+# Example configuration for the example Cookie Server gRPC backend.
+#
+# Example usage:
+#   $ bazel run //cookie-server/backend/example -- --logtostderr \
+#     --config=$(bazel info workspace)/testdata/tls_disabled/cookie-server-backend.txtpb
+
+grpc_options {
+  addr: "127.0.1.3"
+  port: "8022"
+  tls_config {
+    tls_mode: TLS_MODE_DISABLED
+  }
+}
+
+ssh_relay_addr: "127.0.1.1:8022"

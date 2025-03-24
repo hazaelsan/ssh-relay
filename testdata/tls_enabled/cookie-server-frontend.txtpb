@@ -2,7 +2,7 @@
 #
 # Example usage:
 #   $ bazel run //cookie-server/cmd:cookie_server -- --logtostderr \
-#     --config=$(bazel info workspace)/examples/cookie-server-frontend.txtpb
+#     --config=$(bazel info workspace)/testdata/tls_enabled/cookie-server-frontend.txtpb
 
 server_options {
   # Optionally listen on a specific address, defaults to the unspecified address.
@@ -36,8 +36,8 @@ origin_cookie {
 
 # Settings for connecting to the gRPC backend.
 grpc_options {
-  addr: "cookie-server-backend.example.org"
-  port: "8023"
+  addr: "127.0.1.3"
+  port: "8022"
   tls_config {
     # SSL (in PEM format).
     cert_file: "/etc/ssh-relay/cookie-server-frontend.crt"

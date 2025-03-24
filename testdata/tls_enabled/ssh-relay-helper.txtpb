@@ -1,0 +1,33 @@
+# Example configuration for the client helper.
+#
+# Example usage:
+#   $ bazel run //helper/cmd:ssh_relay_helper -- --logtostderr \
+#     --config=$(bazel info workspace)/testdata/tls_enabled/ssh-relay-helper.txtpb \
+#     --host=localhost --port=22
+
+# DO NOT set host/port in the config proto.
+
+# This can also be passed via --cookie_server_address,
+# port defaults to 8022 if unspecified.
+cookie_server_address: "127.0.1.2:8022"
+
+# Settings for talking to the Cookie Server.
+cookie_server_transport {
+  tls_config {
+    cert_file: "/etc/ssh-relay-helper/cookie-server-client.crt"
+    key_file: "/etc/ssh-relay-helper/cookie-server-client.key"
+    root_ca_certs: "/etc/ssh-relay-helper/ca.crt"
+  }
+}
+
+# Optionally use different settings to talk to the SSH Relay.
+ssh_relay_transport {
+  tls_config {
+    cert_file: "/etc/ssh-relay-helper/ssh-relay-client.crt"
+    key_file: "/etc/ssh-relay-helper/ssh-relay-client.key"
+    root_ca_certs: "/etc/ssh-relay-helper/ca.crt"
+  }
+}
+
+# Use the corp-relay-v4@google.com protocol version.
+protocol_version: CORP_RELAY_V4

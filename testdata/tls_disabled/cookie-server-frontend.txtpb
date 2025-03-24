@@ -1,0 +1,36 @@
+# Example configuration for the Cookie Server.
+#
+# Example usage:
+#   $ bazel run //cookie-server/cmd:cookie_server -- --logtostderr \
+#     --config=$(bazel info workspace)/testdata/tls_disabled/cookie-server-frontend.txtpb
+
+server_options {
+  # Optionally listen on a specific address, defaults to the unspecified address.
+  addr: "127.0.1.2"
+
+  # Specify a custom port, defaults to 8022.
+  port: "8022"
+
+  # Inbound SSL/TLS settings.
+  tls_config {
+    tls_mode: TLS_MODE_DISABLED
+  }
+}
+
+# Settings for the origin cookie.
+# The format of this message may change in future versions.
+origin_cookie {
+  name: "o"
+  domain: ".example.org"
+  max_age { seconds: 86400 }  # 24 hours
+  path: "/"
+}
+
+# Settings for connecting to the gRPC backend.
+grpc_options {
+  addr: "127.0.1.3"
+  port: "8022"
+  tls_config {
+    tls_mode: TLS_MODE_DISABLED
+  }
+}
