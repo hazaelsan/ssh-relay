@@ -1,0 +1,34 @@
+syntax = "proto3";
+
+package hazaelsan.ssh_relay.v1;
+
+option java_package = "net.hazael.sshrelay.v1";
+option java_outer_classname = "ProtocolVersionProto";
+option java_multiple_files = true;
+option go_package = "github.com/hazaelsan/ssh-relay/proto/v1/protocolversionpb";
+
+// The supported SSH Relay protocol versions.
+enum ProtocolVersion {
+  // Defaults to [CORP_RELAY][].
+  PROTOCOL_VERSION_UNSPECIFIED = 0;
+
+  // The original protocol version, corp-relay@google.com, see
+  // https://chromium.googlesource.com/apps/libapps/+/HEAD/nassh/docs/relay-protocol.md#corp-relay.
+  CORP_RELAY = 1;
+
+  // SSH Relay v4, corp-relay-v4@google.com, see
+  // https://chromium.googlesource.com/apps/libapps/+/HEAD/nassh/docs/relay-protocol.md#corp-relay-v4.
+  CORP_RELAY_V4 = 2;
+
+  // SSH-FE, ssh-fe@google.com, see
+  // https://chromium.googlesource.com/apps/libapps/+/HEAD/nassh/docs/relay-protocol.md#ssh_fe.
+  // NOTE: Not supported.
+  SSH_FE = 3;
+
+  // Websockify, see
+  // https://chromium.googlesource.com/apps/libapps/+/HEAD/nassh/docs/relay-protocol.md#websockify.
+  // NOTE: Not supported.
+  WEBSOCKIFY = 4;
+
+  reserved 5 to max;  // Next ID.
+}
