@@ -14,12 +14,12 @@ option go_package = "github.com/hazaelsan/ssh-relay/cookie-server/backend/exampl
 message Config {
   // The gRPC settings for setting up connections.
   hazaelsan.ssh_relay.v1.GrpcOptions grpc_options = 1
-	  [(google.api.field_behavior) = REQUIRED];
+      [(google.api.field_behavior) = REQUIRED];
 
   // The address in host[:port] for of the SSH relay where to redirect clients.
   // The SSH relay address in host[:port] format, if port is unspecified then
   // the client may use 443, 8022, or the port used for connecting to the
-  // Cookie Server.  Therefore, it's recommended to always specify the port.
+  // Cookie Server. Therefore, it's recommended to always specify the port.
   string ssh_relay_addr = 2 [(google.api.field_behavior) = REQUIRED];
 
   reserved 3 to max;  // Next ID.

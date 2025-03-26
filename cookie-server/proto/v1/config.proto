@@ -21,7 +21,8 @@ message Config {
   hazaelsan.ssh_relay.v1.Cookie origin_cookie = 3;
 
   // gRPC settings for connecting to the gRPC backend.
-  hazaelsan.ssh_relay.v1.GrpcOptions grpc_options = 4 [(google.api.field_behavior) = REQUIRED];
+  hazaelsan.ssh_relay.v1.GrpcOptions grpc_options = 4
+      [(google.api.field_behavior) = REQUIRED];
 
   reserved 5 to max;  // Next ID.
 

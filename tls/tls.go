@@ -9,9 +9,10 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/hazaelsan/ssh-relay/proto/v1/tlspb"
 	"google.golang.org/grpc/credentials"
 	"google.golang.org/grpc/credentials/insecure"
+
+	"github.com/hazaelsan/ssh-relay/proto/v1/tlspb"
 )
 
 const (
