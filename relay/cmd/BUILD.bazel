@@ -43,7 +43,6 @@ go_library(
     srcs = ["ssh-relay.go"],
     importpath = "github.com/hazaelsan/ssh-relay/relay/cmd",
     deps = [
-        "//proto/v1:protocolversionpb_go_proto",
         "//relay/proto/v1:config_go_proto",
         "//relay/runner",
         "@com_github_golang_glog//:glog",

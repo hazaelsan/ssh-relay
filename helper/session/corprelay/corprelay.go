@@ -22,24 +22,29 @@ import (
 	"github.com/hazaelsan/ssh-relay/session"
 	"github.com/hazaelsan/ssh-relay/session/corprelay"
 	"github.com/hazaelsan/ssh-relay/tls"
+
+	"github.com/hazaelsan/ssh-relay/proto/v1/tlspb"
 )
 
 // New creates a *Session.
 // Communication to ssh(1) is done via stdin/stdout.
 func New(opts hsession.Options) *Session {
 	ssh := hsession.NewWrapper(os.Stdin, os.Stdout)
+	insecure := opts.Transport.GetTlsConfig().GetTlsMode() == tlspb.TlsConfig_TLS_MODE_DISABLED
 	return &Session{
-		opts: opts,
-		s:    corprelay.New(ssh),
+		opts:     opts,
+		s:        corprelay.New(ssh),
+		insecure: insecure,
 	}
 }
 
 // A Session is a corp-relay@google.com SSH-over-WebSocket Relay client session.
 type Session struct {
-	opts  hsession.Options
-	s     session.Session
-	ws    *websocket.Conn
-	query url.Values
+	opts     hsession.Options
+	s        session.Session
+	ws       *websocket.Conn
+	query    url.Values
+	insecure bool
 }
 
 // Run copies I/O to an SSH host through a WebSocket Relay via /connect.
@@ -72,8 +77,12 @@ func (s *Session) connectURL() string {
 	q.Add("ack", "0")
 	q.Add("pos", "0")
 	q.Add("try", "1")
+	scheme := "wss"
+	if s.insecure {
+		scheme = "ws"
+	}
 	u := url.URL{
-		Scheme:   "wss",
+		Scheme:   scheme,
 		Host:     s.opts.Relay,
 		Path:     "/connect",
 		RawQuery: q.Encode(),
@@ -95,8 +104,12 @@ func (s *Session) cookieReq(url string) (*http.Request, error) {
 
 // proxyURL builds the correct URL for /proxy requests.
 func (s *Session) proxyURL() string {
+	scheme := "https"
+	if s.insecure {
+		scheme = "http"
+	}
 	u := url.URL{
-		Scheme: "https",
+		Scheme: scheme,
 		Host:   s.opts.Relay,
 		Path:   "/proxy",
 	}

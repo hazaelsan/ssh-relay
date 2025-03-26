@@ -9,6 +9,7 @@ go_library(
     deps = [
         "//helper/session",
         "//http",
+        "//proto/v1:tls_go_proto",
         "//session",
         "//session/corprelay",
         "//tls",
