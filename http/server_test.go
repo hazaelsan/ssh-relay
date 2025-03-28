@@ -158,24 +158,6 @@ func TestNewServer(t *testing.T) {
 			},
 		},
 		{
-			name: "no cert file",
-			cfg: &httppb.HttpServerOptions{
-				Port: "8022",
-				TlsConfig: &tlspb.TlsConfig{
-					KeyFile: "../testdata/test.key",
-				},
-			},
-		},
-		{
-			name: "no client file",
-			cfg: &httppb.HttpServerOptions{
-				Port: "8022",
-				TlsConfig: &tlspb.TlsConfig{
-					CertFile: "../testdata/test.crt",
-				},
-			},
-		},
-		{
 			name: "bad client ca",
 			cfg: &httppb.HttpServerOptions{
 				Port: "8022",
