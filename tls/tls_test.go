@@ -102,8 +102,13 @@ func TestConfig(t *testing.T) {
 			},
 		},
 		{
-			name: "bad empty tls config",
+			name: "empty tls config",
 			cfg:  new(tlspb.TlsConfig),
+			want: &tls.Config{
+				ClientAuth: tls.RequireAndVerifyClientCert,
+				MinVersion: tls.VersionTLS12,
+			},
+			ok: true,
 		},
 	}
 	for _, tt := range tests {

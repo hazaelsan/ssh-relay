@@ -23,12 +23,6 @@ const (
 var (
 	// ErrBadClientAuthType is returned if the corresponding ClientAuthType could not be found.
 	ErrBadClientAuthType = errors.New("bad ClientAuthType")
-
-	// ErrNoCertFile is returned if cert_file is not specified.
-	ErrNoCertFile = errors.New("cert_file must be specified")
-
-	// ErrNoKeyFile is returned if key_file is not specified.
-	ErrNoKeyFile = errors.New("key_file must be specified")
 )
 
 var (
@@ -56,13 +50,7 @@ func Config(cfg *tlspb.TlsConfig) (*tls.Config, error) {
 	if cfg.GetTlsMode() == tlspb.TlsConfig_TLS_MODE_DISABLED {
 		return nil, nil
 	}
-	if cfg.GetCertFile() == "" {
-		return nil, ErrNoCertFile
-	}
-	if cfg.GetKeyFile() == "" {
-		return nil, ErrNoKeyFile
-	}
-	cat, err := ClientAuthType(cfg.ClientAuthType)
+	cat, err := ClientAuthType(cfg.GetClientAuthType())
 	if err != nil {
 		return nil, err
 	}
@@ -70,12 +58,12 @@ func Config(cfg *tlspb.TlsConfig) (*tls.Config, error) {
 		ClientAuth: cat,
 		MinVersion: TLSMinVersion,
 	}
-	clientCAs, err := loadCerts(cfg.ClientCaCerts)
+	clientCAs, err := loadCerts(cfg.GetClientCaCerts())
 	if err != nil {
 		return nil, err
 	}
 	c.ClientCAs = clientCAs
-	rootCAs, err := loadCerts(cfg.RootCaCerts)
+	rootCAs, err := loadCerts(cfg.GetRootCaCerts())
 	if err != nil {
 		return nil, err
 	}
