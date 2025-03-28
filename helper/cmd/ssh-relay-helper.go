@@ -44,23 +44,23 @@ func buildConfig(s string) (*configpb.Config, error) {
 	}
 	cfg.Host = *host
 	cfg.Port = *port
-	if cfg.Host == "" {
+	if cfg.GetHost() == "" {
 		return nil, errors.New("host must be specified")
 	}
-	if cfg.Port == "" {
+	if cfg.GetPort() == "" {
 		return nil, errors.New("port must be specified")
 	}
 	if *csAddr != "" {
 		cfg.CookieServerAddress = *csAddr
 	}
-	if cfg.CookieServerAddress == "" {
+	if cfg.GetCookieServerAddress() == "" {
 		return nil, errors.New("cookie_server_address must be specified")
 	}
 	cfg.CookieServerAddress = session.AddDefaultPort(cfg.CookieServerAddress, session.DefaultPort)
-	if cfg.CookieServerTransport == nil {
+	if cfg.GetCookieServerTransport() == nil {
 		cfg.CookieServerTransport = new(httppb.HttpTransport)
 	}
-	if cfg.SshRelayTransport == nil {
+	if cfg.GetSshRelayTransport() == nil {
 		cfg.SshRelayTransport = cfg.CookieServerTransport
 	}
 	return cfg, nil
