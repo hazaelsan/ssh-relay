@@ -50,9 +50,9 @@ func (a *Agent) Run() error {
 	}
 	var s session.Session
 	switch a.cfg.GetProtocolVersion() {
-	case protocolversionpb.ProtocolVersion_CORP_RELAY, protocolversionpb.ProtocolVersion_PROTOCOL_VERSION_UNSPECIFIED:
+	case protocolversionpb.ProtocolVersion_CORP_RELAY:
 		s = corprelay.New(opts)
-	case protocolversionpb.ProtocolVersion_CORP_RELAY_V4:
+	case protocolversionpb.ProtocolVersion_CORP_RELAY_V4, protocolversionpb.ProtocolVersion_PROTOCOL_VERSION_UNSPECIFIED:
 		s = corprelayv4.New(opts)
 	default:
 		return errors.New("unsupported protocol version")
