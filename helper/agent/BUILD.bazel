@@ -13,6 +13,6 @@ go_library(
         "//helper/session/corprelay",
         "//helper/session/corprelayv4",
         "//http",
-        "//proto/v1:protocolversionpb_go_proto",
+        "//proto/v1:protocol_version_go_proto",
     ],
 )

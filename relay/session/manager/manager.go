@@ -58,10 +58,8 @@ func (m *Manager) New(ssh net.Conn, v session.ProtocolVersion) (session.Session,
 	}
 	session.SetDeadline(s, m.maxAge)
 	go func() {
-		select {
-		case <-s.Done():
-			m.Delete(s.SID())
-		}
+		<-s.Done()
+		m.Delete(s.SID())
 	}()
 	m.sessions[s.SID()] = s
 	glog.V(1).Infof("%v/%v active sessions", len(m.sessions), m.maxSessions)

@@ -32,7 +32,7 @@ proto_library(
 )
 
 proto_library(
-    name = "protocolversionpb_proto",
+    name = "protocol_version_proto",
     srcs = ["protocol_version.proto"],
 )
 
@@ -69,9 +69,9 @@ go_proto_library(
 )
 
 go_proto_library(
-    name = "protocolversionpb_go_proto",
+    name = "protocol_version_go_proto",
     importpath = "github.com/hazaelsan/ssh-relay/proto/v1/protocolversionpb",
-    proto = ":protocolversionpb_proto",
+    proto = ":protocol_version_proto",
 )
 
 go_proto_library(

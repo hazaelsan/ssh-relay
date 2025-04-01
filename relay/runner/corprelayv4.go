@@ -20,21 +20,21 @@ func (r *Runner) connectHandleV4(w http.ResponseWriter, req *http.Request) {
 	var s session.Session
 	var ws *websocket.Conn
 	var addr string
-	err, code := func() (err error, code int) {
+	code, err := func() (code int, err error) {
 		host := req.URL.Query().Get("host")
 		port := req.URL.Query().Get("port")
 		origin, err := request.Origin(req, r.cfg.OriginCookieName)
 		if err != nil {
-			return fmt.Errorf("request.Origin(%v) error: %w", r.cfg.OriginCookieName, err), http.StatusBadRequest
+			return http.StatusBadRequest, fmt.Errorf("request.Origin(%v) error: %w", r.cfg.OriginCookieName, err)
 		}
 		addr = net.JoinHostPort(host, port)
 		ssh, err := net.Dial("tcp", addr)
 		if err != nil {
-			return fmt.Errorf("net.Dial(%v) error: %w", addr, err), http.StatusBadGateway
+			return http.StatusBadGateway, fmt.Errorf("net.Dial(%v) error: %w", addr, err)
 		}
 		s, err = r.mgr.New(ssh, session.CorpRelayV4)
 		if err != nil {
-			return fmt.Errorf("mgr.New(%v) error: %w", addr, err), http.StatusServiceUnavailable
+			return http.StatusServiceUnavailable, fmt.Errorf("mgr.New(%v) error: %w", addr, err)
 		}
 		glog.V(4).Infof("%v: Connected to %v", s, addr)
 
@@ -46,9 +46,9 @@ func (r *Runner) connectHandleV4(w http.ResponseWriter, req *http.Request) {
 		}
 		ws, err = upgrader.Upgrade(w, req, nil)
 		if err != nil {
-			return fmt.Errorf("upgrader.Upgrade(%v) error: %w", origin, err), http.StatusBadGateway
+			return http.StatusBadGateway, fmt.Errorf("upgrader.Upgrade(%v) error: %w", origin, err)
 		}
-		return nil, 0
+		return 0, nil
 	}()
 	if err != nil {
 		http.Error(w, errors.Unwrap(err).Error(), code)

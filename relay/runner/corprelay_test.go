@@ -33,10 +33,11 @@ var (
 	sshMsg = []byte{0xab, 0xcd, 0xef}
 )
 
-func listener(done <-chan struct{}) (string, error) {
+func listener(t *testing.T, done <-chan struct{}) string {
+	t.Helper()
 	s, err := net.Listen("tcp", "localhost:0")
 	if err != nil {
-		return "", err
+		t.Fatal(err)
 	}
 	go func() {
 		<-done
@@ -49,7 +50,7 @@ func listener(done <-chan struct{}) (string, error) {
 			}
 		}
 	}()
-	return strconv.Itoa(s.Addr().(*net.TCPAddr).Port), nil
+	return strconv.Itoa(s.Addr().(*net.TCPAddr).Port)
 }
 
 func newRunner() *Runner {
@@ -187,7 +188,7 @@ func TestProxyHandle(t *testing.T) {
 	p, _ := net.Pipe()
 	defer p.Close()
 	done := make(chan struct{})
-	port, err := listener(done)
+	port := listener(t, done)
 	defer close(done)
 	r := newRunner()
 	if _, err := r.mgr.New(p, session.CorpRelay); err != nil {
@@ -247,7 +248,7 @@ func TestProxyHandle_Failures(t *testing.T) {
 		{
 			url: "/proxy?host=localhost&port=22",
 			cookies: []*http.Cookie{
-				&http.Cookie{
+				{
 					Name:  "origin",
 					Value: "invalid",
 				},
@@ -258,7 +259,7 @@ func TestProxyHandle_Failures(t *testing.T) {
 		{
 			url: "/proxy?host=invalid%20host&port=22",
 			cookies: []*http.Cookie{
-				&http.Cookie{
+				{
 					Name:  "origin",
 					Value: "chrome-extension://foo",
 				},
