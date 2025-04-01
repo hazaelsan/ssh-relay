@@ -209,7 +209,7 @@ func (s *Session) copyWS(r io.Reader) error {
 	}
 	s.incCounter(int(n))
 	glog.V(5).Infof("ws->ssh read %v bytes", n)
-	_, err = s.ssh.Write([]byte(b.String()))
+	_, err = s.ssh.Write(b.Bytes())
 	return err
 }
 

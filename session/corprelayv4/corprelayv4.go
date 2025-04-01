@@ -180,7 +180,7 @@ func (s *Session) sendAck() error {
 // readAck processes an incoming ACK command.
 func (s *Session) readAck(a command.Ack) error {
 	ack := a.Ack()
-	diff := ack - s.wCount
+	diff := int(ack - s.wCount)
 	if diff == 0 {
 		return nil
 	}

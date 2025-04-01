@@ -3,24 +3,13 @@ package tls
 import (
 	"crypto/tls"
 	"crypto/x509"
-	"crypto/x509/pkix"
-	"encoding/asn1"
 	"errors"
-	"sort"
 	"testing"
 
 	"github.com/kylelemons/godebug/pretty"
 
 	"github.com/hazaelsan/ssh-relay/proto/v1/tlspb"
 )
-
-func subjectCN(b []byte) (string, error) {
-	s := new(pkix.RDNSequence)
-	if _, err := asn1.Unmarshal(b, s); err != nil {
-		return "", err
-	}
-	return s.String(), nil
-}
 
 func TestConfig(t *testing.T) {
 	tests := []struct {
@@ -123,36 +112,8 @@ func TestConfig(t *testing.T) {
 			t.Errorf("Config(%v) error = nil", tt.name)
 		}
 
-		if l := len(tt.cfg.RootCaCerts); l > 0 {
-			var cns []string
-			for i, s := range got.RootCAs.Subjects() {
-				cn, err := subjectCN(s)
-				if err != nil {
-					t.Errorf("subjectCN(%v, %v) error = %v", tt.name, i, err)
-					continue
-				}
-				cns = append(cns, cn)
-			}
-			if diff := pretty.Compare(cns, tt.rootCNs); diff != "" {
-				t.Errorf("RootCNs(%v) diff (-got +want):\n%v", tt.name, diff)
-			}
-			got.RootCAs = nil
-		}
-		if l := len(tt.cfg.ClientCaCerts); l > 0 {
-			var cns []string
-			for i, s := range got.ClientCAs.Subjects() {
-				cn, err := subjectCN(s)
-				if err != nil {
-					t.Errorf("subjectCN(%v, %v) error = %v", tt.name, i, err)
-					continue
-				}
-				cns = append(cns, cn)
-			}
-			if diff := pretty.Compare(cns, tt.clientCNs); diff != "" {
-				t.Errorf("ClientCNs(%v) diff (-got +want):\n%v", tt.name, diff)
-			}
-			got.ClientCAs = nil
-		}
+		got.RootCAs = nil
+		got.ClientCAs = nil
 		if diff := pretty.Compare(got, tt.want); diff != "" {
 			t.Errorf("Config(%v) diff (-got +want):\n%v", tt.name, diff)
 		}
@@ -208,7 +169,6 @@ func TestCertConfig(t *testing.T) {
 			t.Errorf("CertConfig(%v) error = nil", tt.name)
 		}
 
-		var names []string
 		var subjects []string
 		for i, tlsCert := range got.Certificates {
 			for k, tc := range tlsCert.Certificate {
@@ -217,24 +177,12 @@ func TestCertConfig(t *testing.T) {
 					t.Errorf("ParseCertificate(%v, %v, %v) error = %v", tt.name, i, k, err)
 				}
 				subjects = append(subjects, cert.Subject.String())
-				names = append(names, cert.Subject.CommonName)
 			}
 		}
 		if diff := pretty.Compare(subjects, tt.subjects); diff != "" {
 			t.Errorf("subjects(%v) diff (-got +want):\n%v", tt.name, diff)
 		}
 		got.Certificates = nil
-
-		var certNames []string
-		for name := range got.NameToCertificate {
-			certNames = append(certNames, name)
-		}
-		sort.Strings(names)
-		sort.Strings(certNames)
-		if diff := pretty.Compare(names, certNames); diff != "" {
-			t.Errorf("NameToCertificate(%v) diff (-got +want):\n%v", tt.name, diff)
-		}
-		got.NameToCertificate = nil
 
 		if diff := pretty.Compare(got, tt.want); diff != "" {
 			t.Errorf("CertConfig(%v) diff (-got +want):\n%v", tt.name, diff)

@@ -83,7 +83,6 @@ func CertConfig(cfg *tlspb.TlsConfig) (*tls.Config, error) {
 		return nil, err
 	}
 	c.Certificates = []tls.Certificate{cert}
-	c.BuildNameToCertificate()
 	return c, nil
 }
 
