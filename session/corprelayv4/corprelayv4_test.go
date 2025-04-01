@@ -137,8 +137,29 @@ func TestParseBinary(t *testing.T) {
 			ok: true,
 		},
 		{
+			b: shortData(),
+		},
+		{
+			b: longData(),
+		},
+		{
 			b:  zeroAck(),
 			ok: true,
+		},
+		{
+			b: maxAck(),
+		},
+		{
+			b: shortAck(),
+		},
+		{
+			b: longAck(),
+		},
+		{
+			b: shortAck(),
+		},
+		{
+			b: shortAck(),
 		},
 		{
 			b: shortAck(),
@@ -147,7 +168,22 @@ func TestParseBinary(t *testing.T) {
 			b: goodCS(),
 		},
 		{
+			b: shortCS(),
+		},
+		{
+			b: longCS(),
+		},
+		{
 			b: zeroAckRS(),
+		},
+		{
+			b: maxAckRS(),
+		},
+		{
+			b: shortAckRS(),
+		},
+		{
+			b: longAckRS(),
 		},
 	}
 	for i, tt := range testdata {
