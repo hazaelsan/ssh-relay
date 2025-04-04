@@ -80,17 +80,30 @@ func (s *Session) Done() <-chan struct{} {
 
 // Run starts a new session between the WebSocket and SSH connections.
 func (s *Session) Run(ws *websocket.Conn) error {
-	s.mu.Lock()
-	defer func() {
-		s.mu.Unlock()
-		s.Close()
-	}()
+	defer s.Close()
 	s.ws = ws
 	s.wFunc = s.ws.NextWriter
 	errc := make(chan error)
 	go s.runWS(errc)
 	go s.runSSH(errc)
 	return <-errc
+}
+
+// wsWriter is a wrapper to a websocket writer.
+// Returns a writer and a cancel function to release the lock.
+// Needed because gorilla doesn't support concurrent writes.
+func (s *Session) wsWriter(t int) (io.WriteCloser, func(), error) {
+	s.mu.Lock()
+	w, err := s.wFunc(t)
+	if err != nil {
+		defer s.mu.Unlock()
+		return nil, nil, err
+	}
+	done := func() {
+		w.Close()
+		s.mu.Unlock()
+	}
+	return w, done, nil
 }
 
 // recvCmd parses an in-band command from a WebSocket stream.
@@ -138,11 +151,11 @@ func (s *Session) sendConnect() error {
 	if err != nil {
 		return err
 	}
-	w, err := s.wFunc(websocket.BinaryMessage)
+	w, cancel, err := s.wsWriter(websocket.BinaryMessage)
 	if err != nil {
 		return fmt.Errorf("wFunc() error: %w", err)
 	}
-	defer w.Close()
+	defer cancel()
 	cs, err := command.NewConnectSuccess(sid)
 	if err != nil {
 		return err
@@ -151,7 +164,7 @@ func (s *Session) sendConnect() error {
 }
 
 // sendReconnect sends a RECONNECT_SUCCESS command.
-func (s *Session) sendReconnect(ack uint64) error {
+func (s *Session) sendReconnect(_ uint64) error {
 	return errors.New("not implemented")
 }
 
@@ -168,11 +181,11 @@ func (s *Session) readData(d command.Data) error {
 
 // sendAck sends an ACK command in response to received data from one or more DATA commands.
 func (s *Session) sendAck() error {
-	w, err := s.wFunc(websocket.BinaryMessage)
+	w, cancel, err := s.wsWriter(websocket.BinaryMessage)
 	if err != nil {
 		return fmt.Errorf("wFunc() error: %w", err)
 	}
-	defer w.Close()
+	defer cancel()
 	a := command.NewAck(s.rCount)
 	return a.Write(w)
 }
@@ -209,13 +222,11 @@ func (s *Session) runSSH(errc chan<- error) {
 			if err != nil {
 				return err
 			}
-
-			w, err := s.wFunc(websocket.BinaryMessage)
+			w, cancel, err := s.wsWriter(websocket.BinaryMessage)
 			if err != nil {
 				return fmt.Errorf("wFunc() error: %w", err)
 			}
-			defer w.Close()
-
+			defer cancel()
 			return s.copySSH(w, data)
 		}()
 		if err != nil {
