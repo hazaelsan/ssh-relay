@@ -4,6 +4,7 @@ package agent
 import (
 	"errors"
 	"fmt"
+	"io"
 	"net/http"
 
 	"github.com/hazaelsan/ssh-relay/helper/session"
@@ -60,5 +61,8 @@ func (a *Agent) Run() error {
 	go func() {
 		<-s.Done()
 	}()
-	return s.Run()
+	if err := s.Run(); !errors.Is(err, io.EOF) {
+		return err
+	}
+	return nil
 }
