@@ -18,3 +18,6 @@
 
 # Bazel
 bazel-*
+
+# Auto-generated go_proto_library symlinks
+*.pb.go
